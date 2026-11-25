@@ -18,11 +18,14 @@ scripts/check-spec-refs.sh                 # every cited requirement exists in o
 scripts/fast-checks.sh                     # what the pre-push hook runs
 shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
 actionlint
+kicad-cli sch erc --severity-error --exit-code-violations hardware/pcb/antuna-remote/antuna-remote.kicad_sch   # KiCad 10.0.8
+kicad-cli sch export netlist -o /tmp/antuna.net hardware/pcb/antuna-remote/antuna-remote.kicad_sch            # nets to review against design.md
+scripts/fetch-3d-models.sh                 # STEP models for the library parts, kept out of git
 ```
 
-The PCB, enclosure and firmware commands land with the changes that create
-those folders (KiCad `kicad-cli` ERC and DRC, the enclosure build and tests,
-the firmware build and tests). Each such change adds its commands here.
+On macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`.
+The enclosure and firmware commands land with the changes that create
+those folders. Each such change adds its commands here.
 
 Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 (commit lint, no commits on main, fast checks before each push).
@@ -30,8 +33,9 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 ## Layout
 
 - `openspec/` specs and changes, as in the app repo.
-- `hardware/pcb/` the KiCad project. KiCad files are text and are reviewed
-  as diffs. Fabrication outputs (Gerbers, drill, BOM, placement) are built
+- `hardware/pcb/` the KiCad project (`antuna-remote/`) and the repo-local
+  library (`lib/`) of parts checked against their datasheets. KiCad files
+  are text and are reviewed as diffs. Fabrication outputs (Gerbers, drill, BOM, placement) are built
   by `kicad-cli`, never committed by hand.
 - `hardware/enclosure/` the enclosure as code. STEP, STL and 3MF are build
   outputs.
