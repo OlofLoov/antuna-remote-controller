@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="125mm" height="175mm" viewBox="0 0 125 175" font-family="Helvetica, Arial, sans-serif">
+  <title>Antuna Remote front and side, 1:1</title>
+  <rect width="125" height="175" fill="#ffffff"/>
+  <g transform="translate(8 14)">
+    <rect x="0" y="0" width="40" height="150" rx="11" fill="#e9ebee" stroke="#30343a" stroke-width="0.4"/>
+    <rect x="13" y="-0.2" width="14" height="2.4" rx="1" fill="#30343a"/>
+    <circle cx="20" cy="9" r="1" fill="#2a9d8f"/>
+    <circle cx="31" cy="11" r="4" fill="#ffffff" stroke="#30343a" stroke-width="0.3"/>
+    <circle cx="31" cy="11" r="3" fill="#c9cdd3"/>
+    <path d="M31 9.2v1.8M29.6 9.9a2 2 0 1 0 2.8 0" fill="none" stroke="#30343a" stroke-width="0.35" stroke-linecap="round"/>
+    <circle cx="20" cy="38" r="15" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <circle cx="20" cy="38" r="7" fill="#ffffff" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M20 25.5l-1.6 2.2h3.2zM20 50.5l-1.6-2.2h3.2zM7.5 38l2.2-1.6v3.2zM32.5 38l-2.2-1.6v3.2z" fill="#30343a"/>
+    <circle cx="10" cy="64" r="5" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M11.2 61.8l-2.4 2.2 2.4 2.2" fill="none" stroke="#30343a" stroke-width="0.45" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="25" y="59" width="10" height="10" rx="3" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <rect x="27.5" y="61.8" width="5" height="3.4" rx="0.5" fill="none" stroke="#30343a" stroke-width="0.4"/>
+    <path d="M28.6 66.2h2.8" stroke="#30343a" stroke-width="0.4" stroke-linecap="round"/>
+    <circle cx="20" cy="78" r="5.5" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M17.6 76.2v3.6l2.6-1.8z" fill="#30343a"/>
+    <path d="M21 76.2v3.6M22.4 76.2v3.6" stroke="#30343a" stroke-width="0.5"/>
+    <circle cx="11" cy="100" r="4.5" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M9.2 99h1.2l1.6-1.4v4.8l-1.6-1.4H9.2z" fill="#30343a"/>
+    <path d="M12.8 99.2l1.4 1.6M14.2 99.2l-1.4 1.6" stroke="#30343a" stroke-width="0.35"/>
+    <rect x="23" y="88" width="9" height="24" rx="4.5" fill="#c9cdd3" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M27.5 91.5v3M26 93h3M26 107h3" stroke="#30343a" stroke-width="0.45" stroke-linecap="round"/>
+    <path d="M2 118h36" stroke="#9aa0a8" stroke-width="0.25" stroke-dasharray="1 1"/>
+    <text x="20" y="132" font-size="2.6" text-anchor="middle" fill="#6b7280">2 × AAA behind</text>
+    <text x="20" y="136" font-size="2.6" text-anchor="middle" fill="#6b7280">(back, side by side)</text>
+  </g>
+  <g transform="translate(96 14)">
+    <path d="M0 0h11.5a1.5 1.5 0 0 1 1.5 1.5L20 112v30a8 8 0 0 1-8 8H8a8 8 0 0 1-8-8z" fill="#e9ebee" stroke="#30343a" stroke-width="0.4"/>
+    <path d="M1.5 104h17v42h-17z" fill="none" stroke="#9aa0a8" stroke-width="0.25" stroke-dasharray="1 1"/>
+    <text x="10" y="126" font-size="2.4" text-anchor="middle" fill="#6b7280">cells</text>
+    <text x="10" y="-3" font-size="2.6" text-anchor="middle" fill="#30343a">side</text>
+  </g>
+  <g font-size="2.6" fill="#30343a">
+    <text x="28" y="8">front, 1:1 (print at 100%)</text>
+    <text x="8" y="170">40 mm wide, 150 mm long, 13 mm thick at the top to 20 mm at the battery end</text>
+  </g>
+  <g font-size="2.3" fill="#4b5563">
+    <text x="50" y="26">power (recessed)</text>
+    <text x="50" y="23">status light; IR at top edge</text>
+    <text x="50" y="53">d-pad + select</text>
+    <text x="50" y="79">back · home</text>
+    <text x="50" y="93">play/pause</text>
+    <text x="50" y="115">mute · volume</text>
+  </g>
+</svg>
