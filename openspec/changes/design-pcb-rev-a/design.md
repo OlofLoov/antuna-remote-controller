@@ -1,0 +1,152 @@
+## Context
+
+Target: PCB rev A. Sources: `docs/research/pcb-components/ble_module.md`
+and `discrete_parts.md`, both from 2026-11-25, with datasheet links and
+the values quoted here. Values marked "to confirm" come from a secondary
+source or could not be read, and a task confirms them before layout.
+
+The supply is two AAA cells straight to the circuit: about 3.2 V fresh,
+2.4 V on NiMH, a warning at 2.2 V under load, and the board must still run
+at 2.0 V.
+
+## Decisions
+
+### 1. Block diagram
+
+```
+ 2 x AAA ──┬── Q2 P-FET (reverse polarity) ──┬── VBAT
+           │                                 │
+           │      ┌──────────────────────────┼─────────────────────────────┐
+           │      │                          │                             │
+           │   C1 100 µF              U1 AN54LQ-15 (nRF54L15)         D1 IR LED + R1 10 Ω
+           │   (by D1)                 VDD, DCC ── L1 4.7 µH               │
+           │                           XL1/XL2 ── Y1 32.768 kHz           Q1 N-FET ── GND
+           │                           P1 PWM ───────────────────────── gate (R2 to GND)
+           │                           12 keys: P0/P1 ── SW1..SW12 ── GND (internal pull-ups)
+           │                           P1 in  ── U2 TSMP96000 out
+           │                           P2 out ── U2 VS (powered only while learning)
+           │                           P2 out ── R3 ── D2 status LED ── GND
+           │                           SWDIO, SWDCLK, RESET, VDD, GND ── J1 Tag-Connect pads
+          GND
+```
+
+### 2. Parts
+
+| Ref | Part | Datasheet values that decide it | LCSC | Alternate |
+|-----|------|---------------------------------|------|-----------|
+| U1 | Raytac AN54LQ-15, nRF54L15 module, chip antenna | VDD 1.7 to 3.6 V, reset needs at least 1.75 V; 13.7 x 9.5 x 1.8 mm (Nordic's list says 2.05 mm); 31 GPIO; FCC SH6AN54LQ, IC 8017A-AN54LQ, EU and UKCA declarations; System ON idle with RTC and 64 KB RAM 1.5 µA. Datasheet v1.3, raytac.com | C49419243, extended, Standard PCBA with X-ray | Raytac MDBT42Q-512KV2 (nRF52832), C2828282, 16 x 10 x 2.2 mm, no UKCA declaration |
+| L1 | 4.7 µH, 0603, at least 120 mA, for the module's DC/DC | Without L1 the chip stays in LDO mode, which Nordic does not support for low power. Value to confirm in Raytac's reference schematic | to pick | |
+| Y1 | 32.768 kHz crystal with load capacitors | External; the SDK expects it. Load capacitance and part to confirm against Raytac's reference | to pick | |
+| SW1 to SW12 | XKB TS-1187A-C-C-B tactile switch, 260 gf | 2.55 N, inside the 1.5 to 3.0 N requirement with margin either side; 5.1 x 5.1 mm, 1.7 mm high | C318889 | XKB TS-1187A-B-A-B, 160 gf (1.57 N, too close to the 1.5 N floor), C318884, basic part |
+| D1 | Vishay TSAL6200, 5 mm, 940 nm, laid flat at the top edge | Half angle 17 degrees; 72 mW/sr typical, 40 min at 100 mA; forward voltage 1.35 V typical, 1.6 V max at 100 mA; pulse rating covers 170 mA at 1/3 duty. About 12 m typical, 8.9 m worst case | C55528, extended, through hole | Vishay VSMB2948SL side-looking SMD, C6604342, about 6.3 m typical and 4.5 m worst case, short of 5 m |
+| R1 | 10 Ohm, 0603 | About 170 mA at 3.2 V and 65 mA at 2.0 V through D1 | basic | |
+| Q1 | AOS AO3416 N-channel MOSFET, SOT-23 | At most 34 mOhm at 1.8 V gate drive, so a GPIO turns it fully on from low cells | C43307, extended | Vishay Si2312CDS, at most 41.4 mOhm at 1.8 V, C142518. Not AO3400A: only specified from 2.5 V |
+| R2 | 100 kOhm, 0603, Q1 gate to ground | Holds Q1 off while the chip resets, so D1 never stays on | basic | |
+| Q2 | Diodes DMP2035U-7 P-channel MOSFET, SOT-23 | At most 62 mOhm at -1.8 V gate drive; about 9 mV drop at 150 mA | C110499, extended | AO3401A, C15127, basic, but only specified at -2.5 V |
+| C1 | Samsung CL31A107MQHNNNE, 100 µF 6.3 V X5R 1206 | 1.6 mm thick; worst-case leakage 6.4 µA at 3.2 V. Effective capacitance at 3 V to confirm (assumed 40 to 60 µF) | C15008, basic | Tantalum CA45A, 1.9 mm, 10 µA, C2976906 |
+| U2 | Vishay TSMP96000, IR receiver with raw carrier output, side view SMD | 2.0 to 5.5 V; 0.35 mA, so powered from a GPIO only while learning; carrier out 30 to 60 kHz, so 36, 38, 40 and 56 kHz TV codes learn with their real frequency | C20346073, stock not shown | Vishay TSOP33338, 2.0 to 5.5 V, decoded 38 kHz only |
+| D2 | Kingbright APTD1608LSECK/J4-PF, orange, 0603 | Forward voltage 1.8 V typical, 2.1 V max at 2 mA, bright at low current | C5879215, extended | Kingbright APTD1608LCGCK yellow-green, C5342733, about 50 times dimmer |
+| R3 | 330 Ohm, 0603 | About 1.2 mA at 2.2 V and 4 mA at 3.2 V with a typical LED; firmware PWM evens out the brightness | basic | |
+| BT1 | Keystone 5204 (negative) and 5226 (positive) AAA contacts, soldered by a tab to the board edge; Keystone 5213 or 5214 bridge contact in the door | Low enough for a 14 mm battery end; PCB-mount AAA spring contacts are 11 to 20 mm tall | not stocked, buy from Digi-Key | Keystone 230-1 board-edge contact, mounting to confirm |
+| J1 | Tag-Connect TC2030-NL footprint | No part on the board; the TC2030-CTX-NL cable fits the DK's debug header | none | 2 x 5 1.27 mm header |
+
+### 3. Pin plan
+
+Rules from the nRF54L15: only P0 and P1 can wake the chip (P2 cannot),
+the PWM only drives P1, and the 32.768 kHz crystal takes P1.00 and P1.01.
+That leaves 18 wake-capable pins for 13 inputs.
+
+| Function | Pins | Port rule |
+|----------|------|-----------|
+| 12 keys | P0.00 to P0.04 and seven of P1.04 to P1.14 | Wake on any key; latched detect mode against erratum 114 |
+| IR LED gate | one P1 pin | PWM20 |
+| IR receiver output | one P1 pin | GPIOTE and timer capture |
+| IR receiver power | one P2 pin | Output only |
+| Status LED | one P2 pin | Output only |
+| SWD | SWDIO, SWDCLK, RESET | Dedicated |
+
+P0.03 and P0.04 stay keys; their GRTC PWM and CLKOUT32K functions are not
+needed. P1.02 and P1.03 default to NFC and are set to GPIO in firmware if
+used. Module pad numbers are checked against Raytac's drawing in task 2.2.
+
+### 4. Power checks
+
+- Supply range: 3.2 V fresh is under the 3.6 V maximum. Lithium AAA cells
+  (about 1.8 V each fresh) would put 3.6 V on the module, at the limit, so
+  the battery door label says alkaline or NiMH.
+- Reset margin: at 2.0 V with about 1 Ohm per worn cell (to confirm on the
+  bench), a 65 mA IR burst sags the supply by about 0.13 V to 1.87 V, above
+  the 1.75 V reset level. C1 smooths the 38 kHz ripple: one 8.8 µs carrier
+  pulse at 170 mA moves 1.5 µC, about 30 mV on 50 µF. The
+  `pcb-assembly/low-cells-keep-it-running` scenario checks this with a
+  scope.
+- IR charge per press: an NEC frame has about 27.5 ms of carrier at 1/3
+  duty, so about 1.6 mC at 170 mA, or 0.43 µAh per frame.
+- Status light: works from 2.2 V with a typical LED; a worst-case LED
+  (2.1 V) can stay dark near 2.0 V, so the low-battery warning starts at
+  2.2 V and is also reported over Bluetooth.
+
+Current budget, alkaline, 200 presses a day:
+
+| Load | Average |
+|------|---------|
+| nRF54L15 idle with RTC and RAM | 1.5 µA (datasheet) |
+| Bluetooth connected with a long interval and latency | 5 to 15 µA (secondary source, to measure) |
+| C1 leakage | up to 6.4 µA worst case, far less typical |
+| U2, D2, key pull-ups | 0 when idle |
+| IR frames when Bluetooth is down, 1.5 frames a press | about 5 µA if every press went over IR |
+
+Worst case about 28 µA, or about 250 mAh a year, against about 1000 mAh
+in an alkaline AAA pair: about four years, against the two-year
+requirement.
+
+### 5. Height
+
+All parts on the top side; the bottom is flat against the shell. Tallest:
+the module at 1.8 mm (2.05 mm per Nordic's list), the switches at 1.7 mm,
+C1 at 1.6 mm. Stack over the keys: 1.2 mm wall, 1.0 mm board, about 2 mm of
+parts, clearance, 1.2 mm top wall and caps 1.5 mm proud: about 7.5 to 8 mm,
+under the 11 mm limit. The 5 mm IR LED laid flat sets the top end at about
+7.5 mm with walls.
+
+### 6. Board
+
+- Two layers, 1.0 mm FR-4, about 37 by 100 mm, the outline following the
+  shell's top corners and stopping at the battery bay.
+- U1 in the top left corner with its antenna at the board edge and
+  Raytac's keep-out clear of copper, parts and cells. The top end of the
+  drawing (Power, status light, IR LED, module) is crowded; layout may move
+  the status light.
+- Battery contacts on the bottom edge, solder tabs on pads.
+- Test points: VBAT, GND, IR gate.
+
+### 7. Assembler: JLCPCB Standard PCBA
+
+The module needs Standard PCBA with X-ray, which also covers the
+through-hole IR LED as an option. Five boards made, two or more
+assembled. PCBWay is the alternate if JLCPCB has no stock of the module
+or U2 and parts must be sent in. Battery contacts come from Digi-Key and
+are soldered at home.
+
+### 8. KiCad 10 with a repo-local library
+
+KiCad files are text and review as diffs, and `kicad-cli` runs ERC, DRC
+and the fab outputs in CI. Symbols and footprints for LCSC parts come in
+through `easyeda2kicad` into `hardware/pcb/lib/`, and each is checked
+against its datasheet's drawing before use. EasyEDA was considered for
+its one-click ordering and rejected: its projects live in its cloud and do
+not diff in git.
+
+## Risks / Trade-offs
+
+- Module and U2 stock at LCSC could not be read by script and may be zero.
+  Fallback: JLCPCB pre-order, or PCBWay with sent-in parts.
+- The 5 mm IR LED laid flat is the only part with margin for 5 m, and it
+  sets the top end's thickness.
+- Early AN54LQ lots used nRF54L15 revision 1 silicon. The order asks for
+  revision 2 (build code C00).
+
+## Open Questions
+
+- Raytac's reference values for L1 and the crystal's load capacitors.
+- Whether X-ray inspection adds a cost worth avoiding with the MDBT42Q.
