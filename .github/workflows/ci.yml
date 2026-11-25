@@ -58,7 +58,9 @@ jobs:
   kicad:
     name: KiCad ERC
     runs-on: ubuntu-latest
-    container: kicad/kicad:10.0
+    container:
+      image: kicad/kicad:10.0
+      options: --user root
     steps:
       - uses: actions/checkout@v7
       - name: ERC
