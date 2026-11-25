@@ -35,16 +35,17 @@ at 2.0 V.
 | Ref | Part | Datasheet values that decide it | LCSC | Alternate |
 |-----|------|---------------------------------|------|-----------|
 | U1 | Raytac AN54LQ-15, nRF54L15 module, chip antenna | VDD 1.7 to 3.6 V, reset needs at least 1.75 V; 13.7 x 9.5 x 1.8 mm (Nordic's list says 2.05 mm); 31 GPIO; FCC SH6AN54LQ, IC 8017A-AN54LQ, EU and UKCA declarations; System ON idle with RTC and 64 KB RAM 1.5 µA. Datasheet v1.3, raytac.com | C49419243, extended, Standard PCBA with X-ray | Raytac MDBT42Q-512KV2 (nRF52832), C2828282, 16 x 10 x 2.2 mm, no UKCA declaration |
-| L1 | 4.7 µH, 0603, at least 120 mA, for the module's DC/DC | Without L1 the chip stays in LDO mode, which Nordic does not support for low power. Value to confirm in Raytac's reference schematic | to pick | |
-| Y1 | 32.768 kHz crystal with load capacitors | External; the SDK expects it. Load capacitance and part to confirm against Raytac's reference | to pick | |
-| SW1 to SW12 | XKB TS-1187A-C-C-B tactile switch, 260 gf | 2.55 N, inside the 1.5 to 3.0 N requirement with margin either side; 5.1 x 5.1 mm, 1.7 mm high | C318889 | XKB TS-1187A-B-A-B, 160 gf (1.57 N, too close to the 1.5 N floor), C318884, basic part |
+| L1 | 4.7 µH, 0603, between DCC (pad 9) and DECD (pad 8) | Raytac reference circuit, datasheet v1.3 section 8. Without L1 the chip stays in LDO mode, which Nordic does not support for low power. Current rating at least 120 mA (Nordic, to confirm on the part picked) | to pick | |
+| C2 | 4.7 µF, 0402, on VDD_NRF (pad 11) | Raytac reference circuit (their C10). DECD's 2.2 µF is inside the module | basic | |
+| Y1 | 32.768 kHz crystal on XL1/XL2 (pads 12, 13), load capacitor footprints not fitted | The SDK expects it. Raytac's reference marks both load capacitors NC; the nRF54L15 sets the load internally, so the firmware's load setting must match the crystal's rated load (to set when the part is picked) | to pick | |
+| SW1 to SW12 | XKB TS-1187A-C-C-B tactile switch, 260 gf | 2.6 N, inside the 1.5 to 3.0 N requirement with margin either side; 5.1 x 5.1 mm, 1.7 mm high, round button, 100,000 cycles (LCSC listing; LCSC's datasheet PDF could not be fetched) | C318889 | XKB TS-1187A-B-A-B, 160 gf (1.57 N, too close to the 1.5 N floor), C318884, basic part |
 | D1 | Vishay TSAL6200, 5 mm, 940 nm, laid flat at the top edge | Half angle 17 degrees; 72 mW/sr typical, 40 min at 100 mA; forward voltage 1.35 V typical, 1.6 V max at 100 mA; pulse rating covers 170 mA at 1/3 duty. About 12 m typical, 8.9 m worst case | C55528, extended, through hole | Vishay VSMB2948SL side-looking SMD, C6604342, about 6.3 m typical and 4.5 m worst case, short of 5 m |
 | R1 | 10 Ohm, 0603 | About 170 mA at 3.2 V and 65 mA at 2.0 V through D1 | basic | |
 | Q1 | AOS AO3416 N-channel MOSFET, SOT-23 | At most 34 mOhm at 1.8 V gate drive, so a GPIO turns it fully on from low cells | C43307, extended | Vishay Si2312CDS, at most 41.4 mOhm at 1.8 V, C142518. Not AO3400A: only specified from 2.5 V |
 | R2 | 100 kOhm, 0603, Q1 gate to ground | Holds Q1 off while the chip resets, so D1 never stays on | basic | |
 | Q2 | Diodes DMP2035U-7 P-channel MOSFET, SOT-23 | At most 62 mOhm at -1.8 V gate drive; about 9 mV drop at 150 mA | C110499, extended | AO3401A, C15127, basic, but only specified at -2.5 V |
-| C1 | Samsung CL31A107MQHNNNE, 100 µF 6.3 V X5R 1206 | 1.6 mm thick; worst-case leakage 6.4 µA at 3.2 V. Effective capacitance at 3 V to confirm (assumed 40 to 60 µF) | C15008, basic | Tantalum CA45A, 1.9 mm, 10 µA, C2976906 |
-| U2 | Vishay TSMP96000, IR receiver with raw carrier output, side view SMD | 2.0 to 5.5 V; 0.35 mA, so powered from a GPIO only while learning; carrier out 30 to 60 kHz, so 36, 38, 40 and 56 kHz TV codes learn with their real frequency | C20346073, stock not shown | Vishay TSOP33338, 2.0 to 5.5 V, decoded 38 kHz only |
+| C1 | Samsung CL31A107MQHNNNE, 100 µF 6.3 V X5R 1206 | 1.6 mm thick; worst-case leakage 6.4 µA at 3.2 V. Effective capacitance at 3 V not published in a readable form; assumed 40 to 60 µF, and the low-cells scenario checks the result | C15008, basic | Tantalum CA45A, 1.9 mm, 10 µA, C2976906 |
+| U2 | Vishay TSMP96000, IR receiver with raw carrier output, side view SMD, at the top edge next to D1 | Panhead 7.5 W x 5.3 H x 4.0 D mm, standing 5.3 mm on the board with its lens to the side (datasheet rev 1.1, 2024-11-25, document 82906); pads 1 GND, 3 VS, 4 OUT at 1.27 mm pitch. 2.0 to 5.5 V; 0.35 mA, so powered from a GPIO only while learning; carrier out 30 to 60 kHz, so 36, 38, 40 and 56 kHz TV codes learn with their real frequency | C20346073, stock not shown | Vishay TSOP33338, 2.0 to 5.5 V, decoded 38 kHz only |
 | D2 | Kingbright APTD1608LSECK/J4-PF, orange, 0603 | Forward voltage 1.8 V typical, 2.1 V max at 2 mA, bright at low current | C5879215, extended | Kingbright APTD1608LCGCK yellow-green, C5342733, about 50 times dimmer |
 | R3 | 330 Ohm, 0603 | About 1.2 mA at 2.2 V and 4 mA at 3.2 V with a typical LED; firmware PWM evens out the brightness | basic | |
 | BT1 | Keystone 5204 (negative) and 5226 (positive) AAA contacts, soldered by a tab to the board edge; Keystone 5213 or 5214 bridge contact in the door | Low enough for a 14 mm battery end; PCB-mount AAA spring contacts are 11 to 20 mm tall | not stocked, buy from Digi-Key | Keystone 230-1 board-edge contact, mounting to confirm |
@@ -65,9 +66,16 @@ That leaves 18 wake-capable pins for 13 inputs.
 | Status LED | one P2 pin | Output only |
 | SWD | SWDIO, SWDCLK, RESET | Dedicated |
 
+Module pads, from the AN54LQ datasheet v1.3 pin table and reference
+circuit: P1.09 to P1.14 on pads 2 to 7, P1.00 and P1.01 (crystal) on 12
+and 13, P1.02 to P1.08 on 15 to 21, P2.00 to P2.03 on 22 to 25, P2.04 to
+P2.10 on 27 to 33, P0.00 and P0.01 on 34 and 35, SWDIO 36, SWDCLK 37,
+P0.03 on 38, RESET 39, P0.04 on 40, P0.02 on 41. VDD_NRF 11, DCC 9,
+DECD 8; GND on 1, 10, 14, 26, 42 and 43.
+
 P0.03 and P0.04 stay keys; their GRTC PWM and CLKOUT32K functions are not
-needed. P1.02 and P1.03 default to NFC and are set to GPIO in firmware if
-used. Module pad numbers are checked against Raytac's drawing in task 2.2.
+needed. P1.02 and P1.03 default to NFC; they are left for other uses and
+set to GPIO in firmware if used, since NFC is not fitted.
 
 ### 4. Power checks
 
@@ -102,12 +110,17 @@ requirement.
 
 ### 5. Height
 
-All parts on the top side; the bottom is flat against the shell. Tallest:
-the module at 1.8 mm (2.05 mm per Nordic's list), the switches at 1.7 mm,
-C1 at 1.6 mm. Stack over the keys: 1.2 mm wall, 1.0 mm board, about 2 mm of
-parts, clearance, 1.2 mm top wall and caps 1.5 mm proud: about 7.5 to 8 mm,
-under the 11 mm limit. The 5 mm IR LED laid flat sets the top end at about
-7.5 mm with walls.
+All parts on the top side; the bottom is flat against the shell. Tallest
+in the key area: the module at 1.8 mm (2.05 mm per Nordic's list), the
+switches at 1.7 mm, C1 at 1.6 mm. Stack over the keys: 1.2 mm wall, 1.0 mm
+board, about 2 mm of parts, clearance, 1.2 mm top wall and caps 1.5 mm
+proud: about 7.5 to 8 mm, under the 11 mm limit.
+
+Two parts at the top edge stand taller and both look out of the top end:
+the 5 mm IR LED laid flat and U2 at 5.3 mm. With 1.2 mm walls above and
+below and the 1.0 mm board, the top end is about 9 mm, still under 11 mm.
+A board cutout under U2 could lower it by the board's thickness if the
+enclosure needs it.
 
 ### 6. Board
 
@@ -148,5 +161,4 @@ not diff in git.
 
 ## Open Questions
 
-- Raytac's reference values for L1 and the crystal's load capacitors.
 - Whether X-ray inspection adds a cost worth avoiding with the MDBT42Q.
