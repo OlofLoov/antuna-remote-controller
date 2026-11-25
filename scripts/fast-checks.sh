@@ -15,6 +15,11 @@ step "spec references" bash scripts/check-spec-refs.sh
 if command -v openspec >/dev/null; then
   step "openspec" openspec validate --all --strict --no-interactive
 fi
+KICAD_CLI=$(command -v kicad-cli || echo /Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli)
+if [[ -x "$KICAD_CLI" ]]; then
+  step "kicad erc" "$KICAD_CLI" sch erc --severity-error --exit-code-violations \
+    -o "${TMPDIR:-/tmp}/antuna-erc.rpt" hardware/pcb/antuna-remote/antuna-remote.kicad_sch
+fi
 if command -v shellcheck >/dev/null; then
   step "shellcheck" shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
 fi
