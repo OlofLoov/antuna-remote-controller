@@ -80,7 +80,9 @@ one more part and a pinhole in the shell. Rejected.
 ### 7. Status light: one LED under a printed light pipe
 
 A single small LED behind a thin spot in the shell or a translucent PETG
-insert. Colors and patterns: blinking for pairing mode, a short double
+insert. Orange, not teal: teal and cyan LEDs need about 2.6 V or more and
+stay dark on low cells, while a low-current orange LED lights at 2 mA
+with about 1.8 V across it (`docs/research/pcb-components/`). Colors and patterns: blinking for pairing mode, a short double
 blink on a press when the battery is low (see `define-power`). RGB was
 considered and rejected: more parts, more firmware, little gain.
 
