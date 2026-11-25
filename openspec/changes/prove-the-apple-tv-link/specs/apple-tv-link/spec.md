@@ -1,6 +1,19 @@
 ## ADDED Requirements
 
-### Requirement: Pairs from the Apple TV settings
+### Requirement: Works over infrared with no setup
+The remote SHALL control an Apple TV 4K over infrared out of the box, with no pairing and no learning step, on an Apple TV that has not been paired with another infrared remote.
+
+#### Scenario: First use
+- **GIVEN** a new remote and an Apple TV 4K showing the Home screen
+- **WHEN** the user points the remote at the Apple TV and presses an arrow
+- **THEN** the focus moves, with nothing set up on the Apple TV first
+
+#### Scenario: Apple TV learned another remote
+- **GIVEN** the Apple TV ignores the remote's infrared because it was paired with or taught another remote
+- **WHEN** the user runs Settings, Remotes and Devices, Learn Remote, and presses the remote's buttons when asked
+- **THEN** the remote controls the Apple TV from then on
+
+### Requirement: Pairs over Bluetooth from the Apple TV settings
 The remote SHALL pair with an Apple TV 4K from Settings, Remotes and Devices, Bluetooth, with no app, code or dongle, and SHALL show there under its own name.
 
 #### Scenario: First pairing
@@ -9,12 +22,25 @@ The remote SHALL pair with an Apple TV 4K from Settings, Remotes and Devices, Bl
 - **THEN** the Apple TV lists it as connected within 10 seconds, with no code to type
 
 #### Scenario: Two Apple TVs in the house
-- **GIVEN** the remote is paired with one Apple TV and a second Apple TV is in range
-- **WHEN** the user presses keys
+- **GIVEN** the remote is paired over Bluetooth with one Apple TV and a second Apple TV is in range
+- **WHEN** the user presses keys out of the second Apple TV's line of sight
 - **THEN** only the paired Apple TV reacts
 
+### Requirement: A press acts once
+The remote SHALL make each button press act once on the Apple TV, whichever link carries it, including while Bluetooth is reconnecting.
+
+#### Scenario: Both links reach the Apple TV
+- **GIVEN** the remote is paired over Bluetooth and pointed at the Apple TV
+- **WHEN** the user presses down once in Antuna's guide
+- **THEN** the focus moves one row, not two
+
+#### Scenario: First press after the remote slept
+- **GIVEN** the remote has been idle long enough to drop its Bluetooth link
+- **WHEN** the user presses up once while a channel plays full screen in Antuna
+- **THEN** Antuna moves exactly one channel, and the bench log records how long the press took to act
+
 ### Requirement: Arrows move the focus
-The remote SHALL move the focus up, down, left and right on the Home screen and in Antuna, one step per press, and keep stepping while a key is held.
+The remote SHALL move the focus up, down, left and right on the Home screen and in Antuna, one step per press, and keep stepping while a key is held, over either link.
 
 #### Scenario: Home screen
 - **GIVEN** the Apple TV shows the Home screen
@@ -26,8 +52,13 @@ The remote SHALL move the focus up, down, left and right on the Home screen and 
 - **WHEN** the user holds the down key for two seconds
 - **THEN** the focus keeps moving down until the key is released and stops within one step of release
 
+#### Scenario: Search field focused
+- **GIVEN** Antuna's search field has the focus
+- **WHEN** the user presses down
+- **THEN** the focus leaves the field for the results, as it does with the Siri Remote
+
 ### Requirement: Select and back
-The remote SHALL open the focused item with its select key and go back one screen with its back key, on the Home screen and in Antuna.
+The remote SHALL open the focused item with its select key and go back one screen with its back key, on the Home screen and in Antuna, over either link.
 
 #### Scenario: Open and leave an app
 - **GIVEN** Antuna is focused on the Home screen
@@ -35,7 +66,7 @@ The remote SHALL open the focused item with its select key and go back one scree
 - **THEN** Antuna opens, and back leaves it the way the Siri Remote's back button does
 
 ### Requirement: Play and pause
-The remote SHALL pause and resume playback in Antuna with one key, as the Siri Remote's play/pause button does.
+The remote SHALL pause and resume playback in Antuna with one key, as the Siri Remote's play/pause button does, over either link.
 
 #### Scenario: Pausing a movie
 - **GIVEN** a movie is playing in Antuna
@@ -43,7 +74,7 @@ The remote SHALL pause and resume playback in Antuna with one key, as the Siri R
 - **THEN** the movie pauses, then resumes
 
 ### Requirement: Up and down change channel
-The remote's up and down keys SHALL change channel in Antuna's full-screen Live the way a swipe on the Siri Remote does, with Antuna's swipe setting on changing channel.
+The remote's up and down keys SHALL change channel in Antuna's full-screen Live the way a swipe on the Siri Remote does, with Antuna's swipe setting on changing channel, over either link.
 
 #### Scenario: Next channel
 - **GIVEN** the fourth of 42 channels in the current group plays full screen in Antuna
@@ -61,19 +92,14 @@ The remote's up and down keys SHALL change channel in Antuna's full-screen Live 
 - **THEN** Antuna skips the loading channel and moves on, as it does for a swipe
 
 ### Requirement: Comes back after sleep
-The remote SHALL reconnect without pairing again after the Apple TV sleeps, after the remote's battery is removed and put back, and after the remote has been out of range.
+The remote SHALL work again without pairing after the Apple TV sleeps, after the remote's batteries are removed and put back, and after the remote has been out of range.
 
 #### Scenario: Apple TV was asleep
 - **GIVEN** the remote is paired and the Apple TV has been asleep for an hour
-- **WHEN** the user wakes the Apple TV with the Siri Remote and presses an arrow on the remote
-- **THEN** the focus moves within 2 seconds of the first press
+- **WHEN** the user presses a key on the remote
+- **THEN** the bench log records whether the Apple TV wakes, over each link, and how long the press took
 
 #### Scenario: Battery swap
-- **GIVEN** the remote is paired
+- **GIVEN** the remote is paired over Bluetooth
 - **WHEN** its power is removed for 10 seconds and restored
-- **THEN** it reconnects on the first key press and that press is not lost
-
-#### Scenario: Waking the Apple TV
-- **GIVEN** the Apple TV is asleep
-- **WHEN** the user presses a key on the remote
-- **THEN** the bench log records whether the Apple TV wakes, since the Siri Remote stays the way to wake it if it does not
+- **THEN** it works on the first key press with no new pairing, and that press is not lost
