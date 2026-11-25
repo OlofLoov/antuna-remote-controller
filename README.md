@@ -2,7 +2,7 @@
 
 A remote for Apple TV with buttons that click, over infrared and
 Bluetooth, built for the Antuna IPTV app. Up and down change channel while live TV plays. PCB in KiCad, enclosure
-as code, firmware on an nRF52840.
+as code, firmware on an nRF54L15.
 
 Start with `CLAUDE.md` for how the repo works, and
 `openspec/changes/` for what is being built now.
