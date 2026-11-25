@@ -10,4 +10,4 @@ command -v openspec >/dev/null || echo "note: npm install -g @fission-ai/openspe
 command -v shellcheck >/dev/null || echo "note: brew install shellcheck (CI runs it)"
 command -v actionlint >/dev/null || echo "note: brew install actionlint (CI runs it)"
 command -v kicad-cli >/dev/null || [[ -x /Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli ]] ||
-    echo "note: brew install --cask kicad (KiCad 10, needed once hardware/pcb has a project)"
+    echo "note: brew install --cask kicad (KiCad 10.0.8, runs ERC in scripts/fast-checks.sh)"

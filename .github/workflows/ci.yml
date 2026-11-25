@@ -54,3 +54,12 @@ jobs:
         run: shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
       - name: actionlint
         run: docker run --rm -v "$PWD:/repo" --workdir /repo rhysd/actionlint:1.7.12 -color
+
+  kicad:
+    name: KiCad ERC
+    runs-on: ubuntu-latest
+    container: kicad/kicad:10.0
+    steps:
+      - uses: actions/checkout@v7
+      - name: ERC
+        run: kicad-cli sch erc --severity-error --exit-code-violations -o /tmp/erc.rpt hardware/pcb/antuna-remote/antuna-remote.kicad_sch
