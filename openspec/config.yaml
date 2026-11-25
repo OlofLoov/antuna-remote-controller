@@ -8,8 +8,8 @@ context: |
 
   Who it is for:
   - Living-room viewer: watches live TV on Apple TV, mostly news and sport,
-    wants to type a channel number, hop channels up and down and open the
-    guide without looking down, like a cable remote.
+    hops channels up and down, pauses and goes back without looking down
+    and without the Siri Remote's touch surface.
   - Household setter-upper: pairs the remote once per Apple TV, expects it
     to come back after sleep or a battery swap without pairing again.
   - Older or less technical viewer: finds the touch surface of the Siri
@@ -20,6 +20,8 @@ context: |
   - Standard protocols only: Bluetooth LE HID over GATT, and IR only if a change decides it. No MFi claims, no Apple trademarks, no Siri Remote look-alike.
   - The radio is a pre-certified module used with the vendor's reference antenna layout and keep-out. No custom RF design.
   - Every key sends a code that tvOS handles or that an Antuna spec in the antenna repo names. App behavior is specified there and cited here as antenna:<capability>/<requirement-slug>.
+  - Apple-style key set, no number pad. Channels change with up and down in full-screen Live, the same move the app takes from a Siri Remote swipe.
+  - The repo is public. Nothing from the private app repo goes in here except its requirement names.
   - Anything about Apple TV behavior is proven on a dev board and logged in docs/bench/ before a PCB depends on it.
   - Button, LED and connector positions have one source, the PCB. The enclosure reads the kicad-cli placement export.
   - KiCad and enclosure sources are text and reviewed as diffs. Gerbers, drill files, BOM, placement, STEP and STL are build outputs.

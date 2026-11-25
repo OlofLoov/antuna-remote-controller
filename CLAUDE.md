@@ -1,12 +1,14 @@
 # Antuna Remote
 
-A physical remote for Apple TV, built around the Antuna app: number keys,
-channel up and down, a guide key, and the navigation a living-room viewer
-expects from a cable remote. This repo holds the PCB, the enclosure and the
-firmware. The app lives in github.com/OlofLoov/antenna.
+A physical remote for Apple TV, built around the Antuna app: clicky
+buttons for up, down, left, right, select, back and play/pause, where up
+and down change channel while live TV plays. No number pad. This repo holds
+the PCB, the enclosure and the firmware. The app lives in a separate,
+private repo named antenna.
 
-Antuna Remote is the name people see. Code names keep "antenna-remote"
-(repo, folders, firmware target, BLE device name prefix until a change sets it).
+Antuna Remote is the name people see. The repo is
+github.com/OlofLoov/antuna-remote-controller and is public: nothing from the
+private app repo beyond its specs' requirement names goes in here.
 
 ## Commands
 
@@ -34,7 +36,7 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 - `hardware/enclosure/` the enclosure as code. STEP, STL and 3MF are build
   outputs.
 - `firmware/` the remote's firmware.
-- `tools/` bench helpers that never ship, such as the tvOS key probe app.
+- `tools/` bench helpers that never ship.
 - `docs/bench/` bench test logs: what was measured on real hardware, with
   the board revision, date, tvOS version and the requirements it covers.
 
@@ -83,4 +85,6 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
   layout and keep-out. No custom RF design.
 - Every key sends a code that tvOS handles or that an Antuna spec names.
   A key with no defined behavior does not ship.
+- Apple-style key set: no number pad. Channels change with up and down,
+  the way Antuna already does on a Siri Remote swipe.
 - The remote holds no secrets and stores no viewing data.

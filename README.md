@@ -1,7 +1,7 @@
 # Antuna Remote
 
-A Bluetooth remote for Apple TV with number keys and channel keys, built
-for the Antuna app (github.com/OlofLoov/antenna). PCB in KiCad, enclosure
+A Bluetooth remote for Apple TV with buttons that click, built for the
+Antuna IPTV app. Up and down change channel while live TV plays. PCB in KiCad, enclosure
 as code, firmware on an nRF52840.
 
 Start with `CLAUDE.md` for how the repo works, and
@@ -9,8 +9,9 @@ Start with `CLAUDE.md` for how the repo works, and
 
 ## Roadmap
 
-1. `prove-the-apple-tv-link`: which keys Apple TV hands to Antuna, proven
-   on a dev board. Everything below waits for it.
+1. `prove-the-apple-tv-link`: a dev board paired as a Bluetooth keyboard
+   drives the Home screen and changes channel in Antuna. Everything below
+   waits for it.
 2. Key layout and feel: the buttons, their spacing and labels, drawn and
    tried as a printed mock-up.
 3. Power: battery type, life at a stated use, charging if any.
