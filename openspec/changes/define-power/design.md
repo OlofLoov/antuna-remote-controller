@@ -18,7 +18,7 @@ it adds quiescent current and parts and buys nothing in this range.
 
 | Option | LED current, fresh (3.2 V) to warning (2.2 V) | Parts | Idle current |
 |--------|-----------------------------------------------|-------|--------------|
-| A. LED and series resistor, switched by an N-channel MOSFET from the cells | About 100 mA falling to about 50 mA | 2 | None |
+| A. LED and series resistor, switched by an N-channel MOSFET from the cells | About 170 mA falling to about 65 mA at 2.0 V (10 Ohm) | 2 | None |
 | B. Small boost converter for an LED rail, enabled only during a burst, with a resistor or sink after it | Constant | Inductor, IC, 2 to 3 passives | None when disabled |
 | C. Two-transistor current limiter (sense resistor and a second transistor) from the cells | Constant while the cells stay above about 2.3 V, then falls | 3 to 4 | None |
 
@@ -27,12 +27,15 @@ on the list: the GPIO's high level falls with the cells, so its current
 falls too.
 
 Start with A, the simplest. IR reach scales with roughly the square root of
-LED intensity, so 50 mA keeps about 70 percent of the fresh reach. If the
+LED intensity, and the PCB change's datasheet check puts a TSAL6200 at about 12 m typical
+from fresh cells and still over 5 m at the warning level. If the
 bench shows reach at 2.2 V below 5 m, use B. C is not chosen: its sense
 drop (about 0.6 V) uses the headroom that matters at the end of the cells.
 
-A bulk capacitor (about 100 µF) next to the LED keeps the pulses from
-pulling the MCU's supply down, whichever option is used.
+A bulk capacitor (about 100 µF) next to the LED smooths the 38 kHz carrier
+ripple. The cells' internal resistance sets the sag over a whole burst;
+the PCB change checks it stays above the nRF54L15's 1.75 V reset level
+near the end of the cells.
 
 ### 3. Reverse polarity: P-channel MOSFET in the supply
 
