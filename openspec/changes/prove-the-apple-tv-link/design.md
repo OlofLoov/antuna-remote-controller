@@ -123,9 +123,11 @@ Options if it does not:
 - A. An IR receiver on the remote's PCB, so the remote learns the TV's
   volume and mute codes once, like a universal remote. One more part and a
   learning mode in firmware.
-- B. Leave volume to the TV's own remote. Drops three keys.
 
-The bench decides between Bluetooth volume, A and B.
+The owner decided on 2026-11-25 that the volume keys stay. A remote used
+over IR only has no Bluetooth path for volume at all, so rev A carries the
+IR receiver for A either way. The bench decides whether Bluetooth volume
+also works, which would make learning optional for paired remotes.
 
 ### 4. A press acts once
 
