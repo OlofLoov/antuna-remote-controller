@@ -108,6 +108,24 @@ Starting codes per button:
 | Select | 0x5C | Menu Pick 0x41 | Return |
 | Back | 0x03 | Menu Escape 0x46 | Escape |
 | Play/Pause | 0x5F | Play/Pause 0xCD | none |
+| Home | 0x40 on address 0xE5 0x87 | Menu 0x40 | none |
+| Power | 0x2A on address 0xE5 0x87 (off) | System Sleep 0x82, then Sleep 0x32, then Power 0x30 | none |
+| Volume up | none known | Volume Increment 0xE9 | Volume Up |
+| Volume down | none known | Volume Decrement 0xEA | Volume Down |
+| Mute | none known | Mute 0xE2 | Mute |
+
+The Siri Remote sends no IR code of its own for volume. It drives the TV
+either over HDMI-CEC through the Apple TV or with the TV's own IR codes,
+which the Apple TV sets up. Volume over Bluetooth relies on the Apple TV
+passing consumer volume codes on the same way; nothing confirms it yet.
+Options if it does not:
+
+- A. An IR receiver on the remote's PCB, so the remote learns the TV's
+  volume and mute codes once, like a universal remote. One more part and a
+  learning mode in firmware.
+- B. Leave volume to the TV's own remote. Drops three keys.
+
+The bench decides between Bluetooth volume, A and B.
 
 ### 4. A press acts once
 
@@ -148,6 +166,8 @@ a movie), tapped and held, over each link:
 10. Both links on at once with decision 4's rule.
 11. DK current in idle connected and idle disconnected states, as a first
     number for the power change.
+12. Home, Power and the volume and mute keys over each link, with the
+    Apple TV's volume control set to HDMI-CEC and then to IR.
 
 ## Risks / Trade-offs
 
