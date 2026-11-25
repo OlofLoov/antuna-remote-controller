@@ -59,38 +59,53 @@ Non-goals: key layout, enclosure, certification, a full power budget.
 The PCB carries IR only, BLE only, or both, depending on the bench result.
 If both, decision 4 applies.
 
-### 2. Bench hardware: Nordic nRF52840 DK with an IR transmitter and receiver
+### 2. Bench hardware: Nordic nRF54L15 DK with an IR transmitter and receiver
 
-The DK runs the chip family a pre-certified module on the PCB would use,
-has an on-board debugger, and its PWM peripheral makes the 38 kHz carrier
-in hardware. The IR parts sit on a breadboard on the DK's header.
+The PCB will use a Raytac AN54LQ-15 module (nRF54L15), chosen from
+datasheets in `docs/research/pcb-components/ble_module.md`, so the bench
+runs the same chip. The DK has an on-board debugger, and the nRF54L15's
+PWM makes the 38 kHz carrier in hardware. Two pin rules from the
+nRF54L15 carry over to the PCB and apply on the bench too: the PWM only
+drives P1 pins, and only P0 and P1 pins can wake the chip. The IR parts
+sit on a breadboard on the DK's header.
 
-- Board: Nordic nRF52840-DK (PCA10056),
-  https://www.nordicsemi.com/Products/Development-hardware/nRF52840-DK.
-  Alternate: Seeed XIAO nRF52840 with a J-Link probe. Source: Mouser or
-  Digi-Key.
-- IR LED: Vishay TSAL6200, 940 nm,
-  https://www.vishay.com/docs/81010/tsal6200.pdf. Alternate: ams OSRAM
-  SFH 4546. Source: Mouser.
-- LED driver: onsemi 2N3904 NPN with a base resistor and a series
-  resistor sized for about 100 mA pulses from the DK's 5 V rail,
-  https://www.onsemi.com/pdf/datasheet/2n3903-d.pdf. Alternate: BC337.
-  Source: Mouser.
-- IR receiver: Vishay TSOP38238, 38 kHz,
-  https://www.vishay.com/docs/82491/tsop382.pdf. Alternate: Vishay
-  TSOP4838. Source: Mouser. Used to capture the Siri Remote's frames and
-  to check our own.
+- Board: Nordic nRF54L15 DK,
+  https://www.nordicsemi.com/Products/Development-hardware/nRF54L15-DK.
+  Optional: Raytac AN54LQ-DB-15 (the module itself on a small board, a
+  Zephyr target `raytac/an54lq_db_15`), to check the module's antenna
+  and current. Alternate: nRF52 DK (nRF52832), if the PCB falls back to
+  the MDBT42Q module. Source: Mouser or Digi-Key.
+- IR LED: Vishay TSAL6200, 940 nm, half angle 17 degrees, 72 mW/sr typical
+  at 100 mA, forward voltage 1.35 V typical and 1.6 V max at 100 mA,
+  https://www.vishay.com/docs/81010/tsal6200.pdf. Alternate: Vishay
+  VSMB2948SL side-looking SMD (less reach, about 6 m typical). Source: Mouser.
+- LED switch: AOS AO3416 N-channel MOSFET, at most 34 mOhm with 1.8 V on
+  the gate, so a GPIO turns it fully on even from low cells,
+  https://www.aosmd.com/res/datasheets/AO3416.pdf. Alternate: Vishay
+  Si2312CDS. Series resistor 10 Ohm: about 170 mA from fresh cells, inside
+  the LED's pulse rating, and about 65 mA at 2.0 V. Source: Mouser.
+- IR receiver for capture: Vishay TSOP38238, 38 kHz, decoded output,
+  https://www.vishay.com/docs/82491/tsop382.pdf, on the DK's 3.3 V. Used to
+  capture the Siri Remote's frames and check our own.
+- IR receiver for learning: Vishay TSMP96000, which outputs the raw carrier
+  (30 to 60 kHz) and runs from 2.0 V,
+  https://www.vishay.com/docs/82713/tsmp96000.pdf. It is the part planned
+  for the PCB, so the bench tries learning a TV's volume codes with it.
 
 ### 3. Bench firmware: Zephyr through the nRF Connect SDK
+
+Starting point: nRF Desktop in the nRF Connect SDK (v3.4.0 LTS, July
+2026), which has nRF54L15 DK keyboard builds with consumer control.
 
 - BLE: one HID report map with a boot keyboard report and a consumer
   control report with a 16-bit usage field, so usages above 0xFF are not
   cropped. LE Secure Connections with Just Works bonding, bond keys in
   flash, a short ASCII device name.
-- IR: Apple NEC frames from the PWM peripheral, address 0xEE 0x87, remote
+- IR: Apple NEC frames from the PWM peripheral on a P1 pin, address 0xEE 0x87, remote
   ID set from the shell (default 0x8C, the Siri Remote's), parity bit
   computed, NEC repeat frames every 108 ms while a key is held.
-- IR capture: the receiver's output on a GPIO, timed and decoded into
+- IR capture: the receiver's output on a P1 pin, timed with a GPIOTE and
+  timer capture, and decoded into
   address, command and remote ID, printed on the shell.
 - Shell: `ir <command> [hold-ms]`, `ir-id <id>`, `hid key <usage> [hold-ms]`,
   `hid consumer <usage> [hold-ms]`, `capture`, plus a script that runs the

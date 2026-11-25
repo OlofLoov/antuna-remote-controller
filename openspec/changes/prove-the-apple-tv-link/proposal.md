@@ -71,8 +71,8 @@ None.
 
 - New folder: `firmware/` (the bench firmware). The research report is in
   `docs/research/`.
-- Needs an nRF52840 DK, a 940 nm IR LED with a transistor driver, a 38 kHz
-  IR receiver module, an Apple TV 4K on tvOS 26 or later with its Siri
+- Needs an nRF54L15 DK, a 940 nm IR LED with a MOSFET switch, a 38 kHz
+  IR receiver module, a raw-carrier IR receiver for learning, an Apple TV 4K on tvOS 26 or later with its Siri
   Remote, and Antuna installed with the swipe setting on changing channel.
 - Depends on the antenna repo's
   antenna:tv-zap-bar-and-number-entry/swipe-up-and-down-to-change-channel.
