@@ -57,14 +57,20 @@ Rules from the nRF54L15: only P0 and P1 can wake the chip (P2 cannot),
 the PWM only drives P1, and the 32.768 kHz crystal takes P1.00 and P1.01.
 That leaves 18 wake-capable pins for 13 inputs.
 
-| Function | Pins | Port rule |
-|----------|------|-----------|
-| 12 keys | P0.00 to P0.04 and seven of P1.04 to P1.14 | Wake on any key; latched detect mode against erratum 114 |
-| IR LED gate | one P1 pin | PWM20 |
-| IR receiver output | one P1 pin | GPIOTE and timer capture |
-| IR receiver power | one P2 pin | Output only |
-| Status LED | one P2 pin | Output only |
-| SWD | SWDIO, SWDCLK, RESET | Dedicated |
+| Net | Pin (pad) | Port rule |
+|-----|-----------|-----------|
+| KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SELECT | P0.00 (34), P0.01 (35), P0.02 (41), P0.03 (38), P0.04 (40) | Wake on any key; latched detect mode against erratum 114 |
+| KEY_BACK, KEY_HOME, KEY_PLAY, KEY_VOLUP, KEY_VOLDN | P1.04 (17) to P1.08 (21) | Same |
+| KEY_MUTE, KEY_POWER | P1.09 (2), P1.10 (3) | Same |
+| IR_LED (Q1 gate) | P1.11 (4) | PWM20 |
+| IR_RX (U2 output) | P1.12 (5) | GPIOTE and timer capture |
+| STATUS_LED | P2.00 (22) | Output only |
+| IR_RX_PWR (U2 supply) | P2.01 (23) | Output only |
+| SWDIO, SWDCLK, RESET | 36, 37, 39 | Dedicated |
+| Spare | P1.02, P1.03, P1.13, P1.14, P2.02 to P2.10 | No-connect flags |
+
+Layout may swap pins within the same port rule to ease routing; the
+schematic and this table change together.
 
 Module pads, from the AN54LQ datasheet v1.3 pin table and reference
 circuit: P1.09 to P1.14 on pads 2 to 7, P1.00 and P1.01 (crystal) on 12
@@ -126,8 +132,12 @@ enclosure needs it.
 
 - Two layers, 1.0 mm FR-4, about 37 by 100 mm, the outline following the
   shell's top corners and stopping at the battery bay.
-- U1 in the top left corner with its antenna at the board edge and
-  Raytac's keep-out clear of copper, parts and cells. The top end of the
+- U1 in the top left corner. Raytac's chip-antenna module wants ground
+  around it, not a board edge: a solid ground pour under and around the
+  module, a 7.35 by 3.3 mm "no ground pad" area under the antenna end (the
+  pad 42 and 43 end), and at least 15 mm of ground beside the antenna
+  (datasheet v1.3 section 2.3). The 37 mm board leaves about 27 mm to the
+  module's right. The top end of the
   drawing (Power, status light, IR LED, module) is crowded; layout may move
   the status light.
 - Battery contacts on the bottom edge, solder tabs on pads.
@@ -143,7 +153,26 @@ are soldered at home.
 
 ### 8. KiCad 10 with a repo-local library
 
-KiCad files are text and review as diffs, and `kicad-cli` runs ERC, DRC
+KiCad 10.0.8. The schematic was first generated from decisions 1 to 3
+with one net label per pin, so every connection reads by name, and is now
+edited in KiCad. ERC runs in CI and in `scripts/fast-checks.sh`.
+
+Library, `hardware/pcb/lib/`:
+
+- U1 and U2 symbols, footprints and STEP models come from LCSC through
+  `easyeda2kicad`, checked against the datasheets: U1's 43 pads match
+  Raytac's top view (the import had the corner ground pads 42 and 43
+  swapped, now fixed); U2's four 0.9 by 2.2 mm pads at 1.27 mm pitch and
+  pinout match Vishay's drawing. Pin types were set by function so ERC
+  means something; U1's RESET is passive, since only the debugger drives
+  it against the internal pull-up.
+- `Keystone_AAAx2_EdgeTabs` is drawn here: two pads on 11 mm centers for
+  the contact tabs. Pad sizes are confirmed against Keystone's drawings in
+  layout.
+- Everything else uses KiCad's own symbols and footprints, including
+  `SW_Push_1P1T_XKB_TS-1187A` and the horizontal 5 mm LED with IR body.
+
+Why KiCad: its files are text and review as diffs, and `kicad-cli` runs ERC, DRC
 and the fab outputs in CI. Symbols and footprints for LCSC parts come in
 through `easyeda2kicad` into `hardware/pcb/lib/`, and each is checked
 against its datasheet's drawing before use. EasyEDA was considered for

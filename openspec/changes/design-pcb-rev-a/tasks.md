@@ -11,14 +11,16 @@
 
 ## 3. KiCad project
 
-- [ ] 3.1 Install KiCad 10, create `hardware/pcb/antuna-remote/` and `hardware/pcb/lib/`, and add the setup line to `scripts/setup.sh`
-- [ ] 3.2 Import each part's symbol and footprint and check it against its datasheet drawing
-- [ ] 3.3 Add `kicad-cli` ERC to CI and `scripts/fast-checks.sh`, and its command to CLAUDE.md
+- [x] 3.1 Install KiCad 10, create `hardware/pcb/antuna-remote/` and `hardware/pcb/lib/`, and add the setup line to `scripts/setup.sh`
+- [x] 3.2 Import each part's symbol and footprint and check it against its datasheet drawing
+- [x] 3.3 Add `kicad-cli` ERC to CI and `scripts/fast-checks.sh`, and its command to CLAUDE.md
 
 ## 4. Schematic
 
-- [ ] 4.1 Capture the schematic from design.md decisions 1 to 3, with each part's LCSC number and alternate in its fields
-- [ ] 4.2 ERC clean, and a review of every net against design.md
+- [x] 4.1 Capture the schematic from design.md decisions 1 to 3, with each part's LCSC number and alternate in its fields
+- [x] 4.2 ERC clean, and a review of every net against design.md
+- [ ] 4.3 Check KiCad's TS-1187A footprint against XKB's drawing (LCSC's datasheet PDF could not be fetched by script)
+- [ ] 4.4 Owner review of the schematic in KiCad
 
 ## 5. Layout
 
