@@ -17,7 +17,7 @@ context: |
 
   Hard constraints every change keeps:
   - Works with an unmodified Apple TV 4K on tvOS 26 or later, paired in Settings, Remotes and Devices, Bluetooth. No dongle, no receiver box.
-  - Standard protocols only: Bluetooth LE HID over GATT, and IR only if a change decides it. No MFi claims, no Apple trademarks, no Siri Remote look-alike.
+  - Standard links only, infrared with Apple's remote codes and Bluetooth LE HID over GATT. No MFi claims, no Apple trademarks, no Siri Remote look-alike. A button press acts once on the Apple TV, whichever link carries it.
   - The radio is a pre-certified module used with the vendor's reference antenna layout and keep-out. No custom RF design.
   - Every key sends a code that tvOS handles or that an Antuna spec in the antenna repo names. App behavior is specified there and cited here as antenna:<capability>/<requirement-slug>.
   - Apple-style key set, no number pad. Channels change with up and down in full-screen Live, the same move the app takes from a Siri Remote swipe.
