@@ -17,11 +17,11 @@ A board SHALL be programmed and debugged through pads that a spring-pin cable pr
 - **THEN** the firmware runs and the board advertises over Bluetooth
 
 ### Requirement: Fits under 11 mm
-Every part on the board SHALL sit on its top side and stand no more than 2.1 mm above the board, except the IR LED at the top edge, so the remote stays within 11 mm over the keys.
+Every part on the board SHALL sit on its top side and stand no more than 2.1 mm above the board, except the IR LED and the IR receiver at the top edge, so the remote stays within 11 mm over the keys and at its top end.
 
 #### Scenario: Caliper on a board
 - **GIVEN** an assembled board
-- **WHEN** the tallest part on the top side is measured, the IR LED aside
+- **WHEN** the tallest part on the top side is measured, the IR LED and IR receiver aside
 - **THEN** it stands no more than 2.1 mm above the board, and the bottom side has no parts
 
 ### Requirement: Each key reads alone and together
