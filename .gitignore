@@ -13,3 +13,5 @@ __pycache__/
 *.pyc
 
 firmware/build/
+
+hardware/pcb/lib/antuna.3dshapes/

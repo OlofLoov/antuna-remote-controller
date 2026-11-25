@@ -1,0 +1,4 @@
+(fp_lib_table
+	(version 7)
+	(lib (name "antuna")(type "KiCad")(uri "${KIPRJMOD}/../lib/antuna.pretty")(options "")(descr "Parts checked against their datasheets"))
+)
