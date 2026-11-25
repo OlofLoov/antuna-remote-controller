@@ -37,6 +37,7 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
   outputs.
 - `firmware/` the remote's firmware.
 - `tools/` bench helpers that never ship.
+- `docs/research/` research reports behind decisions, with their sources.
 - `docs/bench/` bench test logs: what was measured on real hardware, with
   the board revision, date, tvOS version and the requirements it covers.
 
@@ -78,9 +79,10 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 
 - Works with an unmodified Apple TV 4K on tvOS 26 or later. No dongle, no
   receiver box, no app on the TV other than Antuna.
-- Standard protocols only: Bluetooth LE HID over GATT, and IR only if a
-  change decides it. No MFi claims, no Apple trademarks, no Siri Remote
+- Standard links only: infrared with Apple's remote codes, and Bluetooth
+  LE HID over GATT. No MFi claims, no Apple trademarks, no Siri Remote
   look-alike.
+- A button press acts once on the Apple TV, whichever link carries it.
 - The radio is a pre-certified module with the vendor's reference antenna
   layout and keep-out. No custom RF design.
 - Every key sends a code that tvOS handles or that an Antuna spec names.
