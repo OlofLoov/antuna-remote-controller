@@ -4,9 +4,9 @@
 
 ## 2. Confirm from datasheets
 
-- [ ] 2.1 Read Raytac's AN54LQ reference schematic and set L1 and the crystal with its load capacitors in design.md
-- [ ] 2.2 Check every pin in the pin plan against the module's pad drawing
-- [ ] 2.3 Confirm the TSMP96000's height and footprint, the TS-1187A's stem size, and C1's capacitance at 3 V from their datasheets
+- [x] 2.1 Read Raytac's AN54LQ reference schematic and set L1 and the crystal with its load capacitors in design.md
+- [x] 2.2 Check every pin in the pin plan against the module's pad drawing
+- [x] 2.3 Confirm the TSMP96000's height and footprint, the TS-1187A's stem size, and C1's capacitance at 3 V from their datasheets (C1's value at 3 V left to the low-cells bench check)
 - [ ] 2.4 Check live LCSC stock for every part by hand and record the date in design.md
 
 ## 3. KiCad project
