@@ -91,6 +91,40 @@ The remote's up and down keys SHALL change channel in Antuna's full-screen Live 
 - **WHEN** the user presses down
 - **THEN** Antuna skips the loading channel and moves on, as it does for a swipe
 
+### Requirement: Home goes to the Home screen
+The remote's Home key SHALL take the Apple TV to its Home screen from anywhere, including Antuna's full-screen Live, as the Siri Remote's TV button does, over either link.
+
+#### Scenario: Leaving Live
+- **GIVEN** a channel plays full screen in Antuna
+- **WHEN** the user presses Home
+- **THEN** the Apple TV shows its Home screen
+
+### Requirement: Power puts the Apple TV to sleep
+The remote's Power key SHALL put the Apple TV to sleep, and turn the TV off too when the Apple TV's HDMI-CEC setting does so for the Siri Remote, over either link.
+
+#### Scenario: Going to bed
+- **GIVEN** the Apple TV is awake
+- **WHEN** the user presses Power
+- **THEN** the Apple TV sleeps, or shows its sleep menu with sleep focused, and the bench log records which
+
+### Requirement: Volume and mute control the TV
+The remote's volume up, volume down and mute keys SHALL change the sound of the TV or receiver the Apple TV is set to control, as the Siri Remote's volume buttons do.
+
+#### Scenario: Turning it up
+- **GIVEN** the Apple TV controls the TV's volume over HDMI-CEC
+- **WHEN** the user presses volume up three times
+- **THEN** the TV's volume goes up three steps
+
+#### Scenario: Held volume key
+- **GIVEN** the TV's volume is at 10
+- **WHEN** the user holds volume down for two seconds
+- **THEN** the volume keeps going down until the key is released
+
+#### Scenario: Mute
+- **GIVEN** sound is playing
+- **WHEN** the user presses mute, then mute again
+- **THEN** the sound goes off, then comes back at the same level
+
 ### Requirement: Comes back after sleep
 The remote SHALL work again without pairing after the Apple TV sleeps, after the remote's batteries are removed and put back, and after the remote has been out of range.
 

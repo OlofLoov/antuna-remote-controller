@@ -51,15 +51,17 @@ Out of scope:
   session.
 - Any change to Antuna. If the bench shows the app needs one, it is
   proposed in the antenna repo.
-- TV volume and power over IR.
+- Learning the TV's own IR codes. If the bench shows volume needs it,
+  a later change adds it.
 
 ## Capabilities
 
 ### New Capabilities
 
-- `apple-tv-link`: pairing and setup, which keys each link carries, how a
-  press acts once across two links, and how the remote comes back after
-  sleep.
+- `apple-tv-link`: pairing and setup, which keys each link carries
+  (navigation, select, back, play/pause, Home, Power, volume and mute),
+  how a press acts once across two links, and how the remote comes back
+  after sleep.
 
 ### Modified Capabilities
 

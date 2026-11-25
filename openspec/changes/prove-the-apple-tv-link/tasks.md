@@ -18,6 +18,7 @@
 - [ ] 3.2 Run the IR tests (decision 5, items 2 to 6) and log them in `docs/bench/`
 - [ ] 3.3 Run the Bluetooth tests (items 7 to 9) and log them
 - [ ] 3.4 Run both links together (item 10) and measure current (item 11)
+- [ ] 3.5 Run Home, Power, volume and mute (item 12), and pick the volume option in design.md decision 3
 
 ## 4. Decision
 
