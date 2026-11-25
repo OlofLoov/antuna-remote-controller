@@ -1,7 +1,7 @@
 ## ADDED Requirements
 
 ### Requirement: Slim stick size
-The remote SHALL be a stick 40 mm wide (plus or minus 2 mm), 145 to 155 mm long and no more than 20 mm thick at its thickest point, and SHALL weigh no more than 90 g with its batteries in.
+The remote SHALL be a stick 40 mm wide (plus or minus 2 mm), 145 to 155 mm long, no more than 11 mm thick over the keys with the key caps included, and no more than 14 mm thick at the battery end, and SHALL weigh no more than 75 g with its batteries in.
 
 #### Scenario: Caliper and scale
 - **GIVEN** a finished remote with two AAA cells
@@ -31,6 +31,19 @@ The remote SHALL not look like an Apple Siri Remote: no clickpad or touch surfac
 - **GIVEN** the remote and a Siri Remote on a table
 - **WHEN** someone who has not seen the remote before is asked which one is Apple's
 - **THEN** they pick the Siri Remote without hesitating
+
+### Requirement: Stands out
+The shell SHALL be bright Antuna teal and the keys deep navy, with select in off-white, so the remote is easy to spot on a dark sofa, and each key's symbol SHALL be off-white on navy so it reads in a dim room.
+
+#### Scenario: Lost in the cushions
+- **GIVEN** the remote lies among dark sofa cushions in a dim room
+- **WHEN** someone looks for it from 2 m away
+- **THEN** they spot it at a glance
+
+#### Scenario: Reading a key
+- **GIVEN** a dim room lit only by the TV
+- **WHEN** a user looks at the remote at arm's length
+- **THEN** they can tell the back, Home and mute symbols apart
 
 ### Requirement: Battery door without tools
 The user SHALL be able to open the battery door, change both cells and close it again without tools, in under 30 seconds, and the cells SHALL fit only one way round or come to no harm the wrong way round.
