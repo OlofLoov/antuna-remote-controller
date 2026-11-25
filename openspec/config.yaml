@@ -1,0 +1,53 @@
+schema: spec-driven
+
+context: |
+  Antuna Remote is a physical remote for Apple TV that pairs over Bluetooth
+  LE and is designed around Antuna, the native IPTV player in the antenna
+  repo. This repo holds the PCB (KiCad), the enclosure (code CAD) and the
+  firmware.
+
+  Who it is for:
+  - Living-room viewer: watches live TV on Apple TV, mostly news and sport,
+    wants to type a channel number, hop channels up and down and open the
+    guide without looking down, like a cable remote.
+  - Household setter-upper: pairs the remote once per Apple TV, expects it
+    to come back after sleep or a battery swap without pairing again.
+  - Older or less technical viewer: finds the touch surface of the Siri
+    Remote hard to use and wants buttons that click.
+
+  Hard constraints every change keeps:
+  - Works with an unmodified Apple TV 4K on tvOS 26 or later, paired in Settings, Remotes and Devices, Bluetooth. No dongle, no receiver box.
+  - Standard protocols only: Bluetooth LE HID over GATT, and IR only if a change decides it. No MFi claims, no Apple trademarks, no Siri Remote look-alike.
+  - The radio is a pre-certified module used with the vendor's reference antenna layout and keep-out. No custom RF design.
+  - Every key sends a code that tvOS handles or that an Antuna spec in the antenna repo names. App behavior is specified there and cited here as antenna:<capability>/<requirement-slug>.
+  - Anything about Apple TV behavior is proven on a dev board and logged in docs/bench/ before a PCB depends on it.
+  - Button, LED and connector positions have one source, the PCB. The enclosure reads the kicad-cli placement export.
+  - KiCad and enclosure sources are text and reviewed as diffs. Gerbers, drill files, BOM, placement, STEP and STL are build outputs.
+  - The remote holds no secrets and stores no viewing data.
+
+  Hard-to-reverse decisions (link to Apple TV, radio module, MCU, battery,
+  fab and its design rules, enclosure process) are made in a change's
+  design.md.
+
+  All prose follows the repo's no-ai-slop rules (.claude/skills/no-ai-slop/SKILL.md):
+  plain sentences, no em dashes, no puffery, American spelling.
+
+rules:
+  proposal:
+    - Say in the Why who the change is for and what they can do afterwards, in the user's words.
+    - List what is out of scope.
+    - In Impact, name the changes in this repo or the antenna repo this depends on, and anything it is blocked on, such as parts lead time or a bench result.
+  specs:
+    - Write requirements and scenarios a person holding the remote, or a bench test with a meter, a sniffer or a caliper, can observe; no part numbers, net names or file names.
+    - Give each requirement a short name that can become a stable test citation.
+    - "Cover the edges a user notices as scenarios: low battery, Apple TV asleep, out of range, two Apple TVs in the house, a key held down, a dropped remote."
+    - State numbers with units and a tolerance (battery life in months at a stated use, range in meters, force in newtons).
+  design:
+    - Record each hard-to-reverse decision with the options considered and why.
+    - For each part, give the manufacturer part number, a datasheet link, one alternate and its stock source.
+    - Name the board revision the change targets and what it changes on the board, the enclosure and the firmware.
+    - "Settle identifiers here, not in specs: net names, HID usages, GPIO pins, enclosure parameters."
+  tasks:
+    - Group tasks so each group can ship as one small pull request.
+    - Put a bench task before any task that orders a PCB or commits to a part.
+    - End with a Verify group, with one task saying each requirement has a test or a docs/bench log citing <capability>/<requirement-slug> and one saying /opsx:verify passes.

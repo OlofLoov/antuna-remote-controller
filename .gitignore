@@ -1,0 +1,15 @@
+.DS_Store
+
+hardware/pcb/**/*-backups/
+hardware/pcb/**/_autosave-*
+hardware/pcb/**/*.lck
+hardware/pcb/**/fp-info-cache
+hardware/pcb/**/*.kicad_prl
+hardware/pcb/out/
+
+hardware/enclosure/out/
+.venv/
+__pycache__/
+*.pyc
+
+firmware/build/

@@ -1,0 +1,86 @@
+# Antuna Remote
+
+A physical remote for Apple TV, built around the Antuna app: number keys,
+channel up and down, a guide key, and the navigation a living-room viewer
+expects from a cable remote. This repo holds the PCB, the enclosure and the
+firmware. The app lives in github.com/OlofLoov/antenna.
+
+Antuna Remote is the name people see. Code names keep "antenna-remote"
+(repo, folders, firmware target, BLE device name prefix until a change sets it).
+
+## Commands
+
+```sh
+openspec validate --all --strict           # specs and changes; npm install -g @fission-ai/openspec@1.16.0
+scripts/check-spec-refs.sh                 # every cited requirement exists in openspec/specs or an active change
+scripts/fast-checks.sh                     # what the pre-push hook runs
+shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
+actionlint
+```
+
+The PCB, enclosure and firmware commands land with the changes that create
+those folders (KiCad `kicad-cli` ERC and DRC, the enclosure build and tests,
+the firmware build and tests). Each such change adds its commands here.
+
+Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
+(commit lint, no commits on main, fast checks before each push).
+
+## Layout
+
+- `openspec/` specs and changes, as in the app repo.
+- `hardware/pcb/` the KiCad project. KiCad files are text and are reviewed
+  as diffs. Fabrication outputs (Gerbers, drill, BOM, placement) are built
+  by `kicad-cli`, never committed by hand.
+- `hardware/enclosure/` the enclosure as code. STEP, STL and 3MF are build
+  outputs.
+- `firmware/` the remote's firmware.
+- `tools/` bench helpers that never ship, such as the tvOS key probe app.
+- `docs/bench/` bench test logs: what was measured on real hardware, with
+  the board revision, date, tvOS version and the requirements it covers.
+
+## How we work
+
+- **Specs and changes are OpenSpec.** `openspec/specs/<capability>/spec.md`
+  says what the remote does today, with WHEN/THEN scenarios a person holding
+  the remote, or a bench test, can observe. New work is a change in
+  `openspec/changes/<name>/` with `proposal.md`, delta specs, `design.md`
+  and `tasks.md`. Start with `/opsx:propose` (or `/opsx:explore`), build
+  with `/opsx:apply`, check with `/opsx:verify`, fold in with
+  `/opsx:archive` in the last PR. No schematic, layout, enclosure or
+  firmware work without a change.
+- **Decisions live in design.md.** Parts, the radio module, the battery,
+  the fab and its rules, the link to Apple TV: each is decided in a
+  change's `design.md` with the options considered. Parts carry the
+  manufacturer part number, a datasheet link and one alternate.
+- **One placement source.** Button, LED and connector positions come from
+  the PCB. The enclosure reads them from the `kicad-cli` placement export
+  and never copies coordinates by hand.
+- **Prove before you route.** Anything about Apple TV behavior is proven on
+  a dev board and logged in `docs/bench/` before a PCB depends on it.
+- **The app side is the app repo's.** When a key needs new behavior in
+  Antuna, that is a change in the antenna repo. A change here names it in
+  its proposal's Impact and cites app requirements as
+  `antenna:<capability>/<requirement-slug>`.
+- **Tests and bench logs cite requirements** as
+  `<capability>/<requirement-slug>`. `scripts/check-spec-refs.sh` fails CI
+  when a cited requirement does not exist.
+- **Everything ends in a PR.** Never commit on main or push to main. Hooks
+  refuse both.
+- **Conventional Commits**, enforced by the commit-msg hook and in CI.
+  Scopes: pcb, enclosure, firmware, spec, ci, build, docs.
+- **No AI slop.** Every doc, spec, change, commit message and PR body goes
+  through the `no-ai-slop` skill.
+- Conventions: `docs/conventions.md`.
+
+## Hard constraints
+
+- Works with an unmodified Apple TV 4K on tvOS 26 or later. No dongle, no
+  receiver box, no app on the TV other than Antuna.
+- Standard protocols only: Bluetooth LE HID over GATT, and IR only if a
+  change decides it. No MFi claims, no Apple trademarks, no Siri Remote
+  look-alike.
+- The radio is a pre-certified module with the vendor's reference antenna
+  layout and keep-out. No custom RF design.
+- Every key sends a code that tvOS handles or that an Antuna spec names.
+  A key with no defined behavior does not ship.
+- The remote holds no secrets and stores no viewing data.
