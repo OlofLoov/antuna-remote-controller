@@ -269,7 +269,7 @@
 		(uuid "45134de2-5cd0-4357-9ef4-50511d16979c")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/../lib/antuna.3dshapes/Vishay_TSMP96000TR.step"
+	(model "${KIPRJMOD}/../lib/models/Vishay_TSMP96000TR.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

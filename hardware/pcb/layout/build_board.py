@@ -38,7 +38,7 @@ STEP_X = 26.0
 
 # Keys by the net they pull low, centred under their caps in front.svg.
 KEYS = {
-    "KEY_POWER": (7.6, 12.5),  # front.svg has it top right; the module needs that corner
+    "KEY_POWER": (7.3, 12.5),  # front.svg has it top right; the module needs that corner
     "KEY_UP": (20.0, 25.0),
     "KEY_DOWN": (20.0, 47.0),
     "KEY_LEFT": (9.0, 36.0),
@@ -49,7 +49,7 @@ KEYS = {
     "KEY_PLAY": (20.0, 73.0),
     "KEY_MUTE": (11.0, 90.0),
     "KEY_VOLUP": (27.5, 84.0),
-    "KEY_VOLDN": (27.5, 95.0),
+    "KEY_VOLDN": (27.5, 94.5),
 }
 
 # Everything else by reference: (x, y, rotation in degrees, counter-clockwise).
@@ -64,11 +64,11 @@ PARTS = {
     "C3": (22.4, 21.0, 0),
     "C4": (25.6, 21.0, 0),
     # IR LED laid flat, lens at the top edge; receiver beside it, lens up.
-    "D1": (16.1, 11.5, 180),
-    "U2": (22.3, 5.2, 180),
-    "R4": (23.6, 8.0, 0),
-    "C5": (23.6, 9.4, 0),
-    "R5": (20.4, 8.0, 0),
+    "D1": (15.8, 11.5, 180),
+    "U2": (21.9, 5.2, 180),
+    "R4": (23.4, 8.0, 0),
+    "C5": (23.4, 9.4, 0),
+    "R5": (20.2, 8.0, 0),
     # IR drive next to the LED.
     "C1": (15.6, 18.4, 0),
     "Q1": (14.2, 14.6, 0),
@@ -196,6 +196,25 @@ def add_arc(board, centre, start_deg, end_deg):
     return at(start_deg), at(end_deg)
 
 
+def perimeter(inset):
+    """The board outline as points, moved inset mm inwards."""
+    r = CORNER_R - inset
+    left_c = (LEFT + CORNER_R, TOP + CORNER_R)
+    right_c = (RIGHT - CORNER_R, TOP + CORNER_R)
+    pts = []
+    for k in range(13):
+        a = math.radians(180 + 90 * k / 12)
+        pts.append((left_c[0] + r * math.cos(a), left_c[1] + r * math.sin(a)))
+    pts += [(STEP_X - inset, TOP + inset), (STEP_X - inset, MODULE_TOP + inset)]
+    dy = MODULE_TOP + inset - right_c[1]
+    start = math.atan2(dy, math.sqrt(r ** 2 - dy ** 2))
+    for k in range(13):
+        a = start + (0 - start) * k / 12
+        pts.append((right_c[0] + r * math.cos(a), right_c[1] + r * math.sin(a)))
+    pts += [(RIGHT - inset, BOTTOM - inset), (LEFT + inset, BOTTOM - inset)]
+    return pts
+
+
 def outline(board):
     left_c = (LEFT + CORNER_R, TOP + CORNER_R)
     right_c = (RIGHT - CORNER_R, TOP + CORNER_R)
@@ -227,9 +246,33 @@ def ground_and_keepout(board):
         zone.SetNet(gnd)
         zone.SetLocalClearance(pcbnew.FromMM(0.25))
         zone.SetMinThickness(pcbnew.FromMM(0.2))
-        zone.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
+        # Solid to SMD pads (no starved spokes at the module's fine pitch),
+        # thermal reliefs only for the through-hole LED.
+        zone.SetPadConnection(pcbnew.ZONE_CONNECTION_THT_THERMAL)
+        zone.SetIslandRemovalMode(pcbnew.ISLAND_REMOVAL_MODE_ALWAYS)
         polygon(zone, [(0, 0), (40, 0), (40, 105), (0, 105)])
         board.Add(zone)
+    # A 0.4 mm ring inside the outline with no tracks or vias, so the
+    # autorouter keeps the fab's copper-to-edge clearance; it reads rule
+    # areas but not KiCad's edge clearance.
+    ring = pcbnew.ZONE(board)
+    ring.SetIsRuleArea(True)
+    ring.SetLayerSet(pcbnew.LSET.AllCuMask())
+    ring.SetDoNotAllowTracks(True)
+    ring.SetDoNotAllowVias(True)
+    ring.SetDoNotAllowZoneFills(False)
+    ring.SetDoNotAllowPads(False)
+    ring.SetDoNotAllowFootprints(False)
+    ring.SetZoneName("edge clearance for the router")
+    poly = ring.Outline()
+    poly.NewOutline()
+    for p in perimeter(-0.05):
+        poly.Append(mm(*p))
+    poly.NewHole()
+    for p in perimeter(0.4):
+        poly.Append(mm(*p), 0, 0)
+    board.Add(ring)
+
     x0, y0, x1, y1 = ANTENNA_KEEPOUT
     rule = pcbnew.ZONE(board)
     rule.SetIsRuleArea(True)
@@ -261,10 +304,11 @@ def place(board, parts, nets):
         fp = pcbnew.FootprintLoad(footprint_dir(lib), name)
         if fp is None:
             sys.exit(f"{ref}: footprint {part['footprint']} not found")
+        fp.SetFPID(pcbnew.LIB_ID(lib, name))
         fp.SetReference(ref)
         fp.SetValue(part["value"])
         for field, text in part["fields"].items():
-            if field not in ("Reference", "Value", "Footprint", "Datasheet", "Description") and text:
+            if field not in ("Reference", "Value", "Footprint") and text:
                 fp.SetField(field, text)
                 fp.GetField(field).SetVisible(False)
         # The board is too dense for reference text on the silkscreen; the
@@ -276,6 +320,10 @@ def place(board, parts, nets):
         if "exclude_from_bom" in part["props"]:
             fp.SetExcludedFromBOM(True)
             fp.SetExcludedFromPosFiles(True)
+        if name == "SW_Push_1P1T_XKB_TS-1187A":
+            # KiCad ships no body for this switch; LCSC's comes in through
+            # scripts/fetch-3d-models.sh.
+            fp.Models()[0].m_Filename = "${KIPRJMOD}/../lib/antuna.3dshapes/XKB_TS-1187A.step"
         if ref in key_of:
             x, y = KEYS[key_of[ref]]
             rot = 0
@@ -295,6 +343,36 @@ def place(board, parts, nets):
         sys.exit("no position for " + ", ".join(missing))
 
 
+# Ground pads the router can box in, each with a fixed via just outside
+# the part: (reference, pad, via x, via y) in shell coordinates.
+GROUND_VIAS = [
+    ("U1", "14", 27.05, 19.75),
+    ("U1", "26", 35.45, 19.75),
+    ("U2", "1", 23.8, 6.9),
+]
+
+
+def ground_vias(board):
+    gnd = board.FindNet("/GND")
+    for ref, number, x, y in GROUND_VIAS:
+        pad = board.FindFootprintByReference(ref).FindPadByNumber(number)
+        via = pcbnew.PCB_VIA(board)
+        via.SetPosition(mm(x, y))
+        via.SetWidth(pcbnew.FromMM(0.6))
+        via.SetDrill(pcbnew.FromMM(0.3))
+        via.SetNet(gnd)
+        via.SetLocked(True)
+        board.Add(via)
+        track = pcbnew.PCB_TRACK(board)
+        track.SetStart(pad.GetPosition())
+        track.SetEnd(mm(x, y))
+        track.SetWidth(pcbnew.FromMM(0.3))
+        track.SetLayer(pcbnew.F_Cu)
+        track.SetNet(gnd)
+        track.SetLocked(True)
+        board.Add(track)
+
+
 def main():
     parts, nets = read_netlist()
     board = pcbnew.BOARD()
@@ -303,6 +381,7 @@ def main():
     outline(board)
     place(board, parts, nets)
     ground_and_keepout(board)
+    ground_vias(board)
     path = PROJECT + ".kicad_pcb"
     pcbnew.SaveBoard(path, board)
     # Reload with the project so its net classes apply, then fill the pours.

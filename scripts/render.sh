@@ -51,7 +51,7 @@ if [[ -f "$project.kicad_pcb" ]]; then
   }
   view top --side top
   view bottom --side bottom
-  view iso --rotate '-35,0,30' --perspective --zoom 0.9
+  view iso --rotate '-35,0,30' --perspective --zoom 1.05
   # 2D: copper and silkscreen per side, the view a layout review needs.
   tmp="$(mktemp -d)"
   "$kicad" pcb export svg -l F.Cu,F.Silkscreen,Edge.Cuts --mode-single --fit-page-to-board \

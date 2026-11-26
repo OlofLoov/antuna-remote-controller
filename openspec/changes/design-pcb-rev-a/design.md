@@ -197,8 +197,21 @@ rule area. It runs in KiCad's Python with `pcbnew`
 (`scripts/build-board.sh`). Positions are in shell coordinates, the ones
 `front.svg` uses, so a key moves by editing one line. Freerouting 2.5.0
 routes it from a Specctra export (`scripts/route-board.sh`), net classes
-give the supply and IR LED nets 0.4 mm tracks, and DRC runs on the
-result. Hand-placing in the KiCad editor was considered; it leaves no
+give the supply and IR LED nets 0.4 mm tracks, and the script reroutes
+until DRC passes, since Freerouting does not give the same result every
+run. After routing, `finish_board.py` stitches the two ground pours
+with vias on a 3 mm grid and gives every leftover piece of pour its own
+via; three ground pads the router can box in (U1 pads 14 and 26, U2 pad
+1) get a fixed via in `build_board.py`. A 0.4 mm rule area inside the
+outline keeps tracks off the edge, since the router does not read
+KiCad's edge clearance. DRC with schematic parity runs in CI and before
+each push.
+
+Some vendor 3D models are unusable: LCSC's STEP for the TSMP96000 puts
+its geometry hundreds of millimetres off the part. Its body is drawn from
+the datasheet by `hardware/pcb/lib/models/make_models.py` instead. The
+switch and module STEP files come from LCSC through
+`scripts/fetch-3d-models.sh`. Hand-placing in the KiCad editor was considered; it leaves no
 record of why a part sits where it does and does not rebuild after a
 schematic change.
 

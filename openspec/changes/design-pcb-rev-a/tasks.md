@@ -26,7 +26,7 @@
 
 - [x] 5.1 Wait for `prove-the-apple-tv-link` to pass its IR, Bluetooth and learning tests (waived by the owner on 2026-11-26: layout goes ahead, the bench can still change it)
 - [x] 5.2a Place parts to the board in `define-keys-and-layout` and keep the module's keep-out, in `hardware/pcb/layout/build_board.py`
-- [ ] 5.2b Route with `scripts/route-board.sh`, DRC clean, DRC in CI
+- [x] 5.2b Route with `scripts/route-board.sh`, DRC clean with schematic parity, DRC in CI
 - [ ] 5.2c Send the layout to Raytac for their free review
 - [ ] 5.3 Export the placement file and a STEP model for the enclosure change
 
