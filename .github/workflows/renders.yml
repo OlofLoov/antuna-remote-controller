@@ -17,6 +17,8 @@ jobs:
   render:
     name: Render
     runs-on: ubuntu-latest
+    outputs:
+      images: ${{ steps.render.outputs.images }}
     container:
       image: kicad/kicad:10.0
       options: --user root
@@ -25,8 +27,12 @@ jobs:
       - name: Install the SVG converter
         run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin
       - name: Render
-        run: scripts/render.sh out
+        id: render
+        run: |
+          scripts/render.sh out
+          echo "images=$(find out -name '*.png' | wc -l)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v7
+        if: steps.render.outputs.images != '0'
         with:
           name: renders
           path: out/*.png
@@ -35,8 +41,10 @@ jobs:
     name: Publish
     needs: render
     # A pull request from a fork gets a read-only token; its renders stay
-    # in the run's artifacts.
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    # in the run's artifacts. A commit with nothing to draw publishes nothing.
+    if: >-
+      needs.render.outputs.images != '0' &&
+      (github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     permissions:
       contents: write
