@@ -25,7 +25,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install the SVG converter
-        run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin python3-venv
+        run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin python3-venv curl ca-certificates
       - name: Fetch the library STEP models
         if: hashFiles('hardware/pcb/antuna-remote/antuna-remote.kicad_pcb') != ''
         run: |
