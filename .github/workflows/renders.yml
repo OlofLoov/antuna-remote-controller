@@ -1,0 +1,81 @@
+name: Renders
+
+# Every commit to main and every pull request commit gets images of the
+# schematic, the board and the enclosure. They live on the renders branch;
+# a main commit gets a commit comment that shows them, a pull request one
+# comment that is updated on each push.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render
+    runs-on: ubuntu-latest
+    container:
+      image: kicad/kicad:10.0
+      options: --user root
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install the SVG converter
+        run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin
+      - name: Render
+        run: scripts/render.sh out
+      - uses: actions/upload-artifact@v7
+        with:
+          name: renders
+          path: out/*.png
+
+  publish:
+    name: Publish
+    needs: render
+    # A pull request from a fork gets a read-only token; its renders stay
+    # in the run's artifacts.
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GITHUB_TOKEN: ${{ github.token }}
+      SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      PR: ${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          name: renders
+          path: out
+      - name: Push to the renders branch
+        run: |
+          short="${SHA:0:7}"
+          if [[ -n "$PR" ]]; then
+            dest="pr-$PR/$short"
+          else
+            dest="main/$(git log -1 --format=%cs "$SHA")-$short"
+          fi
+          {
+            echo "<!-- renders -->"
+            echo "### Renders for $short"
+            echo
+            scripts/publish-renders.sh out "$dest"
+          } > body.md
+      - name: Comment on the commit
+        if: github.event_name == 'push'
+        run: gh api "repos/$GITHUB_REPOSITORY/commits/$SHA/comments" -F body=@body.md >/dev/null
+      - name: Comment on the pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          id="$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq '.[] | select(.body | startswith("<!-- renders -->")) | .id' | head -1)"
+          if [[ -n "$id" ]]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -F body=@body.md >/dev/null
+          else
+            gh pr comment "$PR" --body-file body.md
+          fi
