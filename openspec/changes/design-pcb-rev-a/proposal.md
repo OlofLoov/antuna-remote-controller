@@ -53,5 +53,6 @@ None.
 - Implements the board side of `define-keys-and-layout` and `define-power`.
 - Layout waits for `prove-the-apple-tv-link` to show that the IR codes,
   Bluetooth codes and learning receiver work. The schematic does not.
-- Blocked on live LCSC stock for the module and the learning receiver
-  (not readable by script; checked by hand before ordering).
+- LCSC has no stock of the module (2026-11-26). It is ordered through
+  JLCPCB Global Sourcing or consigned from Digi-Key, which adds about two
+  weeks.
