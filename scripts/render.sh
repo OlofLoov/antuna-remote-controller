@@ -40,14 +40,29 @@ if [[ -f "$project.kicad_sch" ]]; then
 fi
 
 if [[ -f "$project.kicad_pcb" ]]; then
+  # 3D: raytraced with shadows, in the colors of the board's stackup.
+  # Parts whose STEP model is missing show as bare pads, so CI fetches the
+  # library models first (scripts/fetch-3d-models.sh).
+  view() {
+    "$kicad" pcb render --quality high --floor --use-board-stackup-colors \
+      --width 1600 --height 1000 --background opaque -o "$out/board-$1.png" "${@:2}" \
+      "$project.kicad_pcb" >/dev/null
+    rendered=$((rendered + 1))
+  }
+  view top --side top
+  view bottom --side bottom
+  view iso --rotate '-35,0,30' --perspective --zoom 0.9
+  # 2D: copper and silkscreen per side, the view a layout review needs.
+  tmp="$(mktemp -d)"
+  "$kicad" pcb export svg -l F.Cu,F.Silkscreen,Edge.Cuts --mode-single --fit-page-to-board \
+    --exclude-drawing-sheet -o "$tmp/top.svg" "$project.kicad_pcb" >/dev/null
+  "$kicad" pcb export svg -l B.Cu,B.Silkscreen,Edge.Cuts --mirror --mode-single --fit-page-to-board \
+    --exclude-drawing-sheet -o "$tmp/bottom.svg" "$project.kicad_pcb" >/dev/null
   for side in top bottom; do
-    "$kicad" pcb render --side "$side" --width 1600 --height 1000 \
-      --background opaque -o "$out/board-$side.png" "$project.kicad_pcb" >/dev/null
+    svg_to_png "$tmp/$side.svg" "$out/layout-$side.png"
     rendered=$((rendered + 1))
   done
-  "$kicad" pcb render --rotate '-45,0,45' --perspective --width 1600 --height 1000 \
-    --background opaque -o "$out/board-iso.png" "$project.kicad_pcb" >/dev/null
-  rendered=$((rendered + 1))
+  rm -rf "$tmp"
 fi
 
 if [[ -f hardware/enclosure/render.py ]]; then

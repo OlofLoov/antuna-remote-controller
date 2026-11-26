@@ -25,7 +25,12 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - name: Install the SVG converter
-        run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin
+        run: apt-get update -qq && apt-get install -y -qq --no-install-recommends librsvg2-bin python3-venv
+      - name: Fetch the library STEP models
+        if: hashFiles('hardware/pcb/antuna-remote/antuna-remote.kicad_pcb') != ''
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          scripts/fetch-3d-models.sh || echo "::warning::STEP models missing; the module and IR receiver render as bare pads"
       - name: Render
         id: render
         run: |
@@ -56,6 +61,8 @@ jobs:
       PR: ${{ github.event.pull_request.number }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ env.SHA }}
       - uses: actions/download-artifact@v8
         with:
           name: renders
@@ -63,10 +70,12 @@ jobs:
       - name: Push to the renders branch
         run: |
           short="${SHA:0:7}"
+          # Folders start with the commit time so they sort in order.
+          stamp="$(git log -1 --date=format:%Y-%m-%d-%H%M --format=%cd "$SHA")"
           if [[ -n "$PR" ]]; then
-            dest="pr-$PR/$short"
+            dest="pr-$PR/$stamp-$short"
           else
-            dest="main/$(git log -1 --format=%cs "$SHA")-$short"
+            dest="main/$stamp-$short"
           fi
           {
             echo "<!-- renders -->"
