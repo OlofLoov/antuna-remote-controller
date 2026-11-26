@@ -9,8 +9,8 @@ work=$(mktemp -d)
 trap 'rm -rf "$work"' EXIT
 python3 -m venv "$work/venv"
 "$work/venv/bin/pip" -q install easyeda2kicad==1.0.1
-(cd "$work" && "$work/venv/bin/easyeda2kicad" --3d --lcsc_id C49419243 C20346073 --output "$work/lcsc" >/dev/null)
+(cd "$work" && "$work/venv/bin/easyeda2kicad" --3d --lcsc_id C49419243 C318889 --output "$work/lcsc" >/dev/null)
 mkdir -p "$dest"
 cp "$work/lcsc.3dshapes/WIRELM-SMD_AN54LQ-15.step" "$dest/Raytac_AN54LQ-15.step"
-cp "$work/lcsc.3dshapes/OPTO-SMD_TSOP6238TR.step" "$dest/Vishay_TSMP96000TR.step"
+cp "$work/lcsc.3dshapes/SW-SMD_4P-L5.1-W5.1-P3.70-LS6.5-TL_H1.7.step" "$dest/XKB_TS-1187A.step"
 echo "STEP models in $dest"

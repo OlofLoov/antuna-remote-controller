@@ -19,6 +19,8 @@ KICAD_CLI=$(command -v kicad-cli || echo /Applications/KiCad/KiCad.app/Contents/
 if [[ -x "$KICAD_CLI" ]]; then
   step "kicad erc" "$KICAD_CLI" sch erc --severity-error --exit-code-violations \
     -o "${TMPDIR:-/tmp}/antuna-erc.rpt" hardware/pcb/antuna-remote/antuna-remote.kicad_sch
+  step "kicad drc" "$KICAD_CLI" pcb drc --schematic-parity --severity-error --exit-code-violations \
+    -o "${TMPDIR:-/tmp}/antuna-drc.rpt" hardware/pcb/antuna-remote/antuna-remote.kicad_pcb
 fi
 if command -v shellcheck >/dev/null; then
   step "shellcheck" shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
