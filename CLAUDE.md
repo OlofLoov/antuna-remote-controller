@@ -21,6 +21,7 @@ actionlint
 kicad-cli sch erc --severity-error --exit-code-violations hardware/pcb/antuna-remote/antuna-remote.kicad_sch   # KiCad 10.0.8
 kicad-cli sch export netlist -o /tmp/antuna.net hardware/pcb/antuna-remote/antuna-remote.kicad_sch            # nets to review against design.md
 scripts/fetch-3d-models.sh                 # STEP models for the library parts, kept out of git
+scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
 ```
 
 On macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`.
@@ -42,6 +43,8 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 - `firmware/` the remote's firmware.
 - `tools/` bench helpers that never ship.
 - `docs/research/` research reports behind decisions, with their sources.
+- `docs/datasheets/` the manifest of every vendor document the design
+  relies on (source, revision, sha256). The PDFs stay local in `files/`.
 - `docs/bench/` bench test logs: what was measured on real hardware, with
   the board revision, date, tvOS version and the requirements it covers.
 
@@ -58,7 +61,8 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 - **Decisions live in design.md.** Parts, the radio module, the battery,
   the fab and its rules, the link to Apple TV: each is decided in a
   change's `design.md` with the options considered. Parts carry the
-  manufacturer part number, a datasheet link and one alternate.
+  manufacturer part number, a datasheet link and one alternate. Each
+  datasheet the design reads gets a row in `docs/datasheets/manifest.tsv`.
 - **One placement source.** Button, LED and connector positions come from
   the PCB. The enclosure reads them from the `kicad-cli` placement export
   and never copies coordinates by hand.

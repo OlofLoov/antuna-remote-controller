@@ -19,7 +19,7 @@
 
 - [x] 4.1 Capture the schematic from design.md decisions 1 to 3, with each part's LCSC number and alternate in its fields
 - [x] 4.2 ERC clean, and a review of every net against design.md
-- [ ] 4.3 Check KiCad's TS-1187A footprint against XKB's drawing (LCSC's datasheet PDF could not be fetched by script)
+- [ ] 4.3 Check KiCad's TS-1187A footprint against XKB's drawing (`xkb-ts-1187a-drawing.pdf` in `docs/datasheets/manifest.tsv`) and pin its hash
 - [ ] 4.4 Owner review of the schematic in KiCad
 
 ## 5. Layout
