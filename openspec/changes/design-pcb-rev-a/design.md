@@ -134,14 +134,21 @@ enclosure needs it.
 
 - Two layers, 1.0 mm FR-4, about 37 by 100 mm, the outline following the
   shell's top corners and stopping at the battery bay.
-- U1 in the top left corner. Raytac's chip-antenna module wants ground
-  around it, not a board edge: a solid ground pour under and around the
-  module, a 7.35 by 3.3 mm "no ground pad" area under the antenna end (the
-  pad 42 and 43 end), and at least 15 mm of ground beside the antenna
-  (datasheet v1.3 section 2.3). The 37 mm board leaves about 27 mm to the
-  module's right. The top end of the
-  drawing (Power, status light, IR LED, module) is crowded; layout may move
-  the status light.
+- U1 in the top right corner, antenna end up. Raytac's drawing (datasheet
+  v1.3 section 2.3) puts the module's antenna end on a board edge, with
+  ground pour under and around the module, a 7.35 by 3.3 mm "no ground-pad
+  area" under the antenna end starting 1 mm in from the module's left
+  edge, and at least 15 mm of ground beside the antenna. The board steps
+  down 3.5 mm at the top right so that edge is straight; the module sits
+  0.3 mm in from it so its corner ground pads keep the fab's edge
+  clearance. The no-ground area is a rule area with no pour, tracks or
+  vias on either layer. To the module's left is about 21 mm of ground.
+- The module's supply and crystal pads (1 to 13) are on its left side, so
+  the module takes the right corner and they face the board. Power moves
+  from the top right in `front.svg` to the top left.
+- The IR LED and receiver share the top edge's window, LED at about 15 mm
+  and receiver at about 22 mm from the left. The status light sits below
+  them, above the d-pad.
 - Battery contacts on the bottom edge, solder tabs on pads.
 - Test points: VBAT, GND, IR gate.
 
@@ -182,7 +189,24 @@ paid). If Global Sourcing cannot get it, buy from Digi-Key and consign the
 modules to JLCPCB. Recheck U2 and the module just before ordering; U2 at 53
 can run out.
 
-### 8. KiCad 10 with a repo-local library
+### 8. Layout as code
+
+`hardware/pcb/layout/build_board.py` builds the board from the schematic
+netlist: outline, every part's position, the ground pours and the antenna
+rule area. It runs in KiCad's Python with `pcbnew`
+(`scripts/build-board.sh`). Positions are in shell coordinates, the ones
+`front.svg` uses, so a key moves by editing one line. Freerouting 2.5.0
+routes it from a Specctra export (`scripts/route-board.sh`), net classes
+give the supply and IR LED nets 0.4 mm tracks, and DRC runs on the
+result. Hand-placing in the KiCad editor was considered; it leaves no
+record of why a part sits where it does and does not rebuild after a
+schematic change.
+
+Layout starts before the bench in `prove-the-apple-tv-link`, at the
+owner's call on 2026-11-26, since no DK has been bought yet. If the bench
+changes a pin or a part, the script rebuilds the board.
+
+### 9. KiCad 10 with a repo-local library
 
 KiCad 10.0.8. The schematic was first generated from decisions 1 to 3
 with one net label per pin, so every connection reads by name, and is now
@@ -212,6 +236,11 @@ its one-click ordering and rejected: its projects live in its cloud and do
 not diff in git.
 
 ## Risks / Trade-offs
+
+- The antenna edge is 3.5 mm below the top edge to its left, so the
+  ground there reaches past the antenna's end, which Raytac's drawing does
+  not show. Raytac reviews layouts for free (sales@raytac.com); send the
+  board before ordering.
 
 - LCSC has no AN54LQ-15 (2026-11-26) and only 53 TSMP96000. The module
   comes through JLCPCB Global Sourcing or consignment (decision 7), which

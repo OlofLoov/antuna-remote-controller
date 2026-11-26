@@ -1,0 +1,316 @@
+"""Build antuna-remote.kicad_pcb from the schematic: parts, positions, outline,
+ground pours and the antenna keep-out. Routing is a separate step
+(scripts/route-board.sh) because it rewrites tracks only.
+
+Run with KiCad's Python, which has pcbnew:
+  scripts/build-board.sh
+
+Coordinates below are in millimetres on the shell's front face, as drawn in
+openspec/changes/define-keys-and-layout/boards/front.svg: x from the left
+edge, y down from the top edge. The board sits 1.5 mm inside the shell.
+Every position lives in this file; the enclosure reads them back from the
+placement export, never from here.
+"""
+
+import math
+import os
+import re
+import subprocess
+import sys
+import tempfile
+
+import pcbnew
+
+ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+PROJECT = os.path.join(ROOT, "hardware/pcb/antuna-remote/antuna-remote")
+LOCAL_LIB = os.path.join(ROOT, "hardware/pcb/lib/antuna.pretty")
+
+# Where the sheet sits on the KiCad page, so the board is not at the corner.
+ORIGIN = (100.0, 50.0)
+
+# Board edges in shell coordinates.
+LEFT, RIGHT, TOP, BOTTOM = 1.5, 38.5, 1.5, 103.0
+CORNER_R = 9.5  # the shell's 11 mm corner, 1.5 mm in
+# The module's antenna end must sit on a board edge (Raytac AN54LQ datasheet
+# v1.3, section 2.3), so the board steps down to it at the top right.
+MODULE_TOP = 5.0
+STEP_X = 26.0
+
+# Keys by the net they pull low, centred under their caps in front.svg.
+KEYS = {
+    "KEY_POWER": (7.6, 12.5),  # front.svg has it top right; the module needs that corner
+    "KEY_UP": (20.0, 25.0),
+    "KEY_DOWN": (20.0, 47.0),
+    "KEY_LEFT": (9.0, 36.0),
+    "KEY_RIGHT": (31.0, 36.0),
+    "KEY_SELECT": (20.0, 36.0),
+    "KEY_BACK": (10.0, 60.0),
+    "KEY_HOME": (30.0, 60.0),
+    "KEY_PLAY": (20.0, 73.0),
+    "KEY_MUTE": (11.0, 90.0),
+    "KEY_VOLUP": (27.5, 84.0),
+    "KEY_VOLDN": (27.5, 95.0),
+}
+
+# Everything else by reference: (x, y, rotation in degrees, counter-clockwise).
+PARTS = {
+    # Module, antenna end up and flush with the stepped edge, supply and
+    # crystal pads (1 to 13) facing the board.
+    # 0.3 mm in from the edge so the corner ground pads keep clear of it.
+    "U1": (31.25, MODULE_TOP + 0.3 + 6.97, 0),
+    "L1": (25.2, 14.0, 90),
+    "C2": (25.3, 16.6, 90),
+    "Y1": (24.0, 19.0, 0),
+    "C3": (22.4, 21.0, 0),
+    "C4": (25.6, 21.0, 0),
+    # IR LED laid flat, lens at the top edge; receiver beside it, lens up.
+    "D1": (16.1, 11.5, 180),
+    "U2": (22.3, 5.2, 180),
+    "R4": (23.6, 8.0, 0),
+    "C5": (23.6, 9.4, 0),
+    "R5": (20.4, 8.0, 0),
+    # IR drive next to the LED.
+    "C1": (15.6, 18.4, 0),
+    "Q1": (14.2, 14.6, 0),
+    "R1": (17.4, 14.4, 90),
+    "R2": (12.0, 18.6, 90),
+    "TP3": (9.5, 18.0, 0),
+    # Status light under the top face, between the IR parts and the d-pad.
+    "D2": (20.6, 14.2, 0),
+    "R3": (20.6, 16.2, 0),
+    # Programming pads beside the module.
+    "J1": (32.0, 27.0, 0),
+    # Supply at the battery end.
+    "BT1": (20.0, BOTTOM - 2.5, 0),
+    "Q2": (20.0, 98.4, 0),
+    "TP1": (17.4, 94.5, 0),
+    "TP2": (22.6, 94.5, 0),
+}
+
+# Raytac's "no ground-pad area" under the antenna: 7.35 by 3.3 mm, starting
+# 1 mm in from the module's left edge.
+MODULE_LEFT = 31.25 - 4.75
+ANTENNA_KEEPOUT = (MODULE_LEFT + 1.0, MODULE_TOP, MODULE_LEFT + 1.0 + 7.35, MODULE_TOP + 3.3)
+
+
+def mm(x, y):
+    return pcbnew.VECTOR2I(pcbnew.FromMM(ORIGIN[0] + x), pcbnew.FromMM(ORIGIN[1] + y))
+
+
+def kicad_cli():
+    mac = "/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli"
+    return mac if os.path.exists(mac) else "kicad-cli"
+
+
+def footprint_dir(lib):
+    if lib == "antuna":
+        return LOCAL_LIB
+    for env in ("KICAD10_FOOTPRINT_DIR", "KICAD9_FOOTPRINT_DIR"):
+        if os.environ.get(env):
+            return os.path.join(os.environ[env], lib + ".pretty")
+    for base in ("/Applications/KiCad/KiCad.app/Contents/SharedSupport/footprints",
+                 "/usr/share/kicad/footprints"):
+        if os.path.isdir(base):
+            return os.path.join(base, lib + ".pretty")
+    sys.exit("KiCad footprint libraries not found")
+
+
+def parse_sexpr(text):
+    tokens = re.findall(r'\(|\)|"(?:[^"\\]|\\.)*"|[^\s()]+', text)
+    pos = 0
+
+    def item():
+        nonlocal pos
+        tok = tokens[pos]
+        pos += 1
+        if tok == "(":
+            out = []
+            while tokens[pos] != ")":
+                out.append(item())
+            pos += 1
+            return out
+        return tok[1:-1].replace('\\"', '"') if tok.startswith('"') else tok
+
+    return item()
+
+
+def children(node, key):
+    return [c for c in node if isinstance(c, list) and c and c[0] == key]
+
+
+def value_of(node, key):
+    found = children(node, key)
+    return found[0][1] if found and len(found[0]) > 1 else ""
+
+
+def read_netlist():
+    with tempfile.TemporaryDirectory() as tmp:
+        path = os.path.join(tmp, "antuna.net")
+        subprocess.run([kicad_cli(), "sch", "export", "netlist", "-o", path, PROJECT + ".kicad_sch"],
+                       check=True, capture_output=True)
+        tree = parse_sexpr(open(path).read())
+    parts = []
+    for comp in children(children(tree, "components")[0], "comp"):
+        props = {value_of(p, "name"): value_of(p, "value") for p in children(comp, "property")}
+        fields = {}
+        for f in children(children(comp, "fields")[0], "field") if children(comp, "fields") else []:
+            name = value_of(f, "name")
+            fields[name] = f[2] if len(f) > 2 and not isinstance(f[2], list) else ""
+        parts.append({
+            "ref": value_of(comp, "ref"),
+            "value": value_of(comp, "value"),
+            "footprint": value_of(comp, "footprint"),
+            "uuid": value_of(comp, "tstamps"),
+            "fields": fields,
+            "props": props,
+        })
+    nets = {}
+    for net in children(children(tree, "nets")[0], "net"):
+        name = value_of(net, "name")
+        for node in children(net, "node"):
+            nets[(value_of(node, "ref"), value_of(node, "pin"))] = name
+    return parts, nets
+
+
+def add_line(board, a, b):
+    seg = pcbnew.PCB_SHAPE(board)
+    seg.SetShape(pcbnew.SHAPE_T_SEGMENT)
+    seg.SetStart(mm(*a))
+    seg.SetEnd(mm(*b))
+    seg.SetLayer(pcbnew.Edge_Cuts)
+    seg.SetWidth(pcbnew.FromMM(0.1))
+    board.Add(seg)
+
+
+def add_arc(board, centre, start_deg, end_deg):
+    # Angles on screen, y down, so 270 points up.
+    def at(deg):
+        return (centre[0] + CORNER_R * math.cos(math.radians(deg)),
+                centre[1] + CORNER_R * math.sin(math.radians(deg)))
+    arc = pcbnew.PCB_SHAPE(board)
+    arc.SetShape(pcbnew.SHAPE_T_ARC)
+    arc.SetArcGeometry(mm(*at(start_deg)), mm(*at((start_deg + end_deg) / 2)), mm(*at(end_deg)))
+    arc.SetLayer(pcbnew.Edge_Cuts)
+    arc.SetWidth(pcbnew.FromMM(0.1))
+    board.Add(arc)
+    return at(start_deg), at(end_deg)
+
+
+def outline(board):
+    left_c = (LEFT + CORNER_R, TOP + CORNER_R)
+    right_c = (RIGHT - CORNER_R, TOP + CORNER_R)
+    # Where the right corner's arc crosses the stepped top edge.
+    dy = MODULE_TOP - right_c[1]
+    step_deg = math.degrees(math.atan2(dy, math.sqrt(CORNER_R ** 2 - dy ** 2)))
+    add_arc(board, left_c, 180, 270)
+    add_line(board, (left_c[0], TOP), (STEP_X, TOP))
+    add_line(board, (STEP_X, TOP), (STEP_X, MODULE_TOP))
+    (sx, sy), _ = add_arc(board, right_c, step_deg, 0)
+    add_line(board, (STEP_X, MODULE_TOP), (sx, sy))
+    add_line(board, (RIGHT, right_c[1]), (RIGHT, BOTTOM))
+    add_line(board, (RIGHT, BOTTOM), (LEFT, BOTTOM))
+    add_line(board, (LEFT, BOTTOM), (LEFT, left_c[1]))
+
+
+def polygon(zone, corners):
+    outline_poly = zone.Outline()
+    outline_poly.NewOutline()
+    for c in corners:
+        outline_poly.Append(mm(*c))
+
+
+def ground_and_keepout(board):
+    gnd = board.FindNet("/GND")
+    for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+        zone = pcbnew.ZONE(board)
+        zone.SetLayer(layer)
+        zone.SetNet(gnd)
+        zone.SetLocalClearance(pcbnew.FromMM(0.25))
+        zone.SetMinThickness(pcbnew.FromMM(0.2))
+        zone.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
+        polygon(zone, [(0, 0), (40, 0), (40, 105), (0, 105)])
+        board.Add(zone)
+    x0, y0, x1, y1 = ANTENNA_KEEPOUT
+    rule = pcbnew.ZONE(board)
+    rule.SetIsRuleArea(True)
+    rule.SetLayerSet(pcbnew.LSET.AllCuMask())
+    rule.SetDoNotAllowZoneFills(True)
+    rule.SetDoNotAllowTracks(True)
+    rule.SetDoNotAllowVias(True)
+    rule.SetDoNotAllowPads(False)
+    rule.SetDoNotAllowFootprints(False)
+    rule.SetZoneName("antenna no-ground area")
+    polygon(rule, [(x0, y0 - 0.5), (x1, y0 - 0.5), (x1, y1), (x0, y1)])
+    board.Add(rule)
+
+
+def place(board, parts, nets):
+    netinfo = {}
+    for name in sorted(set(nets.values())):
+        item = pcbnew.NETINFO_ITEM(board, name)
+        board.Add(item)
+        netinfo[name] = item
+    key_of = {}
+    for (ref, _pin), name in nets.items():
+        if name.lstrip("/") in KEYS and ref.startswith("SW"):
+            key_of[ref] = name.lstrip("/")
+    missing = []
+    for part in parts:
+        ref = part["ref"]
+        lib, name = part["footprint"].split(":", 1)
+        fp = pcbnew.FootprintLoad(footprint_dir(lib), name)
+        if fp is None:
+            sys.exit(f"{ref}: footprint {part['footprint']} not found")
+        fp.SetReference(ref)
+        fp.SetValue(part["value"])
+        for field, text in part["fields"].items():
+            if field not in ("Reference", "Value", "Footprint", "Datasheet", "Description") and text:
+                fp.SetField(field, text)
+                fp.GetField(field).SetVisible(False)
+        # The board is too dense for reference text on the silkscreen; the
+        # assembly drawing (F.Fab) and the placement file carry them.
+        fp.Reference().SetVisible(False)
+        fp.SetPath(pcbnew.KIID_PATH("/" + part["uuid"]))
+        if "dnp" in part["props"]:
+            fp.SetDNP(True)
+        if "exclude_from_bom" in part["props"]:
+            fp.SetExcludedFromBOM(True)
+            fp.SetExcludedFromPosFiles(True)
+        if ref in key_of:
+            x, y = KEYS[key_of[ref]]
+            rot = 0
+        elif ref in PARTS:
+            x, y, rot = PARTS[ref]
+        else:
+            missing.append(ref)
+            continue
+        board.Add(fp)
+        fp.SetPosition(mm(x, y))
+        fp.SetOrientationDegrees(rot)
+        for pad in fp.Pads():
+            net = nets.get((ref, pad.GetNumber()))
+            if net:
+                pad.SetNet(netinfo[net])
+    if missing:
+        sys.exit("no position for " + ", ".join(missing))
+
+
+def main():
+    parts, nets = read_netlist()
+    board = pcbnew.BOARD()
+    board.SetCopperLayerCount(2)
+    board.GetDesignSettings().SetBoardThickness(pcbnew.FromMM(1.0))
+    outline(board)
+    place(board, parts, nets)
+    ground_and_keepout(board)
+    path = PROJECT + ".kicad_pcb"
+    pcbnew.SaveBoard(path, board)
+    # Reload with the project so its net classes apply, then fill the pours.
+    board = pcbnew.LoadBoard(path)
+    pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+    pcbnew.SaveBoard(path, board)
+    print(f"wrote {os.path.relpath(path, ROOT)}: {len(parts)} parts")
+
+
+if __name__ == "__main__":
+    main()
