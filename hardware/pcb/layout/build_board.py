@@ -25,6 +25,9 @@ ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..")
 PROJECT = os.path.join(ROOT, "hardware/pcb/antuna-remote/antuna-remote")
 LOCAL_LIB = os.path.join(ROOT, "hardware/pcb/lib/antuna.pretty")
 
+KICAD_MODELS = "${KICAD10_3DMODEL_DIR}/"
+MODELS = "${KIPRJMOD}/../lib/models/"
+
 # Where the sheet sits on the KiCad page, so the board is not at the corner.
 ORIGIN = (100.0, 50.0)
 
@@ -320,10 +323,16 @@ def place(board, parts, nets):
         if "exclude_from_bom" in part["props"]:
             fp.SetExcludedFromBOM(True)
             fp.SetExcludedFromPosFiles(True)
+        # 3D bodies come from hardware/pcb/lib/models, committed, so a
+        # render needs no KiCad 3D library and no download.
+        # Models() yields copies when iterated; index it to change the path.
+        for k in range(len(fp.Models())):
+            model = fp.Models()[k]
+            if model.m_Filename.startswith(KICAD_MODELS):
+                model.m_Filename = MODELS + "kicad/" + model.m_Filename[len(KICAD_MODELS):]
         if name == "SW_Push_1P1T_XKB_TS-1187A":
-            # KiCad ships no body for this switch; LCSC's comes in through
-            # scripts/fetch-3d-models.sh.
-            fp.Models()[0].m_Filename = "${KIPRJMOD}/../lib/antuna.3dshapes/XKB_TS-1187A.step"
+            # KiCad ships no body for this switch; make_models.py draws one.
+            fp.Models()[0].m_Filename = MODELS + "XKB_TS-1187A.wrl"
         if ref in key_of:
             x, y = KEYS[key_of[ref]]
             rot = 0
@@ -343,29 +352,78 @@ def place(board, parts, nets):
         sys.exit("no position for " + ", ".join(missing))
 
 
-# Ground pads the router can box in, each with a fixed via just outside
-# the part: (reference, pad, via x, via y) in shell coordinates.
-GROUND_VIAS = [
-    ("U1", "14", 27.05, 19.75),
-    ("U1", "26", 35.45, 19.75),
-    ("U2", "1", 23.8, 6.9),
-]
-
-
 def ground_vias(board):
+    """Give every ground pad a via of its own, on a short track, before
+    routing. The router then routes around them, so no ground pad can end
+    up boxed in on a sliver of pour, and each pad has a short path to the
+    bottom pour. Raytac's layout drawing puts ground vias beside the
+    module's pads the same way."""
     gnd = board.FindNet("/GND")
-    for ref, number, x, y in GROUND_VIAS:
-        pad = board.FindFootprintByReference(ref).FindPadByNumber(number)
+    edge = []
+    for p in perimeter(1.0):
+        edge.append(p)
+    outline = pcbnew.SHAPE_LINE_CHAIN()
+    for p in edge:
+        outline.Append(mm(*p))
+    outline.SetClosed(True)
+    x0, y0, x1, y1 = ANTENNA_KEEPOUT
+    keep_lo, keep_hi = mm(x0 - 0.8, y0 - 0.8), mm(x1 + 0.8, y1 + 0.8)
+    pads = [pad for fp in board.GetFootprints() for pad in fp.Pads()]
+    yards = {fp.GetReference(): fp.GetCourtyard(pcbnew.F_CrtYd) for fp in board.GetFootprints()}
+    placed = []
+    radius = pcbnew.FromMM(0.3)
+
+    def free(at, own):
+        if not outline.PointInside(at):
+            return False
+        if keep_lo.x <= at.x <= keep_hi.x and keep_lo.y <= at.y <= keep_hi.y:
+            return False
+        for ref, yard in yards.items():
+            if ref != own and yard.OutlineCount() and yard.Contains(at):
+                return False
+        circle = pcbnew.SHAPE_CIRCLE(at, radius)
+        for pad in pads:
+            if pad.GetNetname() == "/GND" and pad.GetParentFootprint().GetReference() == own:
+                gap = 0.15
+            else:
+                gap = 0.35
+            if pad.GetEffectiveShape(pcbnew.F_Cu).Collide(circle, pcbnew.FromMM(gap)):
+                return False
+        for other in placed:
+            if (other - at).EuclideanNorm() < pcbnew.FromMM(1.1):
+                return False
+        return True
+
+    for pad in pads:
+        if pad.GetNetname() != "/GND" or pad.GetAttribute() != pcbnew.PAD_ATTRIB_SMD:
+            continue
+        own = pad.GetParentFootprint().GetReference()
+        centre = pad.GetPosition()
+        spot = None
+        for dist in (0.9, 1.2, 1.5, 1.8, 2.2, 2.6):
+            for step in range(16):
+                a = math.radians(step * 22.5 + 90)
+                at = pcbnew.VECTOR2I(centre.x + int(pcbnew.FromMM(dist) * math.cos(a)),
+                                     centre.y + int(pcbnew.FromMM(dist) * math.sin(a)))
+                if free(at, own):
+                    spot = at
+                    break
+            if spot:
+                break
+        if spot is None:
+            print(f"no room for a ground via at {own} pad {pad.GetNumber()}")
+            continue
+        placed.append(spot)
         via = pcbnew.PCB_VIA(board)
-        via.SetPosition(mm(x, y))
+        via.SetPosition(spot)
         via.SetWidth(pcbnew.FromMM(0.6))
         via.SetDrill(pcbnew.FromMM(0.3))
         via.SetNet(gnd)
         via.SetLocked(True)
         board.Add(via)
         track = pcbnew.PCB_TRACK(board)
-        track.SetStart(pad.GetPosition())
-        track.SetEnd(mm(x, y))
+        track.SetStart(centre)
+        track.SetEnd(spot)
         track.SetWidth(pcbnew.FromMM(0.3))
         track.SetLayer(pcbnew.F_Cu)
         track.SetNet(gnd)
