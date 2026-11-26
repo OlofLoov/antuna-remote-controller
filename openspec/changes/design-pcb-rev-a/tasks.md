@@ -36,7 +36,7 @@
 ## 7. Bring-up
 
 - [ ] 7.1 Program over the Tag-Connect cable, check each key alone and in pairs, and log it in `docs/bench/`
-- [ ] 7.2 Measure idle current, IR reach and the low-cell burst on a scope, and log them
+- [ ] 7.2 Measure idle current, IR reach, the IR pulse shape at D1 and the low-cell burst on a scope, and log them
 
 ## 8. Verify
 
