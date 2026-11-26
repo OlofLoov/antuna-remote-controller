@@ -33,15 +33,20 @@ for attempt in 1 2 3 4 5; do
     echo "# Renders"
     echo
     echo "One folder per commit, made by \`scripts/render.sh\` in CI."
-    echo "Newest main commits first."
+    echo "Main first, then each pull request; newest commit first."
     echo
-    for dir in $(find main -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r); do
-      echo "## ${dir#main/}"
+    for group in main $(find . -mindepth 1 -maxdepth 1 -type d -name 'pr-*' | sed 's|^\./||' | sort -t- -k2 -rn); do
+      [[ -d "$group" ]] || continue
+      echo "# $group"
       echo
-      for png in "$dir"/*.png; do
-        echo "![$(basename "$png" .png)]($png)"
+      for dir in $(find "$group" -mindepth 1 -maxdepth 1 -type d | sort -r); do
+        echo "## ${dir#"$group"/}"
+        echo
+        for png in "$dir"/*.png; do
+          echo "![$(basename "$png" .png)]($png)"
+        done
+        echo
       done
-      echo
     done
   } > README.md
   git add -A
