@@ -16,6 +16,14 @@ the firmware commit, the Apple TV model and tvOS version, and the Antuna
 build. Then one section per requirement, headed by its citation, with what
 was done, what was seen and pass or fail. A failed result stays in the log.
 
+## Datasheets
+
+Every vendor document a design check reads has a row in
+`docs/datasheets/manifest.tsv`, with its revision and sha256 once read.
+A value taken from one cites it by part and revision. The PDFs are not
+committed; `scripts/fetch-datasheets.sh` gets them. Rules:
+`docs/datasheets/README.md`.
+
 ## PCB
 
 - Board revisions are letters: rev A, rev B. The revision is printed on
