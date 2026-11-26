@@ -22,6 +22,7 @@ kicad-cli sch erc --severity-error --exit-code-violations hardware/pcb/antuna-re
 kicad-cli sch export netlist -o /tmp/antuna.net hardware/pcb/antuna-remote/antuna-remote.kicad_sch            # nets to review against design.md
 scripts/fetch-3d-models.sh                 # STEP models for the library parts, kept out of git
 scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
+scripts/render.sh out                      # schematic, board and enclosure PNGs; CI does this per commit (renders branch)
 ```
 
 On macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`.
@@ -45,6 +46,9 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 - `docs/research/` research reports behind decisions, with their sources.
 - `docs/datasheets/` the manifest of every vendor document the design
   relies on (source, revision, sha256). The PDFs stay local in `files/`.
+- The `renders` branch holds a PNG of the schematic, board and enclosure
+  for every main and pull request commit, made by `.github/workflows/renders.yml`.
+  It shares no history with main. Never commit to it by hand.
 - `docs/bench/` bench test logs: what was measured on real hardware, with
   the board revision, date, tvOS version and the requirements it covers.
 
