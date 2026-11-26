@@ -13,7 +13,9 @@ mkdir -p "$dir"
 
 missing=0
 changed=0
-while IFS=$'\t' read -r file refs part _kind _rev get url sha; do
+# Tabs become US (0x1f) first: read treats a tab as whitespace and would
+# merge two tabs around an empty field, shifting the columns after it.
+while IFS=$'\x1f' read -r file refs part _kind _rev get url sha; do
   [[ "$file" == "file" || "$file" == "-" ]] && continue
   path="$dir/$file"
   if [[ ! -s "$path" && "$get" == "auto" ]]; then
@@ -40,7 +42,7 @@ while IFS=$'\t' read -r file refs part _kind _rev get url sha; do
     echo "CHANGED  $file: manifest $sha, file $have"
     changed=$((changed + 1))
   fi
-done < "$manifest"
+done < <(tr '\t' '\037' < "$manifest")
 
 echo "$missing to save by hand, $changed changed"
 [[ "$changed" -eq 0 ]]
