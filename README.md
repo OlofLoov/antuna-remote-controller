@@ -3,6 +3,12 @@
 One folder per commit, made by `scripts/render.sh` in CI.
 Main first, then each pull request; newest commit first.
 
+# main
+
+## 2026-11-26-1312-f647dff
+
+![schematic-antuna-remote](main/2026-11-26-1312-f647dff/schematic-antuna-remote.png)
+
 # pr-4
 
 ## ba047ec
