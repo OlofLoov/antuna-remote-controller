@@ -7,7 +7,7 @@
 - [x] 2.1 Read Raytac's AN54LQ reference schematic and set L1 and the crystal with its load capacitors in design.md
 - [x] 2.2 Check every pin in the pin plan against the module's pad drawing
 - [x] 2.3 Confirm the TSMP96000's height and footprint, the TS-1187A's stem size, and C1's capacitance at 3 V from their datasheets (C1's value at 3 V left to the low-cells bench check)
-- [ ] 2.4 Check live LCSC stock for every part by hand and record the date in design.md
+- [x] 2.4 Check live LCSC stock for every part and record the date in design.md
 
 ## 3. KiCad project
 
@@ -30,8 +30,9 @@
 
 ## 6. Order
 
-- [ ] 6.1 Generate Gerbers, drill, BOM and placement with `kicad-cli`, quote at JLCPCB, and tag `pcb-rev-a`
-- [ ] 6.2 Order five boards with two or more assembled, and the battery contacts from Digi-Key
+- [ ] 6.1 Recheck LCSC stock for U1 and U2, order U1 through Global Sourcing or consign it
+- [ ] 6.2 Generate Gerbers, drill, BOM and placement with `kicad-cli`, quote at JLCPCB, and tag `pcb-rev-a`
+- [ ] 6.3 Order five boards with two or more assembled, and the battery contacts from Digi-Key
 
 ## 7. Bring-up
 
