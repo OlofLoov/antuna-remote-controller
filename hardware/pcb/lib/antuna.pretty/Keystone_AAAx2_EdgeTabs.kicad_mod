@@ -72,6 +72,17 @@
 			)
 		)
 	)
+	(fp_rect
+		(start -7.5 -2.25)
+		(end 7.5 2.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "6f1d2a3e-9b57-4c1e-8a0f-2d4c6b8e1a70")
+	)
 	(pad "1" smd rect
 		(at -5.75 0)
 		(size 3 4)

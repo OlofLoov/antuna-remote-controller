@@ -3556,11 +3556,11 @@
 		(uuid "8df44a3f-3ac7-4766-b723-9faeb1869e56")
 	)
 	(no_connect
-		(at 167.64 90.17)
+		(at 167.64 62.23)
 		(uuid "97d28607-65e3-4312-9270-73d1c1fe4326")
 	)
 	(no_connect
-		(at 167.64 64.77)
+		(at 233.68 60.96)
 		(uuid "9b9fce71-7653-40e0-82b4-bd127288ee1e")
 	)
 	(no_connect
@@ -3568,7 +3568,7 @@
 		(uuid "9c08e508-20fb-4980-9a9f-cca7936ab160")
 	)
 	(no_connect
-		(at 167.64 67.31)
+		(at 233.68 58.42)
 		(uuid "ca43042c-3d24-4638-a2f9-33579d628aa6")
 	)
 	(no_connect
@@ -3576,7 +3576,7 @@
 		(uuid "cb13714d-1f6f-481a-b0d3-04643e061530")
 	)
 	(no_connect
-		(at 167.64 87.63)
+		(at 167.64 54.61)
 		(uuid "cf2ff207-bc7f-4c11-9430-96500396dd06")
 	)
 	(no_connect
@@ -3878,12 +3878,12 @@
 		(uuid "3d66457b-6ff3-4e18-8779-4bd98d17b579")
 	)
 	(label "KEY_LEFT"
-		(at 233.68 58.42 0)
+		(at 167.64 67.31 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "4034b042-4e17-4fe0-8e2a-bd9d61c59f6d")
 	)
@@ -4008,7 +4008,7 @@
 		(uuid "60b302ca-8f47-4992-bf74-9a7476c5e955")
 	)
 	(label "KEY_MUTE"
-		(at 167.64 54.61 180)
+		(at 167.64 87.63 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4078,7 +4078,7 @@
 		(uuid "73a1fd14-26fa-4eaa-9a61-40f5540fa5ce")
 	)
 	(label "IR_RX"
-		(at 167.64 62.23 180)
+		(at 167.64 90.17 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4148,12 +4148,12 @@
 		(uuid "86cecdc1-a93a-487f-904f-f983ce23bf65")
 	)
 	(label "KEY_SELECT"
-		(at 233.68 60.96 0)
+		(at 167.64 64.77 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left bottom)
+			(justify right bottom)
 		)
 		(uuid "89300c17-fea9-4b76-91b2-a8b4048ae9a6")
 	)

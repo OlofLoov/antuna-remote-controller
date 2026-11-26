@@ -11,7 +11,7 @@ import sys
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(__file__))
-from build_board import ANTENNA_KEEPOUT, mm  # noqa: E402
+from build_board import ANTENNA_BAND, inside as in_box, save  # noqa: E402
 
 GRID = 3.0          # mm between stitching via candidates
 VIA_D, VIA_DRILL = 0.6, 0.3
@@ -47,9 +47,8 @@ def inside(outline, at, margin_mm=0.9):
 
 
 def in_keepout(at):
-    x0, y0, x1, y1 = ANTENNA_KEEPOUT
-    lo, hi = mm(x0 - 1, y0 - 1), mm(x1 + 1, y1 + 1)
-    return lo.x <= at.x <= hi.x and lo.y <= at.y <= hi.y
+    """In the band across the antenna end, where no via may go."""
+    return in_box(ANTENNA_BAND, at, 0.4)
 
 
 def join_fragments(board):
@@ -60,7 +59,8 @@ def join_fragments(board):
     outline = pcbnew.SHAPE_POLY_SET()
     board.GetBoardPolygonOutlines(outline, False)
     copper = [pad for fp in board.GetFootprints() for pad in fp.Pads()] + list(board.GetTracks())
-    vias = [t.GetPosition() for t in board.GetTracks() if t.GetClass() == "PCB_VIA"]
+    vias = [t.GetPosition() for t in board.GetTracks()
+            if t.GetClass() == "PCB_VIA" and t.GetNetname() == "/GND"]
     step = pcbnew.FromMM(0.25)
     added = 0
     for i in range(board.GetAreaCount()):
@@ -70,8 +70,13 @@ def join_fragments(board):
         layer = zone.GetLayerSet().Seq()[0]
         fill = zone.GetFilledPolysList(layer)
         for k in range(fill.OutlineCount()):
-            piece = fill.Outline(k)
-            if any(piece.PointInside(v) for v in vias):
+            # The piece with its holes, so a via in a hole (another net's,
+            # in its clearance) does not count as this piece's.
+            piece = pcbnew.SHAPE_POLY_SET()
+            piece.AddOutline(fill.Outline(k))
+            for h in range(fill.HoleCount(k)):
+                piece.AddHole(fill.Hole(k, h))
+            if any(piece.Contains(v) for v in vias):
                 continue
             box = piece.BBox()
             done = False
@@ -81,13 +86,86 @@ def join_fragments(board):
                 while x <= box.GetRight():
                     at = pcbnew.VECTOR2I(x, y)
                     x += step
-                    if (piece.PointInside(at) and inside(outline, at) and not in_keepout(at)
+                    if (piece.Contains(at) and inside(outline, at) and not in_keepout(at)
                             and clear_of(copper, at, clear=0.2)):
+                        copper.append(add_via(board, gnd, at))
+                        vias.append(at)
+                        added += 1
+                        done = True
+                        break
+                y += step
+    return added
+
+
+def pour_pieces(board):
+    """Every filled piece of ground pour, with its holes, and its layer."""
+    pieces = []
+    for i in range(board.GetAreaCount()):
+        zone = board.GetArea(i)
+        if zone.GetIsRuleArea():
+            continue
+        layer = zone.GetLayerSet().Seq()[0]
+        fill = zone.GetFilledPolysList(layer)
+        for k in range(fill.OutlineCount()):
+            piece = pcbnew.SHAPE_POLY_SET()
+            piece.AddOutline(fill.Outline(k))
+            for h in range(fill.HoleCount(k)):
+                piece.AddHole(fill.Hole(k, h))
+            pieces.append((layer, piece))
+    return pieces
+
+
+def join_clusters(board):
+    """The router takes the pours for solid planes, so its tracks can fence
+    a few pieces in on both layers: they reach each other through vias but
+    not the rest of the ground. Find such a cluster and put one via where
+    one of its pieces lies over the main pour on the other layer."""
+    gnd = board.FindNet("/GND")
+    outline = pcbnew.SHAPE_POLY_SET()
+    board.GetBoardPolygonOutlines(outline, False)
+    copper = [pad for fp in board.GetFootprints() for pad in fp.Pads()] + list(board.GetTracks())
+    vias = [t.GetPosition() for t in board.GetTracks()
+            if t.GetClass() == "PCB_VIA" and t.GetNetname() == "/GND"]
+    pieces = pour_pieces(board)
+    group = list(range(len(pieces)))
+
+    def root(i):
+        while group[i] != i:
+            i = group[i]
+        return i
+
+    for v in vias:
+        hit = [i for i, (_, piece) in enumerate(pieces) if piece.Contains(v)]
+        for i in hit[1:]:
+            group[root(i)] = root(hit[0])
+    area = {}
+    for i, (_, piece) in enumerate(pieces):
+        area[root(i)] = area.get(root(i), 0) + piece.Area()
+    main = max(area, key=area.get)
+    step = pcbnew.FromMM(0.25)
+    added = 0
+    for cluster in [c for c in area if c != main]:
+        mains = [piece for i, (layer, piece) in enumerate(pieces) if root(i) == main]
+        done = False
+        for i, (layer, piece) in enumerate(pieces):
+            if root(i) != cluster or done:
+                continue
+            box = piece.BBox()
+            y = box.GetTop()
+            while y <= box.GetBottom() and not done:
+                x = box.GetLeft()
+                while x <= box.GetRight():
+                    at = pcbnew.VECTOR2I(x, y)
+                    x += step
+                    if (piece.Contains(at) and any(m.Contains(at) for m in mains)
+                            and inside(outline, at) and not in_keepout(at) and clear_of(copper, at, clear=0.2)):
                         copper.append(add_via(board, gnd, at))
                         added += 1
                         done = True
                         break
                 y += step
+        if not done:
+            print("a piece of ground pour could not be joined to the rest")
     return added
 
 
@@ -111,6 +189,20 @@ def stitch(board):
         if track.GetClass() == "PCB_VIA" and not outline.Contains(track.GetPosition()):
             copper.remove(track)
             board.Remove(track)
+
+    # Freerouting can leave a signal via that only one layer reaches.
+    for via in [t for t in board.GetTracks() if t.GetClass() == "PCB_VIA" and t.GetNetname() != "/GND"]:
+        ring = pcbnew.SHAPE_CIRCLE(via.GetPosition(), via.GetWidth(pcbnew.F_Cu) // 2)
+        layers = {t.GetLayer() for t in board.GetTracks()
+                  if t.GetClass() != "PCB_VIA" and t.GetNetCode() == via.GetNetCode()
+                  and t.GetEffectiveShape(t.GetLayer()).Collide(ring, 0)}
+        layers |= {layer for fp in board.GetFootprints() for pad in fp.Pads()
+                   if pad.GetNetCode() == via.GetNetCode()
+                   for layer in (pcbnew.F_Cu, pcbnew.B_Cu)
+                   if pad.IsOnLayer(layer) and pad.GetEffectiveShape(layer).Collide(ring, 0)}
+        if len(layers) < 2:
+            copper.remove(via)
+            board.Remove(via)
 
     box = board.GetBoardEdgesBoundingBox()
     step = pcbnew.FromMM(GRID)
@@ -142,6 +234,11 @@ def main():
         for track in list(board.GetTracks()):
             if not track.IsLocked():
                 board.Remove(track)
+        # The Specctra export makes every rule area a full keep-out, so a
+        # pour-only rule would shut the router out.
+        for zone in [board.GetArea(i) for i in range(board.GetAreaCount())]:
+            if zone.GetIsRuleArea() and not zone.GetDoNotAllowTracks() and not zone.GetDoNotAllowVias():
+                board.Remove(zone)
         if not pcbnew.ExportSpecctraDSN(board, sys.argv[3]):
             sys.exit("could not export " + sys.argv[3])
         return
@@ -152,7 +249,7 @@ def main():
                 board.Remove(track)
         if not pcbnew.ImportSpecctraSES(board, sys.argv[2]):
             sys.exit("could not import " + sys.argv[2])
-        pcbnew.SaveBoard(path, board)
+        save(board, path)
         # After a session import pcbnew's Python wrappers hand back bare
         # objects, so the stitching runs in a fresh interpreter.
         os.execv(sys.executable, [sys.executable, __file__, path, "--stitch"])
@@ -161,7 +258,13 @@ def main():
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
     added += join_fragments(board)
     pcbnew.ZONE_FILLER(board).Fill(board.Zones())
-    pcbnew.SaveBoard(path, board)
+    for _ in range(3):
+        joined = join_clusters(board)
+        if not joined:
+            break
+        added += joined
+        pcbnew.ZONE_FILLER(board).Fill(board.Zones())
+    save(board, path)
     print(f"{added} ground stitching vias")
 
 

@@ -15,8 +15,8 @@ TS-1187A-X-X-X rev A0).
 Raytac_AN54LQ-15.wrl: 9.5 x 13.7 x 1.8 mm (datasheet v1.3), a shield
 over all but the antenna end, which is the footprint's -y end.
 
-LCSC's models for the switch and module state no license, and this repo
-is public, so these stand in for them.
+LCSC's models for all three state no license, and this repo is public,
+so these stand in for them.
 """
 
 import os
