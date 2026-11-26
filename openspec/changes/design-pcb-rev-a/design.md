@@ -153,6 +153,35 @@ assembled. PCBWay is the alternate if JLCPCB has no stock of the module
 or U2 and parts must be sent in. Battery contacts come from Digi-Key and
 are soldered at home.
 
+LCSC stock on 2026-11-26, read from LCSC's product API (`wmsc.lcsc.com`,
+product detail by C number). A board takes one of each, twelve switches:
+
+| Ref | Part | LCSC | In stock | Enough for 5 boards |
+|-----|------|------|----------|---------------------|
+| U1 | AN54LQ-15 | C49419243 | 0 | No |
+| SW1 to SW12 | TS-1187A-C-C-B | C318889 | 111,060 | Yes |
+| D1 | TSAL6200 | C55528 | 8,560 | Yes |
+| Q1 | AO3416 | C43307 | 18,565 | Yes |
+| Q2 | DMP2035U-7 | C110499 | 218,185 | Yes |
+| C1 | CL31A107MQHNNNE | C15008 | 1,476,310 | Yes |
+| U2 | TSMP96000TR | C20346073 | 53 | Yes, but thin |
+| D2 | APTD1608LSECK/J4-PF | C5879215 | 655 | Yes |
+
+Alternates: MDBT42Q-512KV2 (C2828282) 0, TS-1187A-B-A-B (C318884) 338,960,
+VSMB2948SL (C6604342) 197, Si2312CDS (C142518) 9,410, AO3401A (C15127)
+531,690, CA45A (C2976906) 26,865, APTD1608LCGCK (C5342733) 1,395.
+
+L1, Y1 and the 0603/0402 passives are picked from JLCPCB basic parts
+when the BOM is exported.
+
+The module is the gap, and its alternate is out too. Digi-Key lists the
+AN54LQ-15 as 3271-AN54LQ-15-ND, with small stock that varies by regional
+site. The route: order it through JLCPCB Global Sourcing, which buys from
+Digi-Key or Mouser into JLCPCB's warehouse (9 to 15 days, no refunds once
+paid). If Global Sourcing cannot get it, buy from Digi-Key and consign the
+modules to JLCPCB. Recheck U2 and the module just before ordering; U2 at 53
+can run out.
+
 ### 8. KiCad 10 with a repo-local library
 
 KiCad 10.0.8. The schematic was first generated from decisions 1 to 3
@@ -184,8 +213,9 @@ not diff in git.
 
 ## Risks / Trade-offs
 
-- Module and U2 stock at LCSC could not be read by script and may be zero.
-  Fallback: JLCPCB pre-order, or PCBWay with sent-in parts.
+- LCSC has no AN54LQ-15 (2026-11-26) and only 53 TSMP96000. The module
+  comes through JLCPCB Global Sourcing or consignment (decision 7), which
+  adds about two weeks and a markup.
 - The 5 mm IR LED laid flat is the only part with margin for 5 m, and it
   sets the top end's thickness.
 - Early AN54LQ lots used nRF54L15 revision 1 silicon. The order asks for
@@ -193,4 +223,4 @@ not diff in git.
 
 ## Open Questions
 
-- Whether X-ray inspection adds a cost worth avoiding with the MDBT42Q.
+None.
