@@ -12,3 +12,4 @@ command -v actionlint >/dev/null || echo "note: brew install actionlint (CI runs
 command -v kicad-cli >/dev/null || [[ -x /Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli ]] ||
     echo "note: brew install --cask kicad (KiCad 10.0.8, runs ERC in scripts/fast-checks.sh)"
 command -v rsvg-convert >/dev/null || echo "note: brew install librsvg (scripts/render.sh turns the schematic into a PNG)"
+[[ -x /opt/homebrew/opt/openjdk/bin/java ]] || command -v java >/dev/null || echo "note: brew install openjdk (scripts/route-board.sh runs Freerouting)"

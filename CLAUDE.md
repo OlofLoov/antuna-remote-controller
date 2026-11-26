@@ -20,6 +20,9 @@ shellcheck scripts/*.sh scripts/githooks/* .claude/hooks/*.sh
 actionlint
 kicad-cli sch erc --severity-error --exit-code-violations hardware/pcb/antuna-remote/antuna-remote.kicad_sch   # KiCad 10.0.8
 kicad-cli sch export netlist -o /tmp/antuna.net hardware/pcb/antuna-remote/antuna-remote.kicad_sch            # nets to review against design.md
+scripts/build-board.sh                     # rebuild the board from the schematic and hardware/pcb/layout/build_board.py (drops tracks)
+scripts/route-board.sh                     # autoroute with Freerouting 2.5.0 (Java 21+, `brew install openjdk`), refill pours
+kicad-cli pcb drc --severity-error --exit-code-violations hardware/pcb/antuna-remote/antuna-remote.kicad_pcb
 scripts/fetch-3d-models.sh                 # STEP models for the library parts, kept out of git
 scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
 scripts/render.sh out                      # schematic, board and enclosure PNGs; CI does this per commit (renders branch)
