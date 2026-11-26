@@ -41,11 +41,13 @@ at 2.0 V.
 | SW1 to SW12 | XKB TS-1187A-C-C-B tactile switch, 260 gf | 2.6 N, inside the 1.5 to 3.0 N requirement with margin either side; 5.1 x 5.1 mm body, 1.7 mm high (height code C), round 2.0 mm brass stem, travel 0.2 mm (XKB drawing TS-1187A-X-X-X rev A0). Pads A and B are one contact, C and D the other. KiCad's `SW_Push_1P1T_XKB_TS-1187A` matches the drawing: four 1.0 x 0.75 mm pads, 7.0 and 5.0 mm across their outer and inner edges, 4.5 and 3.0 mm the other way. 260 gf and 300,000 cycles (XKB spec SP-A0162-53) | C318889 | XKB TS-1187A-B-A-B, 160 gf (1.57 N, too close to the 1.5 N floor), C318884, basic part |
 | D1 | Vishay TSAL6200, 5 mm, 940 nm, laid flat at the top edge | Half angle 17 degrees; 72 mW/sr typical, 40 min at 100 mA; forward voltage 1.35 V typical, 1.6 V max at 100 mA; pulse rating covers 170 mA at 1/3 duty. About 12 m typical, 8.9 m worst case | C55528, extended, through hole | Vishay VSMB2948SL side-looking SMD, C6604342, about 6.3 m typical and 4.5 m worst case, short of 5 m |
 | R1 | 10 Ohm, 0603 | About 170 mA at 3.2 V and 65 mA at 2.0 V through D1 | basic | |
-| Q1 | AOS AO3416 N-channel MOSFET, SOT-23 | At most 34 mOhm at 1.8 V gate drive, so a GPIO turns it fully on from low cells | C43307, extended | Vishay Si2312CDS, at most 41.4 mOhm at 1.8 V, C142518. Not AO3400A: only specified from 2.5 V |
+| Q1 | AOS AO3416 N-channel MOSFET, SOT-23 | At most 34 mOhm at 1.8 V gate drive, so a GPIO turns it fully on from low cells. Its gate has 1.8 kOhm inside, and turn-off takes about 6 µs at 4.5 V drive (datasheet rev 5.1), against an 8.8 µs carrier pulse; the bench looks at the pulse shape at D1, and Si2312CDS is the swap if it smears | C43307, extended | Vishay Si2312CDS, at most 41.4 mOhm at 1.8 V, C142518. Not AO3400A: only specified from 2.5 V |
 | R2 | 100 kOhm, 0603, Q1 gate to ground | Holds Q1 off while the chip resets, so D1 never stays on | basic | |
 | Q2 | Diodes DMP2035U-7 P-channel MOSFET, SOT-23 | At most 62 mOhm at -1.8 V gate drive; about 9 mV drop at 150 mA | C110499, extended | AO3401A, C15127, basic, but only specified at -2.5 V |
-| C1 | Samsung CL31A107MQHNNNE, 100 µF 6.3 V X5R 1206 | 1.6 mm thick; worst-case leakage 6.4 µA at 3.2 V. Effective capacitance at 3 V not published in a readable form; assumed 40 to 60 µF, and the low-cells scenario checks the result | C15008, basic | Tantalum CA45A, 1.9 mm, 10 µA, C2976906 |
-| U2 | Vishay TSMP96000, IR receiver with raw carrier output, side view SMD, at the top edge next to D1 | Panhead 7.5 W x 5.3 H x 4.0 D mm, standing 5.3 mm on the board with its lens to the side (datasheet rev 1.1, 2024-11-25, document 82906); pads 1 GND, 3 VS, 4 OUT at 1.27 mm pitch. 2.0 to 5.5 V; 0.35 mA, so powered from a GPIO only while learning; carrier out 30 to 60 kHz, so 36, 38, 40 and 56 kHz TV codes learn with their real frequency | C20346073, stock not shown | Vishay TSOP33338, 2.0 to 5.5 V, decoded 38 kHz only |
+| C1 | Samsung CL31A107MQHNNNE, 100 µF 6.3 V X5R 1206 | 1.6 mm thick. The initial insulation resistance (at least 50 MOhm x µF) allows up to 6.4 µA at 3.2 V; after Samsung's moisture test the floor is 3.5 MOhm x µF, up to about 91 µA, which would break the current budget. Typical MLCC leakage is far lower, and the idle-current bench check (7.2) measures it. Effective capacitance at 3 V not published in a readable form; assumed 40 to 60 µF, and the low-cells scenario checks the result | C15008, basic | Tantalum CA45A, 1.9 mm, 10 µA, C2976906 |
+| U2 | Vishay TSMP96000, IR receiver with raw carrier output, side view SMD, at the top edge next to D1 | Panhead 7.5 W x 5.3 H x 4.0 D mm, standing 5.3 mm on the board with its lens to the side (datasheet rev 1.1, 2024-11-25, document 82906); pads 1 GND, 3 VS, 4 OUT at 1.27 mm pitch. 2.0 to 5.5 V; 0.35 mA typical, 0.45 mA max typical, 0.45 mA max, so powered from a GPIO only while learning; carrier out 30 to 60 kHz, so 36, 38, 40 and 56 kHz TV codes learn with their real frequency | C20346073, stock not shown | Vishay TSOP33338, 2.0 to 5.5 V, decoded 38 kHz only |
+| R4, C5 | 100 Ohm 0603 in series to VS, 4.7 µF 0402 from VS to ground | Vishay's recommended supply filter (application circuit, document 82906) | basic | |
+| R5 | 4.7 kOhm 0603, OUT pull-up to U2's switched supply | Vishay's recommended pull-up for fast edges and a clean high level; output sinks at most 5 mA | basic | |
 | D2 | Kingbright APTD1608LSECK/J4-PF, orange, 0603 | Forward voltage 1.8 V typical, 2.1 V max at 2 mA, bright at low current | C5879215, extended | Kingbright APTD1608LCGCK yellow-green, C5342733, about 50 times dimmer |
 | R3 | 330 Ohm, 0603 | About 1.2 mA at 2.2 V and 4 mA at 3.2 V with a typical LED; firmware PWM evens out the brightness | basic | |
 | BT1 | Keystone 5204 (negative) and 5226 (positive) AAA contacts, soldered by a tab to the board edge; Keystone 5213 or 5214 bridge contact in the door | Low enough for a 14 mm battery end; PCB-mount AAA spring contacts are 11 to 20 mm tall | not stocked, buy from Digi-Key | Keystone 230-1 board-edge contact, mounting to confirm |
@@ -106,7 +108,7 @@ Current budget, alkaline, 200 presses a day:
 |------|---------|
 | nRF54L15 idle with RTC and RAM | 1.5 µA (datasheet) |
 | Bluetooth connected with a long interval and latency | 5 to 15 µA (secondary source, to measure) |
-| C1 leakage | up to 6.4 µA worst case, far less typical |
+| C1 leakage | up to 6.4 µA at the initial spec, far less typical; measured in 7.2 |
 | U2, D2, key pull-ups | 0 when idle |
 | IR frames when Bluetooth is down, 1.5 frames a press | about 5 µA if every press went over IR |
 
@@ -166,8 +168,9 @@ Library, `hardware/pcb/lib/`:
   pinout match Vishay's drawing. Pin types were set by function so ERC
   means something; U1's RESET is passive, since only the debugger drives
   it against the internal pull-up.
-- `Keystone_AAAx2_EdgeTabs` is drawn here: two pads on 11 mm centers for
-  the contact tabs. Pad sizes are confirmed against Keystone's drawings in
+- `Keystone_AAAx2_EdgeTabs` is drawn here: two pads on 11.5 mm centers for
+  the contact tabs, the spacing of the 5213/5214 bridge's two contacts
+  (.453 in on Keystone's catalog page 17), so the cells line up at both ends. Pad sizes are confirmed against Keystone's drawings in
   layout.
 - Everything else uses KiCad's own symbols and footprints, including
   `SW_Push_1P1T_XKB_TS-1187A` and the horizontal 5 mm LED with IR body.
