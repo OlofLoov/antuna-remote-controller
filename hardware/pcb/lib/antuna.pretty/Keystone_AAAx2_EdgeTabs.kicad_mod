@@ -3,7 +3,7 @@
 	(generator "pcbnew")
 	(generator_version "10.0")
 	(layer "F.Cu")
-	(descr "Solder pads at the board edge for the tabs of Keystone 5226 (+) and 5204 (-) AAA contacts, cells side by side on 11 mm centers. Pad sizes to confirm against the Keystone drawings in layout.")
+	(descr "Solder pads at the board edge for the tabs of Keystone 5226 (+) and 5204 (-) AAA contacts, cells side by side on 11.5 mm centers, the contact spacing of the Keystone 5213/5214 door bridge. Pad sizes to confirm against the Keystone drawings in layout.")
 	(property "Reference" "BT**"
 		(at 0 -4 0)
 		(layer "F.SilkS")
@@ -51,7 +51,7 @@
 	(attr smd)
 	(duplicate_pad_numbers_are_jumpers no)
 	(fp_text user "+"
-		(at -5.5 -3 0)
+		(at -5.75 -3 0)
 		(layer "F.SilkS")
 		(uuid "cb525d32-e250-4df7-9230-2a1ac43c8532")
 		(effects
@@ -62,7 +62,7 @@
 		)
 	)
 	(fp_text user "-"
-		(at 5.5 -3 0)
+		(at 5.75 -3 0)
 		(layer "F.SilkS")
 		(uuid "1aa888e0-1b9a-4576-ab2a-78e2796fde1c")
 		(effects
@@ -73,13 +73,13 @@
 		)
 	)
 	(pad "1" smd rect
-		(at -5.5 0)
+		(at -5.75 0)
 		(size 3 4)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(uuid "e6d2ccee-6cfe-4cc0-a914-248378ef3c9b")
 	)
 	(pad "2" smd rect
-		(at 5.5 0)
+		(at 5.75 0)
 		(size 3 4)
 		(layers "F.Cu" "F.Mask" "F.Paste")
 		(uuid "b416db77-c161-40e7-909d-5ecd3546f6e7")
