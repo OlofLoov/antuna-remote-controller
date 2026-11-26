@@ -28,21 +28,22 @@ finish=hardware/pcb/layout/finish_board.py
 work="$(mktemp -d)"
 trap 'rm -rf "$work"' EXIT
 quiet() { "$@" 2> >(grep -v -e Fontconfig -e wxApp -e 'memory leak' >&2); }
-cp "$board" "$work/placed.kicad_pcb"
-
-# Freerouting is not deterministic: a run can leave a net or a ground
-# island unconnected. Route again from the placed board until DRC passes.
-for attempt in 1 2 3 4 5; do
-  cp "$work/placed.kicad_pcb" "$board"
-  quiet "$python" "$finish" "$board" --export "$work/board.dsn"
-  "$java" -jar "$jar" -de "$work/board.dsn" -do "$work/board.ses" \
-    --router.autorouter.max_passes=100 --gui.enabled=false >"$work/freerouting.log" 2>&1
-  quiet "$python" "$finish" "$board" "$work/board.ses"
-  if "$kicad" pcb drc --severity-error --exit-code-violations -o "$work/drc.rpt" "$board" >/dev/null 2>&1; then
-    echo "routed $board, DRC clean (attempt $attempt)"
-    exit 0
-  fi
-  echo "attempt $attempt: $(grep -E '^\*\* Found' "$work/drc.rpt" | tr '\n' ' ')"
-done
-echo "no clean route in five attempts; $board holds the last one" >&2
+# Freerouting gives the same routes for the same board, and build_board.py
+# writes the same board for the same inputs, so one run settles it: a
+# route that leaves something unconnected needs a placement change.
+quiet "$python" "$finish" "$board" --export "$work/board.dsn"
+if ! "$java" -jar "$jar" -de "$work/board.dsn" -do "$work/board.ses" \
+  --router.autorouter.max_passes=100 --gui.enabled=false >"$work/freerouting.log" 2>&1; then
+  cat "$work/freerouting.log" >&2
+  echo "Freerouting failed; $board is still the placed board" >&2
+  exit 1
+fi
+quiet "$python" "$finish" "$board" "$work/board.ses"
+if "$kicad" pcb drc --schematic-parity --severity-error --exit-code-violations \
+  -o "$work/drc.rpt" "$board" >/dev/null 2>&1; then
+  echo "routed $board, DRC clean"
+  exit 0
+fi
+grep -E '^(\*\* Found|\[|    @)' "$work/drc.rpt" >&2
+echo "DRC failed; $board holds the route, scripts/build-board.sh restores the placed board" >&2
 exit 1

@@ -11,8 +11,7 @@ PCB exists, its placement export is the one source for key positions.
 Drawn in `boards/front.svg`, 40 by 150 mm:
 
 - Top edge: IR window. Top face: status light at center, Power at upper
-  left, recessed in a ring. (Upper right at first; the PCB change needs
-  that corner for the radio module's antenna.)
+  right, recessed in a ring.
 - D-pad ring, 30 mm across, with select in the middle, 14 mm across,
   centered 36 mm from the top.
 - Back (round) at left and Home (rounded square) at right, 60 mm from the

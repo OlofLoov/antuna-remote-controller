@@ -1,0 +1,8 @@
+(version 1)
+
+# Raytac's layout drawing (AN54LQ datasheet v1.3, section 2.3) shows only
+# ground vias under the module. build_board.py's "module body" rule area
+# keeps tracks out; this keeps every other via out.
+(rule "only ground vias under the radio module"
+	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('module body')")
+	(constraint disallow via))

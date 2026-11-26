@@ -61,18 +61,27 @@ That leaves 18 wake-capable pins for 13 inputs.
 
 | Net | Pin (pad) | Port rule |
 |-----|-----------|-----------|
-| KEY_UP, KEY_DOWN, KEY_LEFT, KEY_RIGHT, KEY_SELECT | P0.00 (34), P0.01 (35), P0.02 (41), P0.03 (38), P0.04 (40) | Wake on any key; latched detect mode against erratum 114 |
+| KEY_UP, KEY_DOWN, KEY_RIGHT | P0.00 (34), P0.01 (35), P0.03 (38) | Wake on any key; latched detect mode against erratum 114 |
 | KEY_BACK, KEY_HOME, KEY_PLAY, KEY_VOLUP, KEY_VOLDN | P1.04 (17) to P1.08 (21) | Same |
-| KEY_MUTE, KEY_POWER | P1.09 (2), P1.10 (3) | Same |
+| KEY_POWER | P1.10 (3) | Same |
+| KEY_MUTE | P1.02 (15) | Same; NFC pad, set to GPIO in firmware |
+| KEY_SELECT, KEY_LEFT | P1.13 (6), P1.14 (7) | Same |
 | IR_LED (Q1 gate) | P1.11 (4) | PWM20 |
-| IR_RX (U2 output) | P1.12 (5) | GPIOTE and timer capture |
+| IR_RX (U2 output) | P1.03 (16) | GPIOTE and timer capture; NFC pad, set to GPIO in firmware |
 | STATUS_LED | P2.00 (22) | Output only |
 | IR_RX_PWR (U2 supply) | P2.01 (23) | Output only |
 | SWDIO, SWDCLK, RESET | 36, 37, 39 | Dedicated |
-| Spare | P1.02, P1.03, P1.13, P1.14, P2.02 to P2.10 | No-connect flags |
+| Spare | P0.02, P0.04, P1.09, P1.12, P2.02 to P2.10 | No-connect flags |
 
 Layout may swap pins within the same port rule to ease routing; the
-schematic and this table change together.
+schematic and this table change together. P0.02 and P0.04 are on pads
+41 and 40, inside the module's pad ring, where only a track under the
+module could reach them. Raytac's drawing keeps that area for ground, so
+KEY_LEFT and KEY_SELECT moved from them to P1.14 and P1.13 on the edge.
+KEY_MUTE moved from P1.09 (pad 2) to P1.02 (pad 15), and IR_RX from
+P1.12 (pad 5) to P1.03 (pad 16): the channel left of the module had no
+room for their tracks, and pad 2 sits just below the band kept clear
+across the antenna end.
 
 Module pads, from the AN54LQ datasheet v1.3 pin table and reference
 circuit: P1.09 to P1.14 on pads 2 to 7, P1.00 and P1.01 (crystal) on 12
@@ -81,9 +90,9 @@ P2.10 on 27 to 33, P0.00 and P0.01 on 34 and 35, SWDIO 36, SWDCLK 37,
 P0.03 on 38, RESET 39, P0.04 on 40, P0.02 on 41. VDD_NRF 11, DCC 9,
 DECD 8; GND on 1, 10, 14, 26, 42 and 43.
 
-P0.03 and P0.04 stay keys; their GRTC PWM and CLKOUT32K functions are not
-needed. P1.02 and P1.03 default to NFC; they are left for other uses and
-set to GPIO in firmware if used, since NFC is not fitted.
+P0.03 stays a key; its GRTC PWM function is not needed. P1.02 and P1.03
+default to NFC. NFC is not fitted, so firmware sets them to GPIO; P1.02
+carries KEY_MUTE and P1.03 IR_RX.
 
 ### 4. Power checks
 
@@ -134,21 +143,30 @@ enclosure needs it.
 
 - Two layers, 1.0 mm FR-4, about 37 by 100 mm, the outline following the
   shell's top corners and stopping at the battery bay.
-- U1 in the top right corner, antenna end up. Raytac's drawing (datasheet
-  v1.3 section 2.3) puts the module's antenna end on a board edge, with
-  ground pour under and around the module, a 7.35 by 3.3 mm "no ground-pad
-  area" under the antenna end starting 1 mm in from the module's left
-  edge, and at least 15 mm of ground beside the antenna. The board steps
-  down 3.5 mm at the top right so that edge is straight; the module sits
-  0.3 mm in from it so its corner ground pads keep the fab's edge
-  clearance. The no-ground area is a rule area with no pour, tracks or
-  vias on either layer. To the module's left is about 21 mm of ground.
-- The module's supply and crystal pads (1 to 13) are on its left side, so
-  the module takes the right corner and they face the board. Power moves
-  from the top right in `front.svg` to the top left.
-- The IR LED and receiver share the top edge's window, LED at about 15 mm
-  and receiver at about 22 mm from the left. The status light sits below
-  them, above the d-pad.
+- U1 in the top left corner, antenna end up. Raytac's drawing (datasheet
+  v1.3 section 2.3) puts the module's antenna end on a board edge, ground
+  pour under and around the module with only ground vias under it, a 7.35
+  by 3.3 mm "no ground-pad area" under the antenna end starting 1 mm in
+  from the module's left edge, and at least 15 mm of ground to the
+  module's right. Here 23 mm of ground lies to its right, and its left
+  edge is 4.5 mm from the board's, a channel for the tracks from pads 1
+  to 13 and the parts on them.
+- The board steps down 3.5 mm left of x = 19 mm so the antenna end sits
+  on that edge; the module sits 0.3 mm in from it so its corner ground
+  pads keep the fab's edge clearance. Right of the step the board reaches
+  the top edge for the IR parts. That part has no pour, so the ground
+  ends level with the antenna end, as in the drawing.
+- Rule areas, all on both layers: the no-ground area (no pour, tracks or
+  vias); a band across the antenna end from the left edge to 3.5 mm right
+  of the module (no tracks or vias); and the inside of the pad ring (no
+  tracks), where `antuna-remote.kicad_dru` lets DRC pass ground vias
+  only.
+- The module's supply and crystal pads (1 to 13) face the left edge. L1,
+  C2, Y1, C3 and C4 sit in the channel beside them.
+- Power at the top right, as in `front.svg`.
+- The IR LED and receiver share the top edge's window right of the step,
+  LED at about 22 mm and receiver at about 30 mm from the left. The
+  status light sits under the LED, centred, 14 mm from the top.
 - Battery contacts on the bottom edge, solder tabs on pads.
 - Test points: VBAT, GND, IR gate.
 
@@ -197,17 +215,27 @@ rule area. It runs in KiCad's Python with `pcbnew`
 (`scripts/build-board.sh`). Positions are in shell coordinates, the ones
 `front.svg` uses, so a key moves by editing one line. Freerouting 2.5.0
 routes it from a Specctra export (`scripts/route-board.sh`), net classes
-give the supply and IR LED nets 0.4 mm tracks, and the script reroutes
-until DRC passes, since Freerouting does not give the same result every
-run. After routing, `finish_board.py` stitches the two ground pours
-with vias on a 3 mm grid and gives every leftover piece of pour its own
-via. Before routing, `build_board.py` gives every SMD ground pad its
+give the supply and IR LED nets 0.4 mm tracks (the router narrows them to
+0.3 mm at the module's 0.4 mm pads), and the board rules keep every track
+at 0.127 mm or more, JLCPCB's standard two-layer minimum.
+`build_board.py` names every item by what it is and where it sits
+instead of KiCad's random ids, so the same inputs write the same file and
+a rebuild's diff shows only what moved. Freerouting gives the same routes
+for the same board, so routing repeats too. After routing,
+`finish_board.py` stitches the two ground pours with vias on a 3 mm grid
+and gives every leftover piece of pour its own via. The router takes the
+pours for solid planes and can fence a few pieces in with tracks on both
+layers, so it also checks that every piece reaches the rest and adds a
+via where one does not. Before routing, `build_board.py` gives every SMD ground pad its
 own via on a short track, locked, so the router cannot box a ground pad
 in and each pad has a short path to the bottom pour; Raytac's layout
 drawing does the same beside the module's pads. A 0.4 mm rule area inside the
 outline keeps tracks off the edge, since the router does not read
-KiCad's edge clearance. DRC with schematic parity runs in CI and before
-each push.
+KiCad's edge clearance. Small passives meet the pours through thermal
+spokes, so both ends heat alike in reflow. The auxiliary origin is the
+shell's top left corner, so the placement export for the enclosure is in
+shell coordinates. DRC with schematic parity runs in CI and before each
+push.
 
 3D bodies are committed in `hardware/pcb/lib/models/`, so renders need
 no download and look the same everywhere. KiCad's own models for the
@@ -257,10 +285,11 @@ not diff in git.
 
 ## Risks / Trade-offs
 
-- The antenna edge is 3.5 mm below the top edge to its left, so the
-  ground there reaches past the antenna's end, which Raytac's drawing does
-  not show. Raytac reviews layouts for free (sales@raytac.com); send the
-  board before ordering.
+- Right of the step the board reaches 3.5 mm past the antenna end, from
+  3.5 mm right of the module, with the IR LED, the receiver and their
+  tracks on it but no pour. Raytac's drawing shows nothing there. Raytac
+  reviews layouts for free (sales@raytac.com); send the board before
+  ordering and ask about that part.
 
 - LCSC has no AN54LQ-15 (2026-11-26) and only 53 TSMP96000. The module
   comes through JLCPCB Global Sourcing or consignment (decision 7), which
