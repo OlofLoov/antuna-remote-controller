@@ -443,7 +443,7 @@
 		(uuid "b4e5d268-8940-4973-8bd4-0d259223bc26")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/../lib/antuna.3dshapes/Raytac_AN54LQ-15.step"
+	(model "${KIPRJMOD}/../lib/models/Raytac_AN54LQ-15.wrl"
 		(offset
 			(xyz 0 0 0)
 		)

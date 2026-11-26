@@ -201,17 +201,24 @@ give the supply and IR LED nets 0.4 mm tracks, and the script reroutes
 until DRC passes, since Freerouting does not give the same result every
 run. After routing, `finish_board.py` stitches the two ground pours
 with vias on a 3 mm grid and gives every leftover piece of pour its own
-via; three ground pads the router can box in (U1 pads 14 and 26, U2 pad
-1) get a fixed via in `build_board.py`. A 0.4 mm rule area inside the
+via. Before routing, `build_board.py` gives every SMD ground pad its
+own via on a short track, locked, so the router cannot box a ground pad
+in and each pad has a short path to the bottom pour; Raytac's layout
+drawing does the same beside the module's pads. A 0.4 mm rule area inside the
 outline keeps tracks off the edge, since the router does not read
 KiCad's edge clearance. DRC with schematic parity runs in CI and before
 each push.
 
-Some vendor 3D models are unusable: LCSC's STEP for the TSMP96000 puts
-its geometry hundreds of millimetres off the part. Its body is drawn from
-the datasheet by `hardware/pcb/lib/models/make_models.py` instead. The
-switch and module STEP files come from LCSC through
-`scripts/fetch-3d-models.sh`. Hand-placing in the KiCad editor was considered; it leaves no
+3D bodies are committed in `hardware/pcb/lib/models/`, so renders need
+no download and look the same everywhere. KiCad's own models for the
+passives, transistors, crystal and IR LED are copied there under their
+CC-BY-SA licence (`scripts/fetch-kicad-models.sh`). LCSC's models for
+the module, the switch and U2 state no license, and the TSMP96000's puts
+its geometry hundreds of millimetres off the part, so
+`hardware/pcb/lib/models/make_models.py` draws those three from their
+datasheet dimensions instead.
+
+Hand-placing in the KiCad editor was considered; it leaves no
 record of why a part sits where it does and does not rebuild after a
 schematic change.
 
@@ -227,7 +234,7 @@ edited in KiCad. ERC runs in CI and in `scripts/fast-checks.sh`.
 
 Library, `hardware/pcb/lib/`:
 
-- U1 and U2 symbols, footprints and STEP models come from LCSC through
+- U1 and U2 symbols and footprints come from LCSC through
   `easyeda2kicad`, checked against the datasheets: U1's 43 pads match
   Raytac's top view (the import had the corner ground pads 42 and 43
   swapped, now fixed); U2's four 0.9 by 2.2 mm pads at 1.27 mm pitch and

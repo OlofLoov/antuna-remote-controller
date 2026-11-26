@@ -41,8 +41,7 @@ fi
 
 if [[ -f "$project.kicad_pcb" ]]; then
   # 3D: raytraced with shadows, in the colors of the board's stackup.
-  # Parts whose STEP model is missing show as bare pads, so CI fetches the
-  # library models first (scripts/fetch-3d-models.sh).
+  # Every body comes from hardware/pcb/lib/models, committed.
   view() {
     "$kicad" pcb render --quality high --floor --use-board-stackup-colors \
       --width 1600 --height 1000 --background opaque -o "$out/board-$1.png" "${@:2}" \
