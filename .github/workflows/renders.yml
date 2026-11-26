@@ -30,11 +30,13 @@ jobs:
         if: hashFiles('hardware/pcb/antuna-remote/antuna-remote.kicad_pcb') != ''
         run: |
           git config --global --add safe.directory "$GITHUB_WORKSPACE"
-          scripts/fetch-3d-models.sh || echo "::warning::STEP models missing; the module and IR receiver render as bare pads"
+          scripts/fetch-3d-models.sh || echo "::warning::STEP models missing; the module and switches render as bare pads"
+          scripts/fetch-kicad-models.sh
       - name: Render
         id: render
         run: |
-          scripts/render.sh out
+          # The image has no KiCad 3D library; fetch-kicad-models.sh put the board's models here.
+          KICAD10_3DMODEL_DIR="$PWD/.tools/3dmodels" scripts/render.sh out
           echo "images=$(find out -name '*.png' | wc -l)" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@v7
         if: steps.render.outputs.images != '0'
