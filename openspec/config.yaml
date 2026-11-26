@@ -3,7 +3,7 @@ schema: spec-driven
 context: |
   Antuna Remote is a physical remote for Apple TV that pairs over Bluetooth
   LE and is designed around Antuna, the native IPTV player in the antenna
-  repo. This repo holds the PCB (KiCad), the enclosure (code CAD) and the
+  repo. This repo holds the PCB (KiCad), the enclosure (build123d, as code) and the
   firmware.
 
   Who it is for:
