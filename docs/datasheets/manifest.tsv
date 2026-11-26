@@ -1,7 +1,7 @@
 file	refs	part	kind	revision	get	url	sha256
 raytac-an54lq-15.pdf	U1	Raytac AN54LQ-15 module	datasheet	v1.3, 2026-11-20	hand	https://www.raytac.com/download/index.php?index_id=81	
 -	U1	Nordic nRF54L15 product specification	web		link	https://docs.nordicsemi.com/r/bundle/ps_nrf54l15/page/keyfeatures_html5.html	
-xkb-ts-1187a-drawing.pdf	SW1-SW12	XKB TS-1187A-X-X-X drawing	drawing		auto	https://atta.szlcsc.com/upload/public/pdf/source/20211011/CF465E46D2427DB66E133733EF19F823.pdf	
+xkb-ts-1187a-drawing.pdf	SW1-SW12	XKB TS-1187A-X-X-X drawing	drawing	DWG TS-1187A-X-X-X rev A0	auto	https://atta.szlcsc.com/upload/public/pdf/source/20211011/CF465E46D2427DB66E133733EF19F823.pdf	9dd316d0d7b5a447d2116375ccd7eb3ffa405bda658e03b08df3dfe562eb766d
 xkb-ts-1187a-spec.pdf	SW1-SW12	XKB TS-1187A product spec	datasheet	SP-A0162-41, 2024-08-19	auto	https://www.ickey.cn/static-pf/datasheet/41/66/b9e0/4166b9e0a0b21fd51f6971764e2d1164.pdf	
 xkb-ts-1187a-c-c-b-lcsc.pdf	SW1-SW12	XKB TS-1187A-C-C-B, LCSC copy	datasheet		hand	https://www.lcsc.com/product-detail/C318889.html	
 vishay-tsal6200.pdf	D1	Vishay TSAL6200 IR LED	datasheet		auto	https://www.vishay.com/docs/81010/tsal6200.pdf	
