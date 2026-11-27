@@ -20,3 +20,8 @@ Start with `CLAUDE.md` for how the repo works, and
    buttons might need soldering at home.
 5. Enclosure rev A: printed shell around rev A, fit checks as tests.
 6. Firmware for rev A: key scan, sleep, pairing button, battery report.
+
+## Licence
+
+Hardware under CERN-OHL-P-2.0, software under MIT, documents under
+CC-BY-4.0. `LICENSE.md` says which files are which.
