@@ -17,6 +17,15 @@ Main first, then each pull request; newest commit first.
 
 # pr-5
 
+## 2026-11-27-1420-341aa33
+
+![board-bottom](pr-5/2026-11-27-1420-341aa33/board-bottom.png)
+![board-iso](pr-5/2026-11-27-1420-341aa33/board-iso.png)
+![board-top](pr-5/2026-11-27-1420-341aa33/board-top.png)
+![layout-bottom](pr-5/2026-11-27-1420-341aa33/layout-bottom.png)
+![layout-top](pr-5/2026-11-27-1420-341aa33/layout-top.png)
+![schematic-antuna-remote](pr-5/2026-11-27-1420-341aa33/schematic-antuna-remote.png)
+
 ## 2026-11-27-0927-84beafe
 
 ![board-bottom](pr-5/2026-11-27-0927-84beafe/board-bottom.png)
