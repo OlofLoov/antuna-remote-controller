@@ -138,6 +138,9 @@ ANTENNA_BAND = (LEFT - 1.0, MODULE_TOP - 1.0, MODULE_RIGHT + 3.5, KEEPOUT_BOTTOM
 # Ground only from there to the receiver's pads, level with the antenna, so
 # the ground Raytac asks for to the module's right is not cut by tracks.
 BESIDE_ANTENNA = (ANTENNA_BAND[2], TOP - 1.0, 26.4, KEEPOUT_BOTTOM)
+# From there to 15 mm from the module the receiver and its filter are on the top
+# layer, so the bottom layer carries the ground on: no tracks on it.
+UNDER_RECEIVER = (BESIDE_ANTENNA[2], TOP - 1.0, MODULE_RIGHT + 15.5, KEEPOUT_BOTTOM)
 # Inside the module's pad ring: ground pour and ground vias only, as in
 # Raytac's drawing. The inner pads 40 and 41 are not connected.
 MODULE_BODY = (U1_X - 3.75, KEEPOUT_BOTTOM, U1_X + 3.75, U1_Y + 5.75)
@@ -377,10 +380,11 @@ def ground_and_keepout(board):
 
     rule_area(board, "antenna no-ground area", ANTENNA_KEEPOUT, fill=False, tracks=False, vias=False)
     rule_area(board, "antenna band", corners(ANTENNA_BAND), tracks=False, vias=False)
-    # Vias stay allowed in the next three so ground vias can go in; the
+    # Vias stay allowed in the next four so ground vias can go in; the
     # project's .kicad_dru keeps signal vias out, and with no tracks
     # allowed the router has no way in.
     rule_area(board, "ground beside the antenna", corners(BESIDE_ANTENNA), tracks=False)
+    rule_area(board, "ground under the receiver", corners(UNDER_RECEIVER), tracks=False, layers=[pcbnew.B_Cu])
     rule_area(board, "module body", corners(MODULE_BODY), tracks=False)
     rule_area(board, "under the module", corners(UNDER_MODULE), tracks=False, layers=[pcbnew.B_Cu])
     rule_area(board, "under the crystal", corners(CRYSTAL), tracks=False, layers=[pcbnew.B_Cu])

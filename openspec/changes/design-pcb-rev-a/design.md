@@ -37,7 +37,7 @@ at 2.0 V.
 | U1 | Raytac AN54LQ-15, nRF54L15 module, chip antenna | VDD 1.7 to 3.6 V, reset needs at least 1.75 V; 13.7 x 9.5 x 1.8 mm (Nordic's list says 2.05 mm); 31 GPIO; FCC SH6AN54LQ, IC 8017A-AN54LQ, EU and UKCA declarations; System ON idle with RTC and 64 KB RAM 1.5 µA. Datasheet v1.3, raytac.com | C49419243, extended, Standard PCBA with X-ray | Raytac MDBT42Q-512KV2 (nRF52832), C2828282, 16 x 10 x 2.2 mm, no UKCA declaration |
 | L1 | Murata LQM18PN4R7MFRL, 4.7 µH 20 %, 0603, between DCC (pad 9) and DECD (pad 8) | Raytac reference circuit, datasheet v1.3 section 8. Without L1 the chip stays in LDO mode, which Nordic does not support for low power. 620 mA and 550 mOhm, against the 120 mA and at most 650 mOhm of the inductor in Nordic's reference design. Multilayer and shielded, beside the crystal | C114862, extended | |
 | C2 | Samsung CL05A475MP5NRNC, 4.7 µF 10 V X5R, 0402, on VDD_NRF (pad 11) | Raytac reference circuit (their C10). DECD's 2.2 µF is inside the module | C23733, basic | |
-| Y1 | ECS ECS-.327-7-34B-C-TR, 32.768 kHz, 3.2 x 1.5 mm, on XL1/XL2 (pads 12, 13), no load capacitors | The SDK expects it. 7 pF load and 70 kOhm series resistance, inside what the nRF54L15's oscillator takes (6 to 9 pF, at most 100 kOhm, Nordic's product specification, to recheck against the PDF). The chip sets the load with its internal capacitors, which is why Raytac's reference marks both load capacitors NC; the board has no footprints for them, so the crystal's tracks have no stubs. Firmware sets the internal load to 7 pF less about 1 pF of pad and track. The cheapest 3215 crystal at LCSC, Epson's C32346, is 12.5 pF and out of range | C2450085, extended | HCI FC31M2-32.768-N07LLDTL, 7 pF, C5120558 |
+| Y1 | ECS ECS-.327-7-34B-C-TR, 32.768 kHz, 3.2 x 1.5 mm, on XL1/XL2 (pads 12, 13), no load capacitors | The SDK expects it. 7 pF load and 70 kOhm series resistance, 1.05 pF shunt and up to 1.0 µW drive, inside what the nRF54L15's oscillator takes: 6 to 9 pF load, at most 100 kOhm, at most 2.0 pF shunt, and it drives at most 0.5 µW (Nordic's datasheet, table "32.768 kHz crystal oscillator (LFXO)", read 2026-11-27). The chip sets the load with its internal capacitors, which is why Raytac's reference marks both load capacitors NC; the board has no footprints for them, so the crystal's tracks have no stubs. The internal capacitors go from 3 to 18 pF in 0.65 pF steps; firmware asks for 7 pF less about 1 pF of pad and track. The cheapest 3215 crystal at LCSC, Epson's C32346, is 12.5 pF and out of range | C2450085, extended | HCI FC31M2-32.768-N07LLDTL, 7 pF, C5120558 |
 | SW1 to SW12 | XKB TS-1187A-C-C-B tactile switch, 260 gf | 2.6 N, inside the 1.5 to 3.0 N requirement with margin either side; 5.1 x 5.1 mm body, 1.7 mm high (height code C), round 2.0 mm brass stem, travel 0.2 mm (XKB drawing TS-1187A-X-X-X rev A0). Pads A and B are one contact, C and D the other. KiCad's `SW_Push_1P1T_XKB_TS-1187A` matches the drawing: four 1.0 x 0.75 mm pads, 7.0 and 5.0 mm across their outer and inner edges, 4.5 and 3.0 mm the other way. 260 gf and 300,000 cycles (XKB spec SP-A0162-53) | C318889 | XKB TS-1187A-B-A-B, 160 gf (1.57 N, too close to the 1.5 N floor), C318884, basic part |
 | D1 | Vishay TSAL6200, 5 mm, 940 nm, laid flat at the top edge | Half angle 17 degrees; 72 mW/sr typical, 40 min at 100 mA; forward voltage 1.35 V typical, 1.6 V max at 100 mA; pulse rating covers 170 mA at 1/3 duty. About 12 m typical, 8.9 m worst case | C55528, extended, through hole | Vishay VSMB2948SL side-looking SMD, C6604342, about 6.3 m typical and 4.5 m worst case, short of 5 m |
 | R1 | 10 Ohm, 0805, 125 mW | About 170 mA at 3.2 V and 65 mA at 2.0 V through D1. 0.3 W during a carrier pulse and about 0.1 W averaged over a burst at 1/3 duty, so 0805, not 0603. A gate stuck high would put about 180 mA through D1 for good, over its 100 mA continuous rating: firmware drives the pin only from the PWM and R2 holds it low otherwise | C17415, basic | |
@@ -49,7 +49,7 @@ at 2.0 V.
 | R4, C5 | 100 Ohm 0603 in series to VS, 4.7 µF 0402 (as C2) from VS to ground | Vishay's recommended supply filter (application circuit, document 82906), under U2's pads | C22775 and C23733, basic | |
 | R5 | 4.7 kOhm 0603, OUT pull-up to the pin that powers U2 | Vishay's recommended pull-up for fast edges and a clean high level; output sinks at most 5 mA. It returns to the pin side of R4, so its 0.4 mA while OUT is low does not drop VS across R4 | C23162, basic | |
 | D2 | Kingbright APTD1608LSECK/J4-PF, orange, 0603 | Forward voltage 1.8 V typical, 2.1 V max at 2 mA, bright at low current | C5879215, extended | Kingbright APTD1608LCGCK yellow-green, C5342733, about 50 times dimmer |
-| R3 | 330 Ohm, 0603 | About 1.2 mA at 2.2 V and 4 mA at 3.2 V with a typical LED. The pin is on P2, which has no PWM, so firmware evens out the brightness by switching the pin from a timer | C23138, basic (LCSC's own stock was 0 on 2026-11-27) | |
+| R3 | 330 Ohm, 0603 | About 1.2 mA at 2.2 V and 4 mA at 3.2 V with a typical LED. The pin is on P2, which has no PWM, so firmware evens out the brightness by switching the pin from a timer | C23138, basic (LCSC's own stock was 0 on 2026-11-27) | Yageo RC0603FR-07330RL, C105881, 7.1 million in stock on 2026-11-27 |
 | BT1 | Two plated 1.0 mm holes on 11.5 mm centers for wires from the battery contacts. The contacts sit in the shell: Keystone 5204 (negative) and 5226 (positive) by the board, a 5213 or 5214 bridge at the far end | The contact plates stand at right angles to the board, so the shell holds them and takes the springs' push (`define-keys-and-layout` decision 3). 49.5 mm between the plates for AAA (Keystone catalog page 42). PCB-mount AAA spring contacts are 11 to 20 mm tall, too tall for a 14 mm battery end | contacts not stocked, buy from Digi-Key | Keystone 230-1 board-edge contact, mounting to confirm |
 | J1 | Tag-Connect TC2030-NL footprint | No part on the board; the TC2030-CTX-NL cable fits the DK's debug header. KiCad's `Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical` matches drawing TC2030-IDC-NL-FP rev B: six 0.787 mm pads at 1.27 mm, three 0.991 mm unplated holes, no paste. Layout rules from the drawing: no track or via between the pads, other copper 0.5 mm clear, which `antuna-remote.kicad_dru` checks. J1 and the test points are out of the BOM and placement file | none | 2 x 5 1.27 mm header |
 
@@ -89,9 +89,13 @@ pad sits on the module, so that no track has to pass under it:
 - Pads 27 to 39 face right, toward Power, the programming pads, the
   status light and the IR receiver, so the three P0 keys and the two P2
   outputs are there.
-- The two NFC pads both carry keys, which idle high together. Nordic warns
-  that the pads leak into each other when they sit at different levels, as
-  a key and the unpowered receiver's output would.
+- The two NFC pads both carry keys, which idle high together. Nordic's
+  datasheet (NFCT, "Pin configuration", read 2026-11-27) says to expect
+  "some increased leakage current between the two pins" when they sit at
+  different levels, as a key and the unpowered receiver's output would,
+  and that both must be at the same level before a power-saving mode. It
+  gives no figure. The pads have 5 pF each against 1 pF for other pins,
+  which a key does not notice.
 
 Module pads, from the AN54LQ datasheet v1.3 pin table and reference
 circuit: P1.09 to P1.14 on pads 2 to 7, P1.00 and P1.01 (crystal) on 12
@@ -102,7 +106,9 @@ DECD 8; GND on 1, 10, 14, 26, 42 and 43.
 
 What the firmware must do because of this board:
 
-- Set the NFC pads to GPIO (`nfct-pins-as-gpios` in the devicetree).
+- Set the NFC pads to GPIO (`nfct-pins-as-gpios` on the devicetree's
+  `nfct` node). They are NFC pads after reset. Pull both key lines the
+  same way, so they sleep at the same level.
 - Use high drive on P2.09 and P2.10. A standard-drive pin only promises
   0.5 mA at 0.4 V below the supply, and U2 with its filter needs more
   (decision 4).
@@ -190,15 +196,17 @@ are clipped to 0.5 mm, which is what the ribs are for.
 - Rule areas: the T (no pour, tracks or vias); a band across the antenna
   end from the left edge to 3.5 mm right of the module (no tracks or
   vias); from there to the IR receiver's pads, level with the antenna
-  (no tracks); the inside of the pad ring (no tracks); the whole module
-  outline plus 0.5 mm on the bottom layer (no tracks); and under the
-  crystal on the bottom layer (no tracks). `antuna-remote.kicad_dru`
-  lets DRC pass only ground vias under the module and beside the
-  antenna. Measured on the routed board: no pour in the T, no track
-  under the module or in the band, and from the module's right edge
-  10 mm of unbroken ground on both layers level with the antenna. Past
-  that the receiver's three tracks cross it, so within Raytac's 15 mm
-  the top layer is 73 % ground and the bottom 93 %.
+  (no tracks); on to 15.5 mm from the module, under the receiver, on the
+  bottom layer (no tracks); the inside of the pad ring (no tracks); the
+  whole module outline plus 0.5 mm on the bottom layer (no tracks); and
+  under the crystal on the bottom layer (no tracks). `antuna-remote.kicad_dru`
+  lets DRC pass only ground vias under the module, beside the antenna
+  and under the receiver. Measured on the routed board: no pour in the
+  T, no track under the module or in the band, and from the module's
+  right edge 15 mm of unbroken ground on the bottom layer level with
+  the antenna. The top layer is unbroken for the first 10 mm; in the
+  last 5 mm it carries the receiver's pads, its filter and the short
+  tracks between them, with pour around them.
 - The module's supply and crystal pads (8 to 13) face the left edge, 5 mm
   away. L1, C2 and Y1 sit beside their own pads there, and
   `build_board.py` draws their tracks: the crystal's are 1.6 and 3.4 mm
@@ -351,6 +359,11 @@ not diff in git.
   module. Raytac's drawing shows nothing there. Raytac reviews layouts
   for free (sales@raytac.com); the board goes to them before any order
   (task 5.2c), with that question.
+- The IR receiver and its filter sit on the top layer in the last 5 mm of
+  the 15 mm of ground Raytac asks for right of the module. The bottom
+  layer is unbroken ground under them. Moving the receiver out would put
+  it behind the shell's rounded corner. The same review gets that
+  question.
 - The crystal sits 2 mm from the DC/DC inductor. The inductor is
   shielded and the converter runs far above 32 kHz; the bench checks
   that the crystal starts and holds its frequency with the radio on.

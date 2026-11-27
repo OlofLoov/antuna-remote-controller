@@ -9,6 +9,9 @@
 (rule "only ground vias beside the antenna"
 	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('ground beside the antenna')")
 	(constraint disallow via))
+(rule "only ground vias under the receiver"
+	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('ground under the receiver')")
+	(constraint disallow via))
 
 # Tag-Connect's drawing TC2030-IDC-NL-FP rev B, note 2: no other copper
 # within 0.020 in of a contact pad.
