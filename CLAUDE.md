@@ -26,7 +26,7 @@ kicad-cli pcb drc --schematic-parity --severity-error --exit-code-violations har
 scripts/fetch-kicad-models.sh              # copy a new footprint's KiCad 3D model into hardware/pcb/lib/models/kicad (committed)
 python3 hardware/pcb/lib/models/make_models.py   # bodies drawn from datasheets for parts without a usable model
 scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
-scripts/build-mockup.sh                    # grip mock-up as STEP and STL in hardware/enclosure/out (build123d 0.13.0 through uv, `brew install uv`)
+scripts/build-mockup.sh                    # shell prototype as STEP and STL in hardware/enclosure/out, and the board checked against it (build123d 0.13.0 through uv, `brew install uv`)
 scripts/render.sh out                      # schematic, board and enclosure PNGs; CI does this per commit (renders branch)
 scripts/update-renders.sh                  # redraw docs/renders; commit it with any change to the schematic, board, library or enclosure
 ```

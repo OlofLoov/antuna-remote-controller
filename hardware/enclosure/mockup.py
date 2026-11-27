@@ -1,17 +1,22 @@
-"""Grip mock-up of the Antuna Remote: the outer shape with key bumps, to
-print and hold. Not the enclosure: no board, no switches, no battery door.
+"""Shell prototype of the Antuna Remote: three printed parts that screw
+together around the board, to judge the grip, the joint and the battery door.
 
     scripts/build-mockup.sh            # writes hardware/enclosure/out/
 
-It prints as two parts, each flat on the bed with no supports: the back
-(body and battery bulge) and the front (key face, head and keys). Two AAA
-cells go in the back's pockets before the parts are joined, so the mock-up
-weighs and balances like the remote. Four bits of 1.75 mm filament in the
-2 mm holes line the parts up; glue or tape holds them.
+- front: the key face, the head and the side walls down to the board's top.
+  The keys are bumps on it, not moving caps.
+- back: the rest of the body, with a pocket for the board, a bay for two
+  AAA cells and six counterbored holes for M2 x 5 self-tapping screws.
+- door: the battery door. Two tabs hook in at the bottom end and a sprung
+  bar snaps in at the other.
+
+Each part prints flat on the bed with its outside up and no supports. The
+bay is 45 mm long so bare cells sit still; the real bay is longer and has
+spring contacts.
 
 Shape and sizes are openspec/changes/define-keys-and-layout/design.md,
-decisions 1, 2, 3 and 12. Key positions come from the board's placement
-file, in shell coordinates (x from the left, y from the top, in mm).
+decisions 1, 2, 3, 10, 11 and 12. Key and screw positions come from the
+board, in shell coordinates (x from the left, y from the top, in mm).
 """
 
 import csv
@@ -26,28 +31,50 @@ from build123d import (
 
 WIDTH, LENGTH = 40.0, 154.0
 CORNER = 11.0          # front view, all four corners
-END_R = 3.0            # side view, both ends
-BODY = 5.9             # thickness over the keys, front face at z = 0
+BODY = 9.0             # thickness over the keys, front face at z = 0
+BATTERY = 14.0         # thickness at the battery end
+SWELL = (64.0, 96.0)   # the back swells from BODY to BATTERY between these
 HEAD_RISE = 4.2        # the head stands this far above the key face
-HEAD_END, HEAD_SLOPE = 16.0, 3.0     # head is flat to 16 mm, down to the key face at 19
-BULGE_START, BULGE_SLOPE = 96.0, 5.0  # the back slopes out from 96 to 101 mm
-BATTERY = 13.5         # thickness at the battery end
-CAP = 1.5              # caps stand this far above the key face
-SPLIT = -1.2           # the front part is the 1.2 mm front wall and what is on it
-EDGES = (2.0, 1.5, 1.0)  # rounding of the outer edges, the largest that builds
+HEAD_END, HEAD_SLOPE = 16.0, 4.5     # head is flat to 16 mm, down to the key face at 20.5
+SHOULDER = 6.0         # rounding of the back's edges, the part the palm holds
+FRONT_EDGE = 1.5       # rounding of the front's edges
+CAP = 1.5              # key bumps stand this far above the key face
+WALL = 1.6             # side walls
+FACE = 1.2             # front wall, over the switches
 
-# Board top above the back face (wall, ribs, board), and the IR parts' axes
-# 3 mm above that.
-IR_Z = -BODY + 1.2 + 0.5 + 1.0 + 3.0
+# Inside, from the key face down: front wall, 0.3 mm clear, the 1.7 mm
+# switches, then the board. The two halves meet at the board's top.
+SPLIT = -(FACE + 0.3 + 1.7)
+BOARD = 1.0
+BOARD_GAP = 0.2        # around the board's edge
+BOARD_END = 100.0      # the board's bottom edge
+RIB = 0.5              # the board rests this far off the back's floor
+LEDGE = 0.8            # width of the step the board's edge rests on
+RIBS_Y = (30.0, 42.0, 54.0, 66.0, 78.0, 90.0)
+
+# M2 x 5 self-tapping screws from the back: 1.5 mm under the head, through
+# the board, 2.5 mm into a boss in the front half.
+SCREW_SEAT = SPLIT - BOARD - 1.5
+SCREW_CLEAR, SCREW_HEAD, SCREW_PILOT, BOSS = 2.3, 4.2, 1.7, 4.6
+BOARD_SCREWS = [(35.0, 25.0), (5.0, 52.0), (35.0, 68.0), (5.0, 82.0)]   # HOLES in build_board.py
+END_SCREWS = [(4.6, 143.0), (35.4, 143.0)]
+
+# The IR parts' axes are 3 mm above the board.
+IR_Z = SPLIT + 3.0
 # The placement file gives D1's pad 1; its lens axis is one lead away.
 IR_LED_AXIS = -1.27
 IR_HOLES = {"D1": 6.0, "U2": 4.5}
 
 CELL_D, CELL_L = 10.5, 44.5
 CELL_PITCH = 11.5
-CELL_Y = 104.0         # top of the cells' pockets
-PIN_D = 2.0
-PINS = [(8.0, 10.0), (16.0, 6.0), (5.0, 143.0), (35.0, 143.0)]
+BAY_Y = (101.5, 146.5)
+BAY_W = CELL_PITCH + CELL_D + 0.8
+DOOR = 1.6             # door thickness, flush with the back
+DOOR_X = (7.6, 32.4)
+DOOR_Y = (100.0, 147.5)
+FIT = 0.2              # gap around the door
+SPRING = 1.1           # the sprung bar at the door's top edge
+NOSE = 0.4             # radius of the bar's snap, half of it stands out
 
 
 def at(x, y, z=0.0):
@@ -55,50 +82,70 @@ def at(x, y, z=0.0):
     return Pos(x, -y, z)
 
 
-def by_ref(path):
+def rows(path):
     with open(path, newline="") as f:
-        return {row["Ref"]: (float(row["PosX"]), -float(row["PosY"])) for row in csv.DictReader(f)}
+        return list(csv.DictReader(f))
+
+
+def by_ref(path):
+    return {row["Ref"]: (float(row["PosX"]), -float(row["PosY"])) for row in rows(path)}
 
 
 def by_value(path):
-    with open(path, newline="") as f:
-        return {row["Val"]: (float(row["PosX"]), -float(row["PosY"])) for row in csv.DictReader(f)}
+    return {row["Val"]: (float(row["PosX"]), -float(row["PosY"])) for row in rows(path)}
 
 
-def body():
-    """Side profile swept across the width, cut to the front outline."""
-    profile = [
-        (0, HEAD_RISE), (HEAD_END, HEAD_RISE), (HEAD_END + HEAD_SLOPE, 0), (LENGTH, 0),
-        (LENGTH, -BATTERY), (BULGE_START + BULGE_SLOPE, -BATTERY), (BULGE_START, -BODY), (0, -BODY),
-    ]
+def box(x, y, z):
+    """A box from (x0, x1), (y0, y1) in shell coordinates and (z0, z1)."""
+    return at(x[0], y[0], z[0]) * Box(x[1] - x[0], y[1] - y[0], z[1] - z[0],
+                                       align=(Align.MIN, Align.MAX, Align.MIN))
+
+
+def column(inset=0.0):
+    """The front outline, moved inset mm inwards, as a tall prism."""
+    with BuildSketch() as outline:
+        RectangleRounded(WIDTH - 2 * inset, LENGTH - 2 * inset, CORNER - inset)
+    return at(WIDTH / 2, LENGTH / 2) * extrude(outline.sketch, amount=40, both=True)
+
+
+def slab(front=True, back=True):
+    """The side profile swept across the width. With front or back off,
+    that face is left far away."""
+    far = 30.0
+    top = [(-5, HEAD_RISE), (HEAD_END, HEAD_RISE), (HEAD_END + HEAD_SLOPE, 0), (LENGTH + 5, 0)]
+    bottom = [(LENGTH + 5, -BATTERY), (SWELL[1], -BATTERY), (SWELL[0], -BODY), (-5, -BODY)]
+    if not front:
+        top = [(-5, far), (LENGTH + 5, far)]
+    if not back:
+        bottom = [(LENGTH + 5, -far), (-5, -far)]
     # Drawn with x down the remote and y to the front, then stood on the
     # plane x = 0 and swept across the width.
-    face = Polygon(*profile, align=None)
+    face = Polygon(*top, *bottom, align=None)
 
     def corners(points):
         return [v for v in face.vertices()
                 if any(abs(v.X - x) < 1e-6 and abs(v.Y - y) < 1e-6 for x, y in points)]
 
-    face = fillet(corners(profile[:1] + profile[3:5] + profile[7:]), END_R)
-    face = fillet(corners(profile[1:3] + profile[5:7]), 2.0)
+    if front:
+        face = fillet(corners(top[1:3]), 3.0)
+    if back:
+        face = fillet(corners(bottom[1:3]), 40.0)
     side = Plane(origin=(0, 0, 0), x_dir=(0, -1, 0), z_dir=(-1, 0, 0))
-    slab = side.location * extrude(face, amount=WIDTH)
-    slab = Pos(-slab.bounding_box().min.X, 0, 0) * slab
-    with BuildSketch() as outline:
-        RectangleRounded(WIDTH, LENGTH, CORNER, align=(Align.MIN, Align.MAX))
-    column = extrude(outline.sketch, amount=40, both=True)
-    solid = slab & column
-    for radius in EDGES:
-        try:
-            return fillet(solid.edges().filter_by(lambda e: e.length > 20), radius)
-        except ValueError:
-            continue
-    print("edges left sharp", file=sys.stderr)
-    return solid
+    solid = side.location * extrude(face, amount=WIDTH + 10)
+    return Pos(-solid.bounding_box().min.X - 5, 0, 0) * solid
+
+
+def body():
+    """The outside: the outline cut to the side profile, edges rounded."""
+    solid = column() & slab()
+    back = [e for e in solid.edges() if e.bounding_box().max.Z < -BODY + 0.01]
+    solid = fillet(back, SHOULDER)
+    front = [e for e in solid.edges() if e.bounding_box().min.Z > -0.01]
+    return fillet(front, FRONT_EDGE)
 
 
 def cap(shape):
-    """A key cap: the sketch pushed up from just under the key face."""
+    """A key bump: the sketch pushed up from just under the key face."""
     solid = extrude(shape, amount=CAP + 0.2)
     solid = fillet(solid.edges().group_by(Axis.Z)[-1], 0.4)
     return Pos(0, 0, -0.2) * solid
@@ -121,59 +168,116 @@ def keys(pos):
     return parts
 
 
+def rod(x, y, z0, z1, dia):
+    return at(x, y, z0) * Cylinder(dia / 2, z1 - z0, align=(Align.CENTER, Align.CENTER, Align.MIN))
+
+
+def front_part(shell, pos, ref):
+    half = Box(200, 400, 100, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    front = shell & (Pos(0, 0, SPLIT) * half)
+    # Hollow, with the front wall following the head.
+    room = column(WALL) & (Pos(0, 0, -FACE) * slab(back=False)) & (Pos(0, 0, SPLIT - 1) * half)
+    # Power's recess is a cup that reaches down into the room.
+    cup = rod(*pos["Power"], -FACE, HEAD_RISE, 9.4)
+    room -= cup
+    for x, y in BOARD_SCREWS + END_SCREWS:
+        room -= rod(x, y, SPLIT, 0, BOSS)
+    front -= room
+    front -= rod(*pos["Power"], 0, HEAD_RISE + 1, 7.6)
+    # Status light: a dimple in the head.
+    front -= at(*ref["D2"], HEAD_RISE) * Cylinder(1.0, 0.8)
+    # IR openings through the top wall.
+    for part, dia in IR_HOLES.items():
+        x = ref[part][0] + (IR_LED_AXIS if part == "D1" else 0.0)
+        front -= at(x, 0, IR_Z) * Rot(90, 0, 0) * Cylinder(dia / 2, 6.0)
+    for key in keys(pos):
+        front += key
+    for x, y in BOARD_SCREWS + END_SCREWS:
+        front -= rod(x, y, SPLIT - 1, SPLIT + 2.5, SCREW_PILOT)
+    return front
+
+
+def back_part(shell):
+    half = Box(200, 400, 100, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    back = shell - (Pos(0, 0, SPLIT) * half)
+    above_board_end = box((-5, WIDTH + 5), (-5, BOARD_END + BOARD_GAP), (-50, 50))
+    # The board's pocket, then a shallower room under it. The step between
+    # them and the ribs carry the board.
+    back -= column(2.0 - BOARD_GAP) & above_board_end & box((-5, 45), (-5, 160), (SPLIT - BOARD, SPLIT + 1))
+    floor = SPLIT - BOARD - RIB
+    under = column(2.0 + LEDGE) & above_board_end & box((-5, 45), (-5, 160), (floor, SPLIT))
+    for y in RIBS_Y:
+        under -= box((0, WIDTH), (y - 0.6, y + 0.6), (floor, SPLIT - BOARD))
+    for x, y in BOARD_SCREWS:
+        under -= rod(x, y, floor, SPLIT - BOARD, 5.2)
+    # The IR LED's clipped leads stick out under the board at the top end.
+    under += column(2.0 + LEDGE) & box((-5, 45), (-5, 22), (floor - 1.2, SPLIT - BOARD))
+    back -= under
+    for x, y in BOARD_SCREWS + END_SCREWS:
+        back -= rod(x, y, SCREW_SEAT, SPLIT + 1, SCREW_CLEAR)
+        back -= rod(x, y, -BATTERY - 1, SCREW_SEAT, SCREW_HEAD)
+
+    # Battery bay, open to the front half and to the door.
+    ledge = -BATTERY + DOOR
+    mid = WIDTH / 2
+    back -= box((mid - BAY_W / 2, mid + BAY_W / 2), BAY_Y, (ledge - 1, SPLIT + 1))
+    back -= box(DOOR_X, DOOR_Y, (-BATTERY - 1, ledge))
+    for x0, x1 in door_tabs():
+        back -= box((x0 - FIT, x1 + FIT), (DOOR_Y[1] - 1, DOOR_Y[1] + 1.5), (ledge - 1.0, ledge))
+    # The groove the door's snap sits in, and two slots for a fingernail
+    # to get under the door's edge beside it.
+    back -= at(mid - 4.5, DOOR_Y[0], ledge - NOSE) * Rot(0, 90, 0) * Cylinder(
+        NOSE + 0.15, 9.0, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    for x0 in (mid - 10.5, mid + 5.5):
+        back -= box((x0, x0 + 5.0), (DOOR_Y[0] - 2.5, DOOR_Y[0] + 0.1), (-BATTERY - 1, ledge + 0.5))
+    return back
+
+
+def door_tabs():
+    mid = WIDTH / 2
+    return [(mid - 8.0, mid - 3.0), (mid + 3.0, mid + 8.0)]
+
+
+def door_part():
+    ledge = -BATTERY + DOOR
+    mid = WIDTH / 2
+    top = DOOR_Y[0] + FIT
+    door = box((DOOR_X[0] + FIT, DOOR_X[1] - FIT), (top, DOOR_Y[1] - FIT), (-BATTERY, ledge))
+    for x0, x1 in door_tabs():
+        door += box((x0, x1), (DOOR_Y[1] - FIT - 0.1, DOOR_Y[1] + 1.2), (ledge - 0.8, ledge))
+    # A slot leaves a bar along the top edge that bends back as the snap
+    # passes the shell's edge.
+    door -= box((mid - 11.0, mid + 11.0), (top + SPRING, top + SPRING + 1.0), (-BATTERY - 1, ledge + 1))
+    door += at(mid - 4.0, top, ledge - NOSE) * Rot(0, 90, 0) * Cylinder(
+        NOSE, 8.0, align=(Align.CENTER, Align.CENTER, Align.MIN))
+    return door
+
+
 def build(placement):
     pos, ref = by_value(placement), by_ref(placement)
     shell = body()
-    # Power sits in a recess in the head, down to the key face.
-    shell -= at(*pos["Power"]) * Cylinder(4.0, HEAD_RISE + 1, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    # Status light: a dimple in the head.
-    shell -= at(*ref["D2"], HEAD_RISE) * Cylinder(1.0, 0.8)
-    # IR openings in the top wall, 2 mm deep.
-    for part, dia in IR_HOLES.items():
-        x = ref[part][0] + (IR_LED_AXIS if part == "D1" else 0.0)
-        shell -= at(x, 0, IR_Z) * Rot(90, 0, 0) * Cylinder(dia / 2, 4.0)
-    for key in keys(pos):
-        shell += key
-
-    # Cut in two at the back of the front wall.
-    half = Box(200, 400, 100, align=(Align.CENTER, Align.CENTER, Align.MIN))
-    front = shell & (Pos(0, 0, SPLIT) * half)
-    back = shell - (Pos(0, 0, SPLIT) * half)
-
-    # Pockets for two real AAA cells, open to the split face.
-    r = CELL_D / 2 + 0.2
-    axis_z = SPLIT - 0.3 - CELL_D / 2
-    for side in (-1, 1):
-        x = WIDTH / 2 + side * CELL_PITCH / 2
-        y = CELL_Y + (CELL_L + 1.0) / 2
-        back -= at(x, y, axis_z) * Rot(90, 0, 0) * Cylinder(r, CELL_L + 1.0)
-        back -= at(x, y, axis_z) * Box(2 * r, CELL_L + 1.0, 2 * (SPLIT - axis_z),
-                                       align=(Align.CENTER, Align.CENTER, Align.MIN))
-    # Holes for filament pins across the split.
-    for x, y in PINS:
-        back -= at(x, y, SPLIT) * Cylinder(PIN_D / 2, 8.0)
-        front -= at(x, y, SPLIT) * Cylinder(PIN_D / 2, 6.0 if y < HEAD_END else 20.0)
-    return front, back
+    return front_part(shell, pos, ref), back_part(shell), door_part()
 
 
-def on_bed(front, back):
-    """Both parts as they print: split face down, side by side."""
+def on_bed(front, back, door):
+    """The parts as they print: outside up, side by side."""
     front = Pos(0, 0, -SPLIT) * front
     back = Pos(2 * WIDTH + 10, 0, SPLIT) * Rot(0, 180, 0) * back
-    return front, back
+    door = Pos(3 * WIDTH + 20, 0, -BATTERY + DOOR) * Rot(0, 180, 0) * door
+    return front, back, door
 
 
 def main():
     placement, out = Path(sys.argv[1]), Path(sys.argv[2])
     out.mkdir(parents=True, exist_ok=True)
-    front, back = on_bed(*build(placement))
-    for name, part in (("front", front), ("back", back)):
+    for name, part in zip(("front", "back", "door"), on_bed(*build(placement))):
         export_stl(part, str(out / f"mockup-{name}.stl"), tolerance=0.02, angular_tolerance=0.1)
         export_step(part, str(out / f"mockup-{name}.step"))
-        box = part.bounding_box()
-        print(f"{name}: {box.size.X:.1f} x {box.size.Y:.1f} x {box.size.Z:.1f} mm, "
-              f"{part.volume / 1000:.1f} cm3, bed face at z = {box.min.Z:.2f}")
-    print(f"wrote {out}/mockup-front and mockup-back, as .step and .stl")
+        size = part.bounding_box()
+        print(f"{name}: {size.size.X:.1f} x {size.size.Y:.1f} x {size.size.Z:.1f} mm, "
+              f"{part.volume / 1000:.1f} cm3, {len(part.solids())} solid, bed face at z = {size.min.Z:.2f}")
+    print(f"wrote {out}/mockup-front, -back and -door, as .step and .stl")
+
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the grip mock-up: two printable parts as STEP and STL in
+# Build the shell prototype: three printable parts as STEP and STL in
 # hardware/enclosure/out/. Key positions come from the board's placement
 # file, exported here. Needs uv (`brew install uv`); the Python packages
 # are pinned in hardware/enclosure/uv.lock.
@@ -14,6 +14,12 @@ trap 'rm -rf "$work"' EXIT
   -o "$work/placement.csv" hardware/pcb/antuna-remote/antuna-remote.kicad_pcb >/dev/null
 out="${1:-hardware/enclosure/out}"
 uv run --project hardware/enclosure --frozen python hardware/enclosure/mockup.py "$work/placement.csv" "$out"
+# The board with its parts, to check it against the shell. The export
+# warns about the parts whose models are VRML; fit.py adds those.
+"$kicad" pcb export step --drill-origin --subst-models -f \
+  -o "$work/board.step" hardware/pcb/antuna-remote/antuna-remote.kicad_pcb >/dev/null 2>&1 || true
+[[ -s "$work/board.step" ]] || { echo "kicad-cli wrote no board.step" >&2; exit 1; }
+uv run --project hardware/enclosure --frozen python hardware/enclosure/fit.py "$work/board.step" "$work/placement.csv"
 if [[ -n "${RENDER_TO:-}" ]]; then
   uv run --project hardware/enclosure --frozen python hardware/enclosure/render.py "$work/placement.csv" "$RENDER_TO"
 fi

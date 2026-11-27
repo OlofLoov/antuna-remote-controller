@@ -1,4 +1,4 @@
-"""Draw the grip mock-up as PNGs: scripts/render.sh calls this with the
+"""Draw the shell prototype as PNGs: scripts/render.sh calls this with the
 placement file and the output folder."""
 
 import subprocess
@@ -15,6 +15,7 @@ VIEWS = {
     "front": ((60, -160, 260), (0, 1, 0)),
     "back": ((60, -160, -260), (0, 1, 0)),
     "side": ((400, -77, -4), (0, 0, 1)),
+    "inside": ((60, -160, 260), (0, 1, 0)),
 }
 
 
@@ -28,12 +29,14 @@ def draw(shape, origin, up, path):
 
 def main():
     placement, out = Path(sys.argv[1]), Path(sys.argv[2])
-    front, back = mockup.build(placement)
-    whole = Compound(children=[front, back])
+    front, back, door = mockup.build(placement)
+    whole = Compound(children=[front, back, door])
+    # The back half alone, seen from where the front half was.
+    shapes = {"inside": back}
     with tempfile.TemporaryDirectory() as tmp:
         for name, (origin, up) in VIEWS.items():
             svg = f"{tmp}/{name}.svg"
-            draw(whole, origin, up, svg)
+            draw(shapes.get(name, whole), origin, up, svg)
             subprocess.run(["rsvg-convert", "--width", "1600", "--background-color", "white",
                             "-o", str(out / f"enclosure-mockup-{name}.png"), svg], check=True)
 
