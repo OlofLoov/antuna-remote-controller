@@ -1,0 +1,13 @@
+[project]
+name = "antuna-remote-enclosure"
+version = "0"
+description = "The Antuna Remote's enclosure as build123d code"
+requires-python = "==3.12.*"
+dependencies = ["build123d==0.13.0"]
+
+[tool.uv]
+package = false
+required-environments = [
+    "sys_platform == 'darwin' and platform_machine == 'arm64'",
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]

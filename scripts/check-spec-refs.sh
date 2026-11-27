@@ -40,7 +40,7 @@ fi
 pattern="(^|[^a-z0-9/:-])($capabilities)/[a-z0-9][a-z0-9-]*"
 {
     grep -rhoE "$pattern" firmware --include='*.c' --include='*.h' --include='*.py' 2>/dev/null || true
-    grep -rhoE "$pattern" hardware --include='*.py' 2>/dev/null || true
+    grep -rhoE "$pattern" hardware --include='*.py' --exclude-dir=.venv 2>/dev/null || true
     grep -rhoE "$pattern" docs/bench --include='*.md' 2>/dev/null || true
 } | sed -E 's/^[^a-z]*//' | sort -u >"$cited"
 

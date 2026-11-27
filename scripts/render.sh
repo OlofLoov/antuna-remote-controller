@@ -2,7 +2,7 @@
 # Render the schematic, the board and the enclosure to PNGs in <outdir>.
 # Whatever does not exist yet is skipped: the board appears once
 # antuna-remote.kicad_pcb exists, the enclosure once hardware/enclosure/render.py
-# does. CI runs this on every commit (.github/workflows/renders.yml).
+# does (it needs uv). CI runs this on every commit (.github/workflows/renders.yml).
 set -euo pipefail
 
 out="${1:?usage: scripts/render.sh <outdir>}"
@@ -64,9 +64,11 @@ if [[ -f "$project.kicad_pcb" ]]; then
   rm -rf "$tmp"
 fi
 
-if [[ -f hardware/enclosure/render.py ]]; then
-  python3 hardware/enclosure/render.py "$out"
-  rendered=$((rendered + 1))
+if [[ -f hardware/enclosure/render.py && -f "$project.kicad_pcb" ]]; then
+  tmp="$(mktemp -d)"
+  RENDER_TO="$out" scripts/build-mockup.sh "$tmp" >/dev/null
+  rm -rf "$tmp"
+  rendered=$((rendered + 3))
 fi
 
 echo "rendered $rendered views into $out"
