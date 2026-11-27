@@ -28,6 +28,7 @@ python3 hardware/pcb/lib/models/make_models.py   # bodies drawn from datasheets 
 scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
 scripts/build-mockup.sh                    # grip mock-up as STEP and STL in hardware/enclosure/out (build123d 0.13.0 through uv, `brew install uv`)
 scripts/render.sh out                      # schematic, board and enclosure PNGs; CI does this per commit (renders branch)
+scripts/update-renders.sh                  # redraw docs/renders; commit it with any change to the schematic, board, library or enclosure
 ```
 
 On macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`.
@@ -53,6 +54,10 @@ Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 - The `renders` branch holds a PNG of the schematic, board and enclosure
   for every main and pull request commit, made by `.github/workflows/renders.yml`.
   It shares no history with main. Never commit to it by hand.
+- `docs/renders/` the same images for the commit you are on, committed, so
+  every commit and tag carries pictures of its own hardware. CI and the
+  pre-push hook fail when a source changed and the images did not
+  (`scripts/update-renders.sh --check`).
 - `docs/bench/` bench test logs: what was measured on real hardware, with
   the board revision, date, tvOS version and the requirements it covers.
 
