@@ -5,6 +5,15 @@ Main first, then each pull request; newest commit first.
 
 # main
 
+## 2026-11-27-1953-4381ade
+
+![board-bottom](main/2026-11-27-1953-4381ade/board-bottom.png)
+![board-iso](main/2026-11-27-1953-4381ade/board-iso.png)
+![board-top](main/2026-11-27-1953-4381ade/board-top.png)
+![layout-bottom](main/2026-11-27-1953-4381ade/layout-bottom.png)
+![layout-top](main/2026-11-27-1953-4381ade/layout-top.png)
+![schematic-antuna-remote](main/2026-11-27-1953-4381ade/schematic-antuna-remote.png)
+
 ## 2026-11-27-1953-3425ad4
 
 ![board-bottom](main/2026-11-27-1953-3425ad4/board-bottom.png)
