@@ -8,47 +8,79 @@ PCB exists, its placement export is the one source for key positions.
 
 ### 1. Layout, top to bottom
 
-Drawn in `boards/front.svg`, 40 by 150 mm:
+Drawn in `boards/front.svg`, 40 by 154 mm:
 
-- Top edge: IR window. Top face: status light at center, Power at upper
-  right, recessed in a ring.
-- D-pad ring, 30 mm across, with select in the middle, 14 mm across,
-  centered 36 mm from the top.
+- Top edge: two openings in the top wall, one for the IR LED and one for
+  the IR receiver (decision 12). Top face: status light at center, Power
+  at upper right, recessed in a ring.
+- D-pad, 30 mm across, one ring that tilts onto four switches, with select
+  in the middle, 13 mm across with a 0.4 mm gap to the ring, centered
+  36 mm from the top.
 - Back (round) at left and Home (rounded square) at right, 60 mm from the
   top, 20 mm apart.
 - Play/pause, 11 mm across, centered 73 mm from the top.
-- Mute (round) at left and a volume rocker, 9 by 20 mm, at right, around
-  90 mm from the top.
-- From 104 mm down: the battery bay, past the end of the PCB, no keys.
+- Mute (round) at left and a volume rocker, 9 by 20 mm, at right, both
+  centered 89 mm from the top. The rocker pivots at its middle, 5.5 mm
+  from each of its two switches, so up and down take the same force.
+- From 101 mm down: the battery bay, past the end of the PCB, no keys.
 
 Options considered: volume on the side edge (easy to press by accident
 when gripping, harder to print), and play/pause inside the d-pad ring
 (fewer keys to find but a crowded center). Both rejected.
 
-### 2. Profile: thin over the keys, thicker only where the cells are
+### 2. Profile: thin over the keys, a head for the IR parts, cells on the back
 
-At most 11 mm over the keys, caps included, rising to at most 14 mm at
-the battery end. The owner found 20 mm too chunky on 2026-11-25.
+Three thicknesses, all inside the limits of 11 mm over the keys and at the
+top end and 14 mm at the battery end. The owner found 20 mm too chunky on
+2026-11-25.
 
-The stack over the keys, bottom to top: 1.2 mm wall, 1.0 mm PCB with every
-part on the top side, about 2 to 2.5 mm for the module and the switches,
-1.2 mm top wall, and caps standing about 1.5 mm proud. That is about
-8.5 to 9.5 mm, which leaves margin under 11 mm. The final numbers come
-from the parts picked in the PCB change.
+- Over the keys, about 6 mm of body and 7.5 mm with the caps: 1.2 mm back
+  wall, 0.5 mm of ribs under the board (the IR LED's clipped leads stick
+  out there), 1.0 mm PCB with every part on the top side, 1.7 mm switches,
+  0.3 mm clearance, 1.2 mm front wall, caps 1.5 mm proud.
+- The head, the top 18 mm, about 10 mm: the IR LED lies flat on the board
+  and its 5.8 mm flange, centered 3.0 mm above the board, reaches 5.9 mm
+  up; the receiver stands 5.3 mm. With the same back wall and ribs that is
+  1.7 + 1.0 + 5.9 + 0.3 + 1.2 = 10.1 mm. The extra 4.2 mm rises on the
+  front, since the parts sit on the board's top side. Power sits in the
+  head, which is how it ends up below the surface around it.
+- The battery end, 13.5 mm: a 10.5 mm cell, two 1.2 mm walls and 0.6 mm of
+  clearance. The extra rises on the back, so the key face stays flat down
+  to the end and the hand's palm fills the step.
 
-### 3. Batteries beside the PCB, not under it
+Options considered for the IR parts: a body 10 mm thick all the way with
+caps 0.8 mm proud (simplest shell, but thick in the hand and caps too low
+to find by touch), and the two IR parts on the board's bottom side so the
+head rises on the back (a flat front, but a second assembly side for one
+part). Both rejected.
+
+### 3. Batteries past the PCB's end, contacts held by the shell
 
 An AAA cell is 10.5 mm across, so any cell under the PCB sets the
-thickness at about 18 mm or more. The cells instead lie side by side in
-the bottom 46 mm, past the end of the PCB: 10.5 mm plus two 1.2 mm walls
-and clearance gives about 13.5 mm there. The PCB stops at the battery
-bay. Spring contacts on the PCB's bottom edge meet one end of the cells,
-and a bridge contact in the battery door joins the far ends in series.
+thickness at about 18 mm or more. The cells instead lie side by side past
+the end of the PCB, on 11.5 mm centers.
+
+Length, from Keystone's catalog page 42: contacts 5204 and 5226 at one end
+and the bridge 5213 at the other need 49.5 mm between their plates for an
+AAA cell. With the plates' 0.5 mm each, a 1 mm rib behind the contacts and
+a 2.5 mm end wall, the bay takes 53 mm, from 101 mm to the end at 154 mm.
+The first draft had 46 mm in a 150 mm shell, shorter than the cells need.
+The bottom end's corners are 3 mm in the side view, not the 8 mm first
+drawn, so the bridge plate and the cells fit to the end.
+
+The contact plates stand across the cells, at right angles to the PCB, so
+they cannot lie on pads. Each plate slides into a slot in the shell, which
+takes the springs' push and a drop's knock. A short wire from each plate's
+tab goes to a plated hole in the PCB. The bridge sits in a slot in the end
+wall. The battery door is a sliding cover on the back and carries no
+contact, so a drop on the end does not load it.
 
 Options considered: cells under the PCB (about 18 to 20 mm, the first
-draft), and cells end to end along the back (a narrower body, about
-32 mm, but 10.5 mm of cell under most of the PCB, so thick for the whole
-length). Both rejected.
+draft), cells end to end along the back (a narrower body, about 32 mm, but
+10.5 mm of cell under most of the PCB), contact tabs bent onto pads at the
+PCB's edge (the solder joints would carry the springs through a 5.5 mm
+lever, and the cells would sit too high for 14 mm), and the bridge in the
+door (the door would carry both springs). All rejected.
 
 ### 4. Key mechanism: SMD tactile switches under printed caps
 
@@ -61,8 +93,16 @@ length). Both rejected.
 Tactile switches under printed caps. The switch sets the force, so the
 "every press clicks" range is met by choosing a switch rated in it, for
 example a 160 gf (1.6 N) or 250 gf (2.5 N) part. The part number is picked
-in the PCB change from the assembler's stock. A TPU membrane stays an
-option if the printed caps rattle.
+in the PCB change from the assembler's stock.
+
+The switch picked there travels 0.2 mm (plus or minus 0.1), about one
+printed layer, so a loose cap under the front wall would either rattle or
+hold its switch down. Each cap therefore gets a 0.8 mm flange under the
+front wall, a guide sleeve at least 3 mm long, a 1.8 mm nub on the
+switch's stem and a thin foam pad between nub and stem to take up the
+print's tolerance. The enclosure change tests that against one navy key
+mat with flexure webs, clamped between shell and board, which has no
+loose parts. A TPU membrane stays an option if both rattle.
 
 ### 5. Key repeat in firmware
 
@@ -79,8 +119,9 @@ one more part and a pinhole in the shell. Rejected.
 
 ### 7. Status light: one LED under a printed light pipe
 
-A single small LED behind a thin spot in the shell or a translucent PETG
-insert. Orange, not teal: teal and cyan LEDs need about 2.6 V or more and
+A single small LED under a translucent PETG light pipe, about 5 mm long,
+since the status light sits in the head where the front wall is 6 mm
+above the board. Orange, not teal: teal and cyan LEDs need about 2.6 V or more and
 stay dark on low cells, while a low-current orange LED lights at 2 mA
 with about 1.8 V across it (`docs/research/pcb-components/`). Colors and patterns: blinking for pairing mode, a short double
 blink on a press when the battery is low (see `define-power`). RGB was
@@ -89,9 +130,9 @@ considered and rejected: more parts, more firmware, little gain.
 ### 8. Not a Siri Remote
 
 The Siri Remote (2021) is about 36 by 136 by 9 mm, aluminum, with a
-clickpad. This remote is wider and longer, steps up to 14 mm at the
-battery end, is bright teal matte plastic, and has a separate-key d-pad
-and no touch surface. No Apple
+clickpad. This remote is wider and longer, has a raised head and steps up
+to 14 mm at the battery end, is bright teal matte plastic, and has a
+d-pad ring that clicks and no touch surface. No Apple
 names or glyphs: the Home key shows a generic TV glyph, not Apple's.
 
 ### 9. Colors: teal shell, navy keys, off-white select and symbols
@@ -113,10 +154,50 @@ wedge with key bumps at the board's positions, using build123d, to print
 and hold. It is not the enclosure: no PCB, no battery door. The real
 enclosure change replaces it and reads key positions from the PCB.
 
+### 11. Screws through the PCB
+
+Four M2 screws go through the back shell and unplated 2.2 mm holes in the
+PCB into bosses in the front shell, at 35/25, 5/52, 35/68 and 5/82 mm
+(x/y on the board). They locate the board and clamp it, so the board
+needs no notches. The top left corner has no screw, since steel beside
+the antenna detunes it: a printed hook holds that corner. The PCB sits
+2 mm inside the outline all round, room for a 1.2 mm wall and a 0.8 mm
+lap between the two shell halves.
+
+Clips alone were considered: no tools, but nothing clamps the board
+against the switches' push, and printed clips wear. Rejected.
+
+The shell opens with a screwdriver, and the programming pads face the
+front shell, so a finished remote is updated over Bluetooth, not by
+cable. The cable is for bare boards.
+
+### 12. IR openings in the top wall
+
+Printed PETG, dark or not, cannot be trusted to pass 940 nm, so the top
+wall has two holes: 6 mm for the IR LED, 23.1 mm from the left, whose lens
+sits in the hole, and 4.5 mm for the receiver, 30.2 mm from the left,
+chamfered to its 50 degree half angle. Both are centered 3 mm above the
+board. A saddle rib behind the LED's flange keeps it from being pushed
+in. One window of IR-pass acrylic across both was considered: a bought
+part cut to size and glued or clipped, against two printed holes.
+Rejected for rev A.
+
 ## Risks / Trade-offs
 
-- 11 mm over the keys depends on the module and switch heights. The PCB
-  change confirms the stack from datasheets before layout.
+- Nothing here has been held yet: tasks 1.2 and 2.1 to 2.3 are open. The
+  viewing keys span 70 mm, and a hand at the battery end covers mute and
+  volume with the base of the thumb. The paper cut-out and the printed
+  mock-up come before the enclosure change, and can move every key.
+- The head rises 4.2 mm above the key face 3 mm above the d-pad ring. If
+  it gets in the thumb's way, the fallback is the IR parts on the
+  board's bottom side.
+- Face down on a cushion, the caps stand 1.5 mm proud and can be pressed
+  through the remote's back; only Power is protected, by its recess. On
+  a firm surface the head keeps them clear. The mock-up tries the
+  buttons spec's face-down scenario.
+- No metallic or carbon-filled filament, and no metallic label, near the
+  top left corner: the antenna is there.
+
 - Printed caps can wobble in printed guides. The enclosure change sets
   clearances from test prints.
 

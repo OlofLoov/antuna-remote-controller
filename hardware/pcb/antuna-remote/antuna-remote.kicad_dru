@@ -1,8 +1,17 @@
 (version 1)
 
 # Raytac's layout drawing (AN54LQ datasheet v1.3, section 2.3) shows only
-# ground vias under the module. build_board.py's "module body" rule area
-# keeps tracks out; this keeps every other via out.
+# ground under the module and to its right. build_board.py's rule areas
+# keep tracks out; these keep every via but a ground via out.
 (rule "only ground vias under the radio module"
-	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('module body')")
+	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('under the module')")
 	(constraint disallow via))
+(rule "only ground vias beside the antenna"
+	(condition "A.Type == 'Via' && A.NetName != '/GND' && A.intersectsArea('ground beside the antenna')")
+	(constraint disallow via))
+
+# Tag-Connect's drawing TC2030-IDC-NL-FP rev B, note 2: no other copper
+# within 0.020 in of a contact pad.
+(rule "0.5 mm around the programming pads"
+	(condition "A.Type == 'Pad' && A.memberOfFootprint('J1') && !B.memberOfFootprint('J1')")
+	(constraint clearance (min 0.5mm)))

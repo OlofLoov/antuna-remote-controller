@@ -33,7 +33,7 @@ quiet() { "$@" 2> >(grep -v -e Fontconfig -e wxApp -e 'memory leak' >&2); }
 # route that leaves something unconnected needs a placement change.
 quiet "$python" "$finish" "$board" --export "$work/board.dsn"
 if ! "$java" -jar "$jar" -de "$work/board.dsn" -do "$work/board.ses" \
-  --router.autorouter.max_passes=100 --gui.enabled=false >"$work/freerouting.log" 2>&1; then
+  -mt 1 --router.autorouter.max_passes=100 --gui.enabled=false >"$work/freerouting.log" 2>&1; then
   cat "$work/freerouting.log" >&2
   echo "Freerouting failed; $board is still the placed board" >&2
   exit 1

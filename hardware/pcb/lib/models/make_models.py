@@ -80,7 +80,7 @@ def tsmp96000():
     black, lens, tin = "0.08 0.08 0.09", "0.15 0.12 0.18", "0.8 0.8 0.82"
     # Footprint y -0.89..2.01 is the body, so model y -2.01..0.89.
     parts = [box(0, -0.56, 2.65, 7.5, 2.9, 5.3, black)]
-    parts.append(prism((0, -2.56, 3.0), "y", 1.7, 1.1, lens))
+    parts.append(prism((0, -2.56, 2.8), "y", 1.7, 1.1, lens))
     for x in (-1.9, -0.63, 0.63, 1.9):
         parts.append(box(x, 0.0, 0.1, 0.5, 1.6, 0.2, tin))
     return "#VRML V2.0 utf8\n" + "".join(parts)

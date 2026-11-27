@@ -1,12 +1,12 @@
 ## ADDED Requirements
 
 ### Requirement: Arrives assembled
-A rev A board SHALL arrive from the assembler with every part fitted except the battery contacts, so that at most the battery contacts and, if the assembler cannot fit it, the IR LED's two leads are soldered by hand.
+A rev A board SHALL arrive from the assembler with every part fitted, so that at most the two wires to the battery contacts and, if the assembler cannot fit it, the IR LED's two leads are soldered by hand.
 
 #### Scenario: Unboxing boards
 - **GIVEN** a delivery of assembled rev A boards
 - **WHEN** the owner counts what is left to fit
-- **THEN** it is the battery contacts, plus the IR LED only if the order said so
+- **THEN** it is the two battery wires, plus the IR LED only if the order said so
 
 ### Requirement: Programs without a connector
 A board SHALL be programmed and debugged through pads that a spring-pin cable presses onto, with no connector soldered on.

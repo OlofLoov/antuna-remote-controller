@@ -1,15 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="125mm" height="175mm" viewBox="0 0 125 175" font-family="Helvetica, Arial, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" width="130mm" height="182mm" viewBox="0 0 130 182" font-family="Helvetica, Arial, sans-serif">
   <title>Antuna Remote front and side, 1:1</title>
-  <rect width="125" height="175" fill="#ffffff"/>
+  <rect width="130" height="182" fill="#ffffff"/>
   <g transform="translate(8 14)">
-    <rect x="0" y="0" width="40" height="150" rx="11" fill="#4FD1C5" stroke="#30343a" stroke-width="0.4"/>
-    <rect x="13" y="-0.2" width="14" height="2.4" rx="1" fill="#30343a"/>
+    <rect x="0" y="0" width="40" height="154" rx="11" fill="#4FD1C5" stroke="#30343a" stroke-width="0.4"/>
+    <rect x="20.1" y="-0.2" width="6" height="2.4" rx="1" fill="#30343a"/>
+    <rect x="27.9" y="-0.2" width="4.6" height="2.4" rx="1" fill="#30343a"/>
+    <path d="M1.2 18h37.6" stroke="#3bb5aa" stroke-width="0.3"/>
     <circle cx="20" cy="14" r="1" fill="#F2F4F8"/>
     <circle cx="31" cy="11" r="4" fill="#3bb5aa" stroke="#30343a" stroke-width="0.3"/>
     <circle cx="31" cy="11" r="3" fill="#1A2A44"/>
     <path d="M31 9.2v1.8M29.6 9.9a2 2 0 1 0 2.8 0" fill="none" stroke="#F2F4F8" stroke-width="0.35" stroke-linecap="round"/>
     <circle cx="20" cy="36" r="15" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
-    <circle cx="20" cy="36" r="7" fill="#F2F4F8" stroke="#30343a" stroke-width="0.3"/>
+    <circle cx="20" cy="36" r="6.6" fill="#F2F4F8" stroke="#30343a" stroke-width="0.3"/>
     <path d="M20 23.5l-1.6 2.2h3.2zM20 48.5l-1.6-2.2h3.2zM7.5 36l2.2-1.6v3.2zM32.5 36l-2.2-1.6v3.2z" fill="#F2F4F8"/>
     <circle cx="10" cy="60" r="5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
     <path d="M11.2 57.8l-2.4 2.2 2.4 2.2" fill="none" stroke="#F2F4F8" stroke-width="0.45" stroke-linecap="round" stroke-linejoin="round"/>
@@ -19,34 +21,39 @@
     <circle cx="20" cy="73" r="5.5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
     <path d="M17.6 71.2v3.6l2.6-1.8z" fill="#F2F4F8"/>
     <path d="M21 71.2v3.6M22.4 71.2v3.6" stroke="#F2F4F8" stroke-width="0.5"/>
-    <circle cx="11" cy="90" r="4.5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
-    <path d="M9.2 89h1.2l1.6-1.4v4.8l-1.6-1.4H9.2z" fill="#F2F4F8"/>
-    <path d="M12.8 89.2l1.4 1.6M14.2 89.2l-1.4 1.6" stroke="#F2F4F8" stroke-width="0.35"/>
-    <rect x="23" y="80" width="9" height="20" rx="4.5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
-    <path d="M27.5 82.5v3M26 84h3M26 96h3" stroke="#F2F4F8" stroke-width="0.45" stroke-linecap="round"/>
-    <path d="M2 104h36" stroke="#1A2A44" stroke-width="0.25" stroke-dasharray="1 1"/>
+    <circle cx="11" cy="89" r="4.5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M9.2 88h1.2l1.6-1.4v4.8l-1.6-1.4H9.2z" fill="#F2F4F8"/>
+    <path d="M12.8 88.2l1.4 1.6M14.2 88.2l-1.4 1.6" stroke="#F2F4F8" stroke-width="0.35"/>
+    <rect x="23" y="79" width="9" height="20" rx="4.5" fill="#1A2A44" stroke="#30343a" stroke-width="0.3"/>
+    <path d="M27.5 81.5v3M26 83h3M26 95h3" stroke="#F2F4F8" stroke-width="0.45" stroke-linecap="round"/>
+    <path d="M2 101h36" stroke="#1A2A44" stroke-width="0.25" stroke-dasharray="1 1"/>
     <text x="20" y="124" font-size="2.6" text-anchor="middle" fill="#1A2A44">2 × AAA, side by side</text>
     <text x="20" y="128" font-size="2.6" text-anchor="middle" fill="#1A2A44">past the PCB's end</text>
   </g>
-  <g transform="translate(96 14)">
-    <path d="M0 0h8a3 3 0 0 1 3 3v98l3 6v35a8 8 0 0 1-8 8H6a6 6 0 0 1-6-6z" fill="#4FD1C5" stroke="#30343a" stroke-width="0.4"/>
-    <path d="M1.2 3h7.6v1M1.2 4h7.6" stroke="#1A2A44" stroke-width="1"/>
-    <path d="M1.2 104h11.6v42H1.2z" fill="none" stroke="#1A2A44" stroke-width="0.25" stroke-dasharray="1 1"/>
-    <text x="7" y="126" font-size="2.4" text-anchor="middle" fill="#1A2A44">cells</text>
-    <text x="7" y="-3" font-size="2.6" text-anchor="middle" fill="#30343a">side</text>
-    <text x="16" y="60" font-size="2.3" fill="#4b5563">11</text>
-    <text x="16" y="130" font-size="2.3" fill="#4b5563">14</text>
+  <g transform="translate(102 14)">
+    <path d="M-1.2 0H2.9a3 3 0 0 1 3 3V96l7.6 5V151a3 3 0 0 1-3 3H3a3 3 0 0 1-3-3V19l-4.2-3V3a3 3 0 0 1 3-3z" fill="#4FD1C5" stroke="#30343a" stroke-width="0.4"/>
+    <path d="M-1.5 21v30M-1.5 55v10M-1.5 67.5v11M-1.5 79v20" stroke="#1A2A44" stroke-width="1.5" transform="translate(0.75 0)"/>
+    <rect x="3.2" y="2" width="1" height="98" fill="#1A2A44"/>
+    <rect x="-2.7" y="0.7" width="5.9" height="8.6" rx="2" fill="none" stroke="#1A2A44" stroke-width="0.3"/>
+    <path d="M1.5 101.5h10.5v49.5H1.5z" fill="none" stroke="#1A2A44" stroke-width="0.25" stroke-dasharray="1 1"/>
+    <text x="6.7" y="127" font-size="2.4" text-anchor="middle" fill="#1A2A44">cells</text>
+    <text x="-3" y="-3" font-size="2.6" text-anchor="end" fill="#30343a">front</text>
+    <text x="7" y="-3" font-size="2.6" fill="#30343a">back</text>
+    <text x="8" y="10" font-size="2.3" fill="#4b5563">10 at the head</text>
+    <text x="8" y="60" font-size="2.3" fill="#4b5563">7.5 with caps</text>
+    <text x="15" y="127" font-size="2.3" fill="#4b5563">14</text>
   </g>
   <g font-size="2.6" fill="#30343a">
     <text x="28" y="8">front, 1:1 (print at 100%)</text>
-    <text x="8" y="170">40 mm wide, 150 mm long, at most 11 mm over the keys and 14 mm at the battery end</text>
+    <text x="8" y="176">40 mm wide, 154 mm long; the head rises on the front, the battery end on the back</text>
   </g>
   <g font-size="2.3" fill="#4b5563">
+    <text x="50" y="16">IR LED and receiver in the top wall</text>
+    <text x="50" y="23">status light</text>
     <text x="50" y="26">power (recessed)</text>
-    <text x="50" y="23">status light; IR at top edge</text>
-    <text x="50" y="51">d-pad + select</text>
+    <text x="50" y="51">d-pad ring + select</text>
     <text x="50" y="75">back · home</text>
     <text x="50" y="88">play/pause</text>
-    <text x="50" y="105">mute · volume</text>
+    <text x="50" y="104">mute · volume rocker</text>
   </g>
 </svg>

@@ -21,6 +21,7 @@
 - [x] 4.2 ERC clean, and a review of every net against design.md
 - [x] 4.3 Check KiCad's TS-1187A footprint against XKB's drawing (`xkb-ts-1187a-drawing.pdf` in `docs/datasheets/manifest.tsv`) and pin its hash
 - [ ] 4.4 Owner review of the schematic in KiCad
+- [ ] 4.5 Recheck the crystal's load and series resistance limits, and the NFC pads' leakage, against Nordic's nRF54L15 product specification PDF
 
 ## 5. Layout
 
@@ -28,7 +29,7 @@
 - [x] 5.2a Place parts to the board in `define-keys-and-layout` and keep the module's keep-out, in `hardware/pcb/layout/build_board.py`
 - [x] 5.2b Route with `scripts/route-board.sh`, DRC clean with schematic parity, DRC in CI
 - [ ] 5.2c Send the layout to Raytac for their free review
-- [ ] 5.3 Export the placement file and a STEP model for the enclosure change
+- [ ] 5.3 Export the placement file and a STEP model for the enclosure change. `kicad-cli pcb export step` skips the VRML bodies, so first draw STEP bodies for the switches, U1 and U2. Add a table of what the placement file lacks: the IR LED's and receiver's optical axes and heights, the switch stem's top, the screw holes and the outline
 
 ## 6. Order
 
@@ -40,6 +41,7 @@
 
 - [ ] 7.1 Program over the Tag-Connect cable, check each key alone and in pairs, and log it in `docs/bench/`
 - [ ] 7.2 Measure idle current, IR reach, the IR pulse shape at D1 and the low-cell burst on a scope, and log them
+- [ ] 7.3 Check that the crystal starts and holds 32.768 kHz with the DC/DC and radio running, that learning works at 2.2 V, and each key's force with a gauge
 
 ## 8. Verify
 

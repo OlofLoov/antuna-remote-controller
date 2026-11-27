@@ -11,7 +11,7 @@ import sys
 import pcbnew
 
 sys.path.insert(0, os.path.dirname(__file__))
-from build_board import ANTENNA_BAND, inside as in_box, save  # noqa: E402
+from build_board import ROUTER_KEEPOUTS, corners, no_via, rule_area, save  # noqa: E402
 
 GRID = 3.0          # mm between stitching via candidates
 VIA_D, VIA_DRILL = 0.6, 0.3
@@ -23,6 +23,8 @@ def clear_of(copper, at, clear=CLEAR):
     circle = pcbnew.SHAPE_CIRCLE(at, pcbnew.FromMM(VIA_D / 2))
     for item in copper:
         keep = pcbnew.FromMM(0.05 if item.GetNetname() == "/GND" else clear)
+        if item.GetClass() == "PAD" and item.GetParentFootprint().GetReference() == "J1":
+            keep = pcbnew.FromMM(0.55)  # Tag-Connect's 0.5 mm
         for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
             if item.IsOnLayer(layer) and item.GetEffectiveShape(layer).Collide(circle, keep):
                 return False
@@ -44,11 +46,6 @@ def inside(outline, at, margin_mm=0.9):
     m = pcbnew.FromMM(margin_mm)
     return all(outline.Contains(pcbnew.VECTOR2I(at.x + dx, at.y + dy))
                for dx, dy in ((0, 0), (m, 0), (-m, 0), (0, m), (0, -m), (m, m), (-m, m), (m, -m), (-m, -m)))
-
-
-def in_keepout(at):
-    """In the band across the antenna end, where no via may go."""
-    return in_box(ANTENNA_BAND, at, 0.4)
 
 
 def join_fragments(board):
@@ -86,7 +83,7 @@ def join_fragments(board):
                 while x <= box.GetRight():
                     at = pcbnew.VECTOR2I(x, y)
                     x += step
-                    if (piece.Contains(at) and inside(outline, at) and not in_keepout(at)
+                    if (piece.Contains(at) and inside(outline, at) and not no_via(at)
                             and clear_of(copper, at, clear=0.2)):
                         copper.append(add_via(board, gnd, at))
                         vias.append(at)
@@ -118,8 +115,9 @@ def pour_pieces(board):
 def join_clusters(board):
     """The router takes the pours for solid planes, so its tracks can fence
     a few pieces in on both layers: they reach each other through vias but
-    not the rest of the ground. Find such a cluster and put one via where
-    one of its pieces lies over the main pour on the other layer."""
+    not the rest of the ground. Find such a cluster and put up to three
+    vias, 1.5 mm or more apart, where its pieces lie over the main pour on
+    the other layer, so its return current has more than one way out."""
     gnd = board.FindNet("/GND")
     outline = pcbnew.SHAPE_POLY_SET()
     board.GetBoardPolygonOutlines(outline, False)
@@ -146,25 +144,25 @@ def join_clusters(board):
     added = 0
     for cluster in [c for c in area if c != main]:
         mains = [piece for i, (layer, piece) in enumerate(pieces) if root(i) == main]
-        done = False
+        new = []
         for i, (layer, piece) in enumerate(pieces):
-            if root(i) != cluster or done:
+            if root(i) != cluster:
                 continue
             box = piece.BBox()
             y = box.GetTop()
-            while y <= box.GetBottom() and not done:
+            while y <= box.GetBottom() and len(new) < 3:
                 x = box.GetLeft()
-                while x <= box.GetRight():
+                while x <= box.GetRight() and len(new) < 3:
                     at = pcbnew.VECTOR2I(x, y)
                     x += step
                     if (piece.Contains(at) and any(m.Contains(at) for m in mains)
-                            and inside(outline, at) and not in_keepout(at) and clear_of(copper, at, clear=0.2)):
+                            and all((at - n).EuclideanNorm() >= pcbnew.FromMM(1.5) for n in new)
+                            and inside(outline, at) and not no_via(at) and clear_of(copper, at, clear=0.2)):
                         copper.append(add_via(board, gnd, at))
-                        added += 1
-                        done = True
-                        break
+                        new.append(at)
                 y += step
-        if not done:
+        added += len(new)
+        if not new:
             print("a piece of ground pour could not be joined to the rest")
     return added
 
@@ -215,7 +213,7 @@ def stitch(board):
             x += step
             if not inside(outline, at):
                 continue
-            if in_keepout(at):
+            if no_via(at):
                 continue
             if any(c.Contains(at) for c in courtyards):
                 continue
@@ -230,15 +228,20 @@ def main():
     path = sys.argv[1]
     if sys.argv[2] == "--export":
         board = pcbnew.LoadBoard(path)
-        # Locked tracks and vias are build_board.py's; the router keeps them.
-        for track in list(board.GetTracks()):
-            if not track.IsLocked():
-                board.Remove(track)
+        # Keep-outs for the router alone; the tracks build_board.py drew
+        # inside them stay.
+        for n, box in enumerate(ROUTER_KEEPOUTS):
+            rule_area(board, f"router keep-out {n + 1}", corners(box), tracks=False, vias=False)
         # The Specctra export makes every rule area a full keep-out, so a
-        # pour-only rule would shut the router out.
-        for zone in [board.GetArea(i) for i in range(board.GetAreaCount())]:
-            if zone.GetIsRuleArea() and not zone.GetDoNotAllowTracks() and not zone.GetDoNotAllowVias():
-                board.Remove(zone)
+        # pour-only rule would shut the router out. Locked tracks and vias
+        # are build_board.py's; the router keeps them. Everything is
+        # picked before anything is removed: a removal leaves pcbnew's
+        # Python wrappers unusable.
+        drop = [zone for zone in (board.GetArea(i) for i in range(board.GetAreaCount()))
+                if zone.GetIsRuleArea() and not zone.GetDoNotAllowTracks() and not zone.GetDoNotAllowVias()]
+        drop += [track for track in board.GetTracks() if not track.IsLocked()]
+        for item in drop:
+            board.Remove(item)
         if not pcbnew.ExportSpecctraDSN(board, sys.argv[3]):
             sys.exit("could not export " + sys.argv[3])
         return
