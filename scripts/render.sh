@@ -68,7 +68,7 @@ if [[ -f hardware/enclosure/render.py && -f "$project.kicad_pcb" ]]; then
   tmp="$(mktemp -d)"
   RENDER_TO="$out" scripts/build-mockup.sh "$tmp" >/dev/null
   rm -rf "$tmp"
-  rendered=$((rendered + 3))
+  rendered=$((rendered + 4))
 fi
 
 echo "rendered $rendered views into $out"

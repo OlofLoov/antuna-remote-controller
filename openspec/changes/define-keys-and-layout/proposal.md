@@ -21,7 +21,7 @@ can be printed on paper and held before any PCB or enclosure exists.
   colors, not looking like a Siri Remote, the battery door, drops, and printing
   at home.
 - A front and side drawing at 1:1 in `boards/front.svg`.
-- A grip mock-up: a blank shell printed from code, to hold and adjust
+- A grip mock-up, then a shell prototype with screws and a battery door, printed from code, to hold and adjust
   before the PCB change places the keys.
 
 Out of scope:
