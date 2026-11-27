@@ -5,9 +5,9 @@
 
 ## 2. Grip mock-up
 
-- [ ] 2.1 Add `hardware/enclosure/` with a pinned build123d environment and the build command in CLAUDE.md
-- [ ] 2.2 Write `mockup.py`: the wedge from design.md decision 2 with key bumps at the board's positions, exporting STL
-- [ ] 2.3 Print it, try it with three hand sizes, and log it in `docs/bench/` citing `form-factor/balanced-in-the-hand` and `form-factor/thumb-reaches-the-viewing-keys`
+- [x] 2.1 Add `hardware/enclosure/` with a pinned build123d environment and the build command in CLAUDE.md
+- [x] 2.2 Write `mockup.py`: the wedge from design.md decision 2 with key bumps at the board's positions, exporting STEP and STL
+- [ ] 2.3 Print both parts (PLA or PETG, 0.2 mm layers, no supports), put two AAA cells in, try it with three hand sizes, and log it in `docs/bench/` citing `form-factor/balanced-in-the-hand` and `form-factor/thumb-reaches-the-viewing-keys`
 - [ ] 2.4 Update the board and design.md with what the mock-up showed
 
 ## 3. Built in rev A

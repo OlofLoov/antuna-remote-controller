@@ -26,12 +26,12 @@ kicad-cli pcb drc --schematic-parity --severity-error --exit-code-violations har
 scripts/fetch-kicad-models.sh              # copy a new footprint's KiCad 3D model into hardware/pcb/lib/models/kicad (committed)
 python3 hardware/pcb/lib/models/make_models.py   # bodies drawn from datasheets for parts without a usable model
 scripts/fetch-datasheets.sh                # vendor PDFs from docs/datasheets/manifest.tsv, kept out of git
+scripts/build-mockup.sh                    # grip mock-up as STEP and STL in hardware/enclosure/out (build123d 0.13.0 through uv, `brew install uv`)
 scripts/render.sh out                      # schematic, board and enclosure PNGs; CI does this per commit (renders branch)
 ```
 
 On macOS `kicad-cli` is `/Applications/KiCad/KiCad.app/Contents/MacOS/kicad-cli`.
-The enclosure and firmware commands land with the changes that create
-those folders. Each such change adds its commands here.
+The firmware commands land with the change that creates that folder.
 
 Run `scripts/setup.sh` once per clone. It points git at `scripts/githooks`
 (commit lint, no commits on main, fast checks before each push).

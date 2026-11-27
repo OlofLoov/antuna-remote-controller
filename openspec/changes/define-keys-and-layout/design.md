@@ -149,10 +149,29 @@ colors are picked in the enclosure change from test prints.
 
 ### 10. Grip mock-up in code
 
-A first enclosure file, `hardware/enclosure/mockup.py`, builds the outer
-wedge with key bumps at the board's positions, using build123d, to print
-and hold. It is not the enclosure: no PCB, no battery door. The real
-enclosure change replaces it and reads key positions from the PCB.
+`hardware/enclosure/mockup.py` builds the outer shape from decisions 1
+to 3 with build123d: the body, the head, the battery bulge, a bump per
+key, Power in its recess and the two IR openings. Key positions come
+from the board's placement file, which `scripts/build-mockup.sh` exports
+first. It is not the enclosure: no board, no switches, no battery door.
+The enclosure change replaces it.
+
+It prints as two parts, cut at the back of the 1.2 mm front wall, so each
+lies flat on the bed and needs no supports: the back with the bulge, and
+the front with the head and the keys. The back has pockets for two real
+AAA cells, so the mock-up weighs and balances like the remote; they go in
+before the parts are joined. Four pieces of 1.75 mm filament in 2 mm
+holes line the parts up, and glue or tape holds them. The outer edges are
+rounded 2 mm.
+
+The outputs are STEP and STL. build123d's 3MF writer rejected these
+shapes' meshes, and a slicer opens STEP directly.
+
+Options considered: one solid part (the head rises on one face and the
+bulge on the other, so either way up needs supports under a face the
+hand judges) and printing it on its long edge (no supports, but a 14 mm
+footprint for a 40 mm tall print, and layer lines across the grip). Both
+rejected.
 
 ### 11. Screws through the PCB
 
