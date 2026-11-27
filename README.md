@@ -29,6 +29,18 @@ Main first, then each pull request; newest commit first.
 
 # pr-7
 
+## 2026-11-27-1953-70339c3
+
+![board-bottom](pr-7/2026-11-27-1953-70339c3/board-bottom.png)
+![board-iso](pr-7/2026-11-27-1953-70339c3/board-iso.png)
+![board-top](pr-7/2026-11-27-1953-70339c3/board-top.png)
+![enclosure-mockup-back](pr-7/2026-11-27-1953-70339c3/enclosure-mockup-back.png)
+![enclosure-mockup-front](pr-7/2026-11-27-1953-70339c3/enclosure-mockup-front.png)
+![enclosure-mockup-side](pr-7/2026-11-27-1953-70339c3/enclosure-mockup-side.png)
+![layout-bottom](pr-7/2026-11-27-1953-70339c3/layout-bottom.png)
+![layout-top](pr-7/2026-11-27-1953-70339c3/layout-top.png)
+![schematic-antuna-remote](pr-7/2026-11-27-1953-70339c3/schematic-antuna-remote.png)
+
 ## 2026-11-27-1838-97ce40e
 
 ![board-bottom](pr-7/2026-11-27-1838-97ce40e/board-bottom.png)
