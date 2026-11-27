@@ -7,6 +7,16 @@ as code, firmware on an nRF54L15.
 Start with `CLAUDE.md` for how the repo works, and
 `openspec/changes/` for what is being built now.
 
+## What it looks like now
+
+| Board, rev A | Grip mock-up |
+| --- | --- |
+| ![The board from above at an angle](docs/renders/board-iso.png) | ![The mock-up's front part](docs/renders/enclosure-mockup-front.png) |
+
+`docs/renders/` has every view: the schematic, both sides of the board in
+3D and as copper, and the mock-up's parts. They are redrawn in the same
+commit as any change to what they show.
+
 ## Roadmap
 
 1. `prove-the-apple-tv-link`: a dev board sends Apple's IR codes and

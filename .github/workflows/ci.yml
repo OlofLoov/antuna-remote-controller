@@ -27,6 +27,8 @@ jobs:
           openspec validate --all --strict --no-interactive
       - name: Spec references
         run: bash scripts/check-spec-refs.sh
+      - name: Renders in docs/renders match their sources
+        run: bash scripts/update-renders.sh --check
 
   commits:
     name: Commit messages

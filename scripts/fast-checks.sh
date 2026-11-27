@@ -12,6 +12,7 @@ step() {
 }
 
 step "spec references" bash scripts/check-spec-refs.sh
+step "renders match their sources" bash scripts/update-renders.sh --check
 if command -v openspec >/dev/null; then
   step "openspec" openspec validate --all --strict --no-interactive
 fi
