@@ -9,6 +9,20 @@ Main first, then each pull request; newest commit first.
 
 ![schematic-antuna-remote](main/2026-11-26-1312-f647dff/schematic-antuna-remote.png)
 
+# pr-7
+
+## 2026-11-27-1838-97ce40e
+
+![board-bottom](pr-7/2026-11-27-1838-97ce40e/board-bottom.png)
+![board-iso](pr-7/2026-11-27-1838-97ce40e/board-iso.png)
+![board-top](pr-7/2026-11-27-1838-97ce40e/board-top.png)
+![enclosure-mockup-back](pr-7/2026-11-27-1838-97ce40e/enclosure-mockup-back.png)
+![enclosure-mockup-front](pr-7/2026-11-27-1838-97ce40e/enclosure-mockup-front.png)
+![enclosure-mockup-side](pr-7/2026-11-27-1838-97ce40e/enclosure-mockup-side.png)
+![layout-bottom](pr-7/2026-11-27-1838-97ce40e/layout-bottom.png)
+![layout-top](pr-7/2026-11-27-1838-97ce40e/layout-top.png)
+![schematic-antuna-remote](pr-7/2026-11-27-1838-97ce40e/schematic-antuna-remote.png)
+
 # pr-6
 
 ## 2026-11-27-1420-0593183
