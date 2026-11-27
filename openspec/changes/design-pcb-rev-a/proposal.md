@@ -51,8 +51,10 @@ None.
 - New: `hardware/pcb/` (KiCad project and library), a KiCad ERC step in CI
   and in `scripts/fast-checks.sh`.
 - Implements the board side of `define-keys-and-layout` and `define-power`.
-- Layout waits for `prove-the-apple-tv-link` to show that the IR codes,
-  Bluetooth codes and learning receiver work. The schematic does not.
+- Layout was to wait for `prove-the-apple-tv-link` to show that the IR
+  codes, Bluetooth codes and learning receiver work. The owner waived
+  that on 2026-11-26; the board is built by script, so a change from the
+  bench rebuilds it. No order before the bench passes.
 - LCSC has no stock of the module (2026-11-26). It is ordered through
   JLCPCB Global Sourcing or consigned from Digi-Key, which adds about two
   weeks.

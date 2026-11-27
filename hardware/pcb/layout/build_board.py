@@ -7,7 +7,8 @@ Run with KiCad's Python, which has pcbnew:
 
 Coordinates below are in millimetres on the shell's front face, as drawn in
 openspec/changes/define-keys-and-layout/boards/front.svg: x from the left
-edge, y down from the top edge. The board sits 1.5 mm inside the shell.
+edge, y down from the top edge. The board sits 2 mm inside the shell, room
+for the shell's wall and a lap joint.
 Every position lives in this file; the enclosure reads them back from the
 placement export, never from here.
 """
@@ -32,21 +33,33 @@ MODELS = "${KIPRJMOD}/../lib/models/"
 # Where the sheet sits on the KiCad page, so the board is not at the corner.
 ORIGIN = (100.0, 50.0)
 
-# Board edges in shell coordinates.
-LEFT, RIGHT, TOP, BOTTOM = 1.5, 38.5, 1.5, 103.0
-CORNER_R = 9.5  # the shell's 11 mm corner, 1.5 mm in
+# Board edges in shell coordinates. The bottom edge stops short of the
+# battery contacts, which sit in slots in the shell at y = 101.
+LEFT, RIGHT, TOP, BOTTOM = 2.0, 38.0, 2.0, 100.0
+CORNER_R = 9.0  # the shell's 11 mm corner, 2 mm in
 # The module's antenna end must sit on a board edge (Raytac AN54LQ datasheet
 # v1.3, section 2.3), so the board steps down to it at the top left. Right
 # of the step the board reaches the top edge for the IR LED and receiver.
 MODULE_TOP = 5.0
-STEP_X = 19.0
+STEP_X = 19.4
 # Raytac's drawing has the module near the left of the board and at least
-# 15 mm of ground to its right. 4.5 mm to the left edge leaves a channel
-# for the tracks from pads 1 to 13 and the parts on them.
-U1_X = 10.75
+# 15 mm of ground to its right. 5 mm to the left edge leaves a channel
+# for the supply parts, the crystal and the tracks from pads 4 to 7.
+U1_X = 11.75
 MODULE_LEFT = U1_X - 4.75
 MODULE_RIGHT = U1_X + 4.75
-U1_Y = MODULE_TOP + 0.3 + 6.875
+# The footprint's origin is 6.95 mm below the module's antenna edge and
+# 6.75 mm above its other end. The module sits 0.3 mm in from the board
+# edge so its corner ground pads keep the fab's edge clearance.
+MODULE_EDGE = MODULE_TOP + 0.3
+U1_Y = MODULE_EDGE + 6.95
+MODULE_BOTTOM = U1_Y + 6.75
+
+
+def u1_left(n):
+    """Centre of module pad n, 1 to 13, on its left edge."""
+    return (U1_X - 4.2, U1_Y - 3.2 + 0.7 * (n - 1))
+
 
 # Keys by the net they pull low, centred under their caps in front.svg.
 KEYS = {
@@ -59,60 +72,121 @@ KEYS = {
     "KEY_BACK": (10.0, 60.0),
     "KEY_HOME": (30.0, 60.0),
     "KEY_PLAY": (20.0, 73.0),
-    "KEY_MUTE": (11.0, 90.0),
-    "KEY_VOLUP": (27.5, 84.0),
+    "KEY_MUTE": (11.0, 89.0),
+    # The rocker's cap pivots at y = 89, midway between its two switches.
+    "KEY_VOLUP": (27.5, 83.5),
     "KEY_VOLDN": (27.5, 94.5),
 }
 
 # Everything else by reference: (x, y, rotation in degrees, counter-clockwise).
 PARTS = {
-    # Module, antenna end up and 0.3 mm in from the edge so its corner
-    # ground pads keep the fab's edge clearance.
     "U1": (U1_X, U1_Y, 0),
-    # DC/DC inductor, supply capacitor and crystal in the channel left of
-    # the module, beside pads 8 to 13.
-    "L1": (3.5, 14.3, 90),
-    "C2": (3.5, 16.9, 90),
-    "Y1": (3.5, 20.0, 90),
-    "C3": (3.0, 23.1, 270),
-    "C4": (4.6, 23.1, 270),
-    # IR LED laid flat with its lens at the top edge, receiver beside it,
-    # lens up, both on the part of the board right of the step. The
-    # receiver's supply filter sits right of Power, leaving the gap below
-    # the receiver for its tracks.
-    "D1": (24.0, 11.5, 180),
+    # In the channel left of the module, each beside its pads: the DC/DC
+    # inductor at DECD and DCC (8, 9), the supply capacitor at GND and VDD
+    # (10, 11), the crystal at XL1 and XL2 (12, 13).
+    "L1": (MODULE_LEFT - 2.9, u1_left(9)[1] + 0.1, 180),
+    "C2": (MODULE_LEFT - 0.6, u1_left(10)[1] + 0.4, 90),
+    "Y1": (MODULE_LEFT - 1.3, u1_left(13)[1] + 1.35, 90),
+    # IR LED laid flat with its lens in the shell's top wall, receiver
+    # beside it, lens up, both on the part of the board right of the step.
+    "D1": (24.4, 10.6, 180),
     "U2": (30.2, 5.2, 180),
-    "R5": (36.3, 9.2, 90),
-    "R4": (36.3, 12.4, 90),
-    "C5": (36.3, 15.0, 90),
-    # IR drive below the LED.
-    "Q1": (25.0, 14.8, 0),
-    "R1": (21.7, 16.6, 90),
-    "R2": (27.9, 15.7, 90),
+    # The receiver's supply filter and pull-up, under its pads as Vishay's
+    # application circuit draws them.
+    "R5": (27.95, 7.4, 180),
+    "C5": (29.9, 7.16, 270),
+    "R4": (32.0, 7.4, 180),
+    # IR drive below the LED: the pulse runs C1, R1, D1, Q1 and back to
+    # C1's ground pad, straight under Q1's source.
+    "R2": (23.9, 14.6, 180),
+    "Q1": (27.4, 15.7, 0),
+    "R1": (21.5, 17.6, 90),
     "C1": (25.0, 18.7, 0),
-    "TP3": (19.6, 17.5, 0),
+    "TP3": (19.0, 19.2, 0),
     # Status light on the top face, centred, under the IR LED.
     "D2": (20.0, 14.0, 0),
-    "R3": (17.5, 14.0, 90),
+    "R3": (18.2, 16.3, 0),
     # Programming pads below Power.
-    "J1": (31.5, 19.5, 0),
-    # Supply at the battery end.
-    "BT1": (20.0, BOTTOM - 2.5, 0),
-    "Q2": (20.0, 96.3, 0),
-    "TP1": (16.0, 93.8, 0),
-    "TP2": (16.0, 96.5, 0),
+    "J1": (31.5, 20.3, 0),
+    # Supply at the battery end: the two wire holes on the cells' axes.
+    "BT1": (20.0, BOTTOM - 1.5, 0),
+    "Q2": (20.0, 95.4, 0),
+    "TP1": (16.0, 93.3, 0),
+    "TP2": (16.0, 95.7, 0),
 }
 
-# Raytac's "no ground-pad area" under the antenna: 7.35 by 3.3 mm from the
-# module's top edge, starting 1 mm in from its left edge.
-ANTENNA_KEEPOUT = (MODULE_LEFT + 1.0, MODULE_TOP, MODULE_LEFT + 1.0 + 7.35, MODULE_TOP + 0.3 + 3.3)
+# M2 screws through the board into the front shell's bosses. None near the
+# antenna: the shell holds that corner with a plastic hook.
+HOLES = [(35.0, 25.0), (5.0, 52.0), (35.0, 68.0), (5.0, 82.0)]
+HOLE_CLEAR = 2.5  # mm from a hole's centre kept free of copper, for the boss
+
+# Raytac's "no ground pad" area under the antenna (datasheet v1.3, section
+# 2.2) is a T: 3.3 mm down from the module's antenna edge, 7.35 mm wide
+# between the corner ground pads for the first 1.2 mm, then the module's
+# full 9.5 mm width.
+KEEPOUT_BOTTOM = MODULE_EDGE + 3.3
+ANTENNA_KEEPOUT = [
+    (MODULE_LEFT + 1.0, MODULE_TOP - 0.5), (MODULE_LEFT + 8.35, MODULE_TOP - 0.5),
+    (MODULE_LEFT + 8.35, MODULE_EDGE + 1.2), (MODULE_RIGHT, MODULE_EDGE + 1.2),
+    (MODULE_RIGHT, KEEPOUT_BOTTOM), (MODULE_LEFT, KEEPOUT_BOTTOM),
+    (MODULE_LEFT, MODULE_EDGE + 1.2), (MODULE_LEFT + 1.0, MODULE_EDGE + 1.2),
+]
 # No tracks or vias across the antenna end: from the left edge to 3.5 mm
 # right of the module, down to the no-ground area's lower edge, just above
 # pads 1 and 39.
-ANTENNA_BAND = (LEFT - 1.0, MODULE_TOP - 1.0, MODULE_RIGHT + 3.5, ANTENNA_KEEPOUT[3])
+ANTENNA_BAND = (LEFT - 1.0, MODULE_TOP - 1.0, MODULE_RIGHT + 3.5, KEEPOUT_BOTTOM)
+# Ground only from there to the receiver's pads, level with the antenna, so
+# the ground Raytac asks for to the module's right is not cut by tracks.
+BESIDE_ANTENNA = (ANTENNA_BAND[2], TOP - 1.0, 26.4, KEEPOUT_BOTTOM)
 # Inside the module's pad ring: ground pour and ground vias only, as in
 # Raytac's drawing. The inner pads 40 and 41 are not connected.
-MODULE_BODY = (U1_X - 3.75, ANTENNA_KEEPOUT[3], U1_X + 3.75, U1_Y + 5.75)
+MODULE_BODY = (U1_X - 3.75, KEEPOUT_BOTTOM, U1_X + 3.75, U1_Y + 5.75)
+# On the bottom layer nothing but ground under the whole module.
+UNDER_MODULE = (MODULE_LEFT - 0.5, KEEPOUT_BOTTOM, MODULE_RIGHT + 0.5, MODULE_BOTTOM + 0.5)
+# Solid ground under the crystal and its two tracks.
+CRYSTAL = (MODULE_LEFT - 2.5, u1_left(12)[1] - 0.2, MODULE_LEFT - 0.5, u1_left(13)[1] + 3.6)
+# Tag-Connect's drawing keeps other copper 0.5 mm from its pads.
+J1_PADS = (PARTS["J1"][0] - 2.2, PARTS["J1"][1] - 1.6, PARTS["J1"][0] + 2.2, PARTS["J1"][1] + 1.6)
+# Where the router may not go though KiCad's own rules allow it: the top
+# layer by the crystal, and between and beside the programming pads.
+ROUTER_KEEPOUTS = [CRYSTAL, J1_PADS]
+
+
+def j1_pad(col, row):
+    return (PARTS["J1"][0] + 1.27 * col, PARTS["J1"][1] + 0.635 * row)
+
+
+# The supply comes up to C2 on the bottom layer, through a via in the one
+# free spot between the inductor and the crystal.
+SUPPLY_VIA = (PARTS["C2"][0] - 1.1, PARTS["C2"][1] + 0.4)
+
+# Tracks drawn here, not by the router: (net, width, points), top layer.
+# The crystal and the DC/DC want them short and direct, and the
+# programming pads want them leaving straight out.
+PREROUTES = [
+    ("/DCC", 0.3, [u1_left(9), (PARTS["L1"][0] + 0.79, u1_left(9)[1])]),
+    ("/DECD", 0.25, [u1_left(8), (PARTS["L1"][0] - 0.79, u1_left(8)[1]),
+                     (PARTS["L1"][0] - 0.79, PARTS["L1"][1])]),
+    ("/GND", 0.3, [u1_left(10), (PARTS["C2"][0], PARTS["C2"][1] - 0.48)]),
+    ("/VBAT", 0.3, [u1_left(11), (PARTS["C2"][0], PARTS["C2"][1] + 0.48), SUPPLY_VIA]),
+    ("/XL1", 0.15, [u1_left(12), (u1_left(12)[0] - 0.75, u1_left(12)[1]),
+                    (PARTS["Y1"][0] + 0.5, PARTS["Y1"][1] - 1.45)]),
+    ("/XL2", 0.15, [u1_left(13), (u1_left(13)[0] - 0.6, u1_left(13)[1]),
+                    (u1_left(13)[0] - 0.6, PARTS["Y1"][1] + 0.9),
+                    (PARTS["Y1"][0] + 0.8, PARTS["Y1"][1] + 1.25)]),
+    # Q1's source to C1's ground pad, the IR pulse's way back.
+    ("/GND", 0.4, [(PARTS["Q1"][0] - 0.94, PARTS["Q1"][1] + 0.95), (PARTS["C1"][0] + 1.47, PARTS["C1"][1])]),
+    ("/SWDIO", 0.2, [j1_pad(-1, -1), (j1_pad(-1, -1)[0], J1_PADS[1] - 0.6)]),
+    ("/SWDCLK", 0.2, [j1_pad(0, -1), (j1_pad(0, -1)[0], J1_PADS[1] - 0.6)]),
+    ("/VBAT", 0.2, [j1_pad(-1, 1), (j1_pad(-1, 1)[0], J1_PADS[3] + 0.6)]),
+    ("/RESET", 0.2, [j1_pad(0, 1), (j1_pad(0, 1)[0], J1_PADS[3] + 0.6)]),
+    ("/GND", 0.2, [j1_pad(1, 1), (j1_pad(1, 1)[0], J1_PADS[3] + 1.0)]),
+    # C5's ground pad, boxed in by the filter: down to a via under Power.
+    ("/GND", 0.3, [(PARTS["C5"][0], PARTS["C5"][1] + 0.48), (PARTS["C5"][0], PARTS["C5"][1] + 1.4)]),
+]
+# Vias at the ends of the tracks above.
+VIAS = [("/VBAT", SUPPLY_VIA)]
+GROUND_VIAS = [(j1_pad(1, 1)[0], J1_PADS[3] + 1.0), (PARTS["C5"][0], PARTS["C5"][1] + 1.4)]
 
 
 def mm(x, y):
@@ -301,28 +375,41 @@ def ground_and_keepout(board):
         poly.Append(mm(*p), 0, 0)
     board.Add(ring)
 
-    x0, y0, x1, y1 = ANTENNA_KEEPOUT
-    rule_area(board, "antenna no-ground area", [(x0, y0 - 0.5), (x1, y0 - 0.5), (x1, y1), (x0, y1)],
-              fill=False, tracks=False, vias=False)
-    x0, y0, x1, y1 = ANTENNA_BAND
-    rule_area(board, "antenna band", [(x0, y0), (x1, y0), (x1, y1), (x0, y1)],
-              tracks=False, vias=False)
-    # Vias stay allowed here so the ground vias below can go in; the
+    rule_area(board, "antenna no-ground area", ANTENNA_KEEPOUT, fill=False, tracks=False, vias=False)
+    rule_area(board, "antenna band", corners(ANTENNA_BAND), tracks=False, vias=False)
+    # Vias stay allowed in the next three so ground vias can go in; the
     # project's .kicad_dru keeps signal vias out, and with no tracks
     # allowed the router has no way in.
-    x0, y0, x1, y1 = MODULE_BODY
-    rule_area(board, "module body", [(x0, y0), (x1, y0), (x1, y1), (x0, y1)], tracks=False)
+    rule_area(board, "ground beside the antenna", corners(BESIDE_ANTENNA), tracks=False)
+    rule_area(board, "module body", corners(MODULE_BODY), tracks=False)
+    rule_area(board, "under the module", corners(UNDER_MODULE), tracks=False, layers=[pcbnew.B_Cu])
+    rule_area(board, "under the crystal", corners(CRYSTAL), tracks=False, layers=[pcbnew.B_Cu])
     # Ground ends level with the antenna end, as in Raytac's drawing: no
     # pour on the part right of the step.
     rule_area(board, "no ground above the antenna end",
               [(STEP_X - 0.5, TOP - 1.0), (RIGHT + 1.0, TOP - 1.0),
                (RIGHT + 1.0, MODULE_TOP), (STEP_X - 0.5, MODULE_TOP)], fill=False)
+    for n, (x, y) in enumerate(HOLES):
+        ring = [(x + HOLE_CLEAR * math.cos(math.radians(a)), y + HOLE_CLEAR * math.sin(math.radians(a)))
+                for a in range(0, 360, 15)]
+        rule_area(board, f"screw boss {n + 1}", ring, fill=False, tracks=False, vias=False)
 
 
-def rule_area(board, name, corners, fill=True, tracks=True, vias=True):
+def corners(box):
+    x0, y0, x1, y1 = box
+    return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+
+def rule_area(board, name, corners, fill=True, tracks=True, vias=True, layers=None):
     rule = pcbnew.ZONE(board)
     rule.SetIsRuleArea(True)
-    rule.SetLayerSet(pcbnew.LSET.AllCuMask())
+    if layers:
+        lset = pcbnew.LSET()
+        for layer in layers:
+            lset.AddLayer(layer)
+        rule.SetLayerSet(lset)
+    else:
+        rule.SetLayerSet(pcbnew.LSET.AllCuMask())
     rule.SetDoNotAllowZoneFills(not fill)
     rule.SetDoNotAllowTracks(not tracks)
     rule.SetDoNotAllowVias(not vias)
@@ -337,6 +424,15 @@ def inside(box, at, margin=0.0):
     x0, y0, x1, y1 = box
     lo, hi = mm(x0 - margin, y0 - margin), mm(x1 + margin, y1 + margin)
     return lo.x <= at.x <= hi.x and lo.y <= at.y <= hi.y
+
+
+def no_via(at, margin=0.4):
+    """Where no via may go: across the antenna end, by the crystal, between
+    the programming pads and where a screw boss lands."""
+    if any(inside(box, at, margin) for box in (ANTENNA_BAND, CRYSTAL, J1_PADS)):
+        return True
+    reach = pcbnew.FromMM(HOLE_CLEAR + margin)
+    return any((mm(*hole) - at).EuclideanNorm() < reach for hole in HOLES)
 
 
 def place(board, parts, nets):
@@ -385,9 +481,12 @@ def place(board, parts, nets):
         for model in fp.Models():
             if not model.m_Filename.startswith(MODELS):
                 sys.exit(f"{ref}: 3D model {model.m_Filename} is not in hardware/pcb/lib/models")
-        if ref[0] in "RCL":
-            # Small passives meet the pours through thermal spokes, so
-            # both ends heat alike in reflow and the part does not stand up.
+        if ref == "BT1":
+            fp.SetExcludedFromPosFiles(True)  # wires, soldered at home
+        if (ref[0] in "RCL" or ref == "D2") and ref != "C1":
+            # Small parts meet the pours through thermal spokes, so both
+            # ends heat alike in reflow and the part does not stand up.
+            # C1 carries the IR pulses and stays solid.
             for pad in fp.Pads():
                 pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_THERMAL)
         if ref in key_of:
@@ -407,9 +506,53 @@ def place(board, parts, nets):
                 pad.SetNet(netinfo[net])
     if missing:
         sys.exit("no position for " + ", ".join(missing))
+    for n, (x, y) in enumerate(HOLES):
+        fp = pcbnew.FootprintLoad(footprint_dir("MountingHole"), "MountingHole_2.2mm_M2")
+        fp.SetFPID(pcbnew.LIB_ID("MountingHole", "MountingHole_2.2mm_M2"))
+        fp.SetReference(f"H{n + 1}")
+        fp.Reference().SetVisible(False)
+        fp.SetAttributes(fp.GetAttributes() | pcbnew.FP_BOARD_ONLY
+                         | pcbnew.FP_EXCLUDE_FROM_BOM | pcbnew.FP_EXCLUDE_FROM_POS_FILES)
+        board.Add(fp)
+        fp.SetPosition(mm(x, y))
 
 
-def ground_vias(board):
+def add_track(board, net, a, b, width):
+    track = pcbnew.PCB_TRACK(board)
+    track.SetStart(a)
+    track.SetEnd(b)
+    track.SetWidth(pcbnew.FromMM(width))
+    track.SetLayer(pcbnew.F_Cu)
+    track.SetNet(net)
+    track.SetLocked(True)
+    board.Add(track)
+    return track
+
+
+def add_via(board, at, net="/GND"):
+    via = pcbnew.PCB_VIA(board)
+    via.SetPosition(at)
+    via.SetWidth(pcbnew.FromMM(0.6))
+    via.SetDrill(pcbnew.FromMM(0.3))
+    via.SetNet(board.FindNet(net))
+    via.SetLocked(True)
+    board.Add(via)
+    return via
+
+
+def preroute(board):
+    tracks = []
+    for net, width, points in PREROUTES:
+        for a, b in zip(points, points[1:]):
+            tracks.append(add_track(board, board.FindNet(net), mm(*a), mm(*b), width))
+    for at in GROUND_VIAS:
+        add_via(board, mm(*at))
+    for net, at in VIAS:
+        tracks.append(add_via(board, mm(*at), net))
+    return tracks
+
+
+def ground_vias(board, drawn):
     """Give every ground pad a via of its own, on a short track, before
     routing. The router then routes around them, so no ground pad can end
     up boxed in on a sliver of pour, and each pad has a short path to the
@@ -431,7 +574,7 @@ def ground_vias(board):
     def free(start, at, own):
         if not outline.PointInside(at):
             return False
-        if inside(ANTENNA_BAND, at, 0.4) or inside(MODULE_BODY, at, 0.4):
+        if no_via(at) or inside(MODULE_BODY, at, 0.4):
             return False
         for ref, yard in yards.items():
             if ref != own and yard.OutlineCount() and yard.Contains(at):
@@ -447,10 +590,17 @@ def ground_vias(board):
         for other in placed:
             if (other - at).EuclideanNorm() < pcbnew.FromMM(1.1):
                 return False
-        # The short track from the pad must clear other nets' pads too.
+        # The via and its short track must clear other nets' pads and the
+        # tracks drawn above.
         path = pcbnew.SHAPE_SEGMENT(start, at, pcbnew.FromMM(0.3))
         for pad in pads:
             if pad.GetNetname() != "/GND" and pad.GetEffectiveShape(pcbnew.F_Cu).Collide(path, pcbnew.FromMM(0.2)):
+                return False
+        for track in drawn:
+            if track.GetNetname() == "/GND":
+                continue
+            shape = track.GetEffectiveShape(pcbnew.F_Cu)
+            if shape.Collide(path, pcbnew.FromMM(0.2)) or shape.Collide(circle, pcbnew.FromMM(0.25)):
                 return False
         return True
 
@@ -459,6 +609,8 @@ def ground_vias(board):
             continue
         own = pad.GetParentFootprint().GetReference()
         centre = pad.GetPosition()
+        if own in ("J1", "C5", "C2"):
+            continue  # drawn above
         if inside(ANTENNA_BAND, centre):
             continue  # the module's top corner pads reach ground through the top pour
         spot = None
@@ -476,21 +628,8 @@ def ground_vias(board):
             print(f"no room for a ground via at {own} pad {pad.GetNumber()}")
             continue
         placed.append(spot)
-        via = pcbnew.PCB_VIA(board)
-        via.SetPosition(spot)
-        via.SetWidth(pcbnew.FromMM(0.6))
-        via.SetDrill(pcbnew.FromMM(0.3))
-        via.SetNet(gnd)
-        via.SetLocked(True)
-        board.Add(via)
-        track = pcbnew.PCB_TRACK(board)
-        track.SetStart(centre)
-        track.SetEnd(spot)
-        track.SetWidth(pcbnew.FromMM(0.3))
-        track.SetLayer(pcbnew.F_Cu)
-        track.SetNet(gnd)
-        track.SetLocked(True)
-        board.Add(track)
+        add_via(board, spot)
+        add_track(board, gnd, centre, spot, 0.3)
     module_vias(board, pads)
 
 
@@ -509,13 +648,7 @@ def module_vias(board, pads):
             circle = pcbnew.SHAPE_CIRCLE(at, radius)
             if any(pad.GetEffectiveShape(pcbnew.F_Cu).Collide(circle, pcbnew.FromMM(0.3)) for pad in pads):
                 continue
-            via = pcbnew.PCB_VIA(board)
-            via.SetPosition(at)
-            via.SetWidth(pcbnew.FromMM(0.6))
-            via.SetDrill(pcbnew.FromMM(0.3))
-            via.SetNet(gnd)
-            via.SetLocked(True)
-            board.Add(via)
+            add_via(board, at)
         y += 1.5
 
 
@@ -595,7 +728,7 @@ def main():
     outline(board)
     place(board, parts, nets)
     ground_and_keepout(board)
-    ground_vias(board)
+    ground_vias(board, preroute(board))
     # The placement export reads from here: shell coordinates, x right, y down.
     board.GetDesignSettings().SetAuxOrigin(mm(0, 0))
     board.GetDesignSettings().SetGridOrigin(mm(0, 0))

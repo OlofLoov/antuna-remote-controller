@@ -3552,11 +3552,11 @@
 		(uuid "7ab9e955-1822-48df-ba99-76cc0d4cfbe2")
 	)
 	(no_connect
-		(at 233.68 78.74)
+		(at 233.68 104.14)
 		(uuid "8df44a3f-3ac7-4766-b723-9faeb1869e56")
 	)
 	(no_connect
-		(at 167.64 62.23)
+		(at 167.64 57.15)
 		(uuid "97d28607-65e3-4312-9270-73d1c1fe4326")
 	)
 	(no_connect
@@ -3564,7 +3564,7 @@
 		(uuid "9b9fce71-7653-40e0-82b4-bd127288ee1e")
 	)
 	(no_connect
-		(at 233.68 81.28)
+		(at 167.64 105.41)
 		(uuid "9c08e508-20fb-4980-9a9f-cca7936ab160")
 	)
 	(no_connect
@@ -3596,16 +3596,6 @@
 			(justify right bottom)
 		)
 		(uuid "0178e0a1-6a80-4cbd-bbc0-391aab963096")
-	)
-	(label "XL1"
-		(at 190.5 135.89 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "04af721c-38d2-4d6d-b3c5-e5474c8348a9")
 	)
 	(label "IR_VS"
 		(at 45.72 146.05 90)
@@ -3717,7 +3707,7 @@
 		)
 		(uuid "204173a2-5610-42b1-bebe-8108279a2c65")
 	)
-	(label "KEY_UP"
+	(label "KEY_HOME"
 		(at 233.68 76.2 0)
 		(effects
 			(font
@@ -3738,7 +3728,7 @@
 		(uuid "2153ea1b-4b76-4481-811c-caf335158c3d")
 	)
 	(label "IR_RX_PWR"
-		(at 233.68 104.14 0)
+		(at 233.68 78.74 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3747,7 +3737,7 @@
 		)
 		(uuid "24c41e3b-3291-482c-8c60-fac8ce3536dd")
 	)
-	(label "KEY_BACK"
+	(label "KEY_PLAY"
 		(at 167.64 92.71 180)
 		(effects
 			(font
@@ -3837,7 +3827,7 @@
 		)
 		(uuid "2e17f635-a5d8-42ca-a5be-9691ed849a64")
 	)
-	(label "KEY_HOME"
+	(label "KEY_VOLUP"
 		(at 167.64 95.25 180)
 		(effects
 			(font
@@ -3857,7 +3847,7 @@
 		)
 		(uuid "31104eeb-9579-46e5-bcde-857fc71cbb40")
 	)
-	(label "IR_LED"
+	(label "KEY_LEFT"
 		(at 167.64 59.69 180)
 		(effects
 			(font
@@ -3877,7 +3867,7 @@
 		)
 		(uuid "3d66457b-6ff3-4e18-8779-4bd98d17b579")
 	)
-	(label "KEY_LEFT"
+	(label "KEY_UP"
 		(at 167.64 67.31 180)
 		(effects
 			(font
@@ -3967,7 +3957,7 @@
 		)
 		(uuid "52fa8f4c-4368-480f-9a0b-2c2bdfda8e9f")
 	)
-	(label "IR_VS"
+	(label "IR_RX_PWR"
 		(at 60.96 140.97 90)
 		(effects
 			(font
@@ -4077,7 +4067,7 @@
 		)
 		(uuid "73a1fd14-26fa-4eaa-9a61-40f5540fa5ce")
 	)
-	(label "IR_RX"
+	(label "KEY_BACK"
 		(at 167.64 90.17 180)
 		(effects
 			(font
@@ -4108,12 +4098,12 @@
 		(uuid "7ef72096-c220-44e1-9ca5-f2c11c4c40bd")
 	)
 	(label "STATUS_LED"
-		(at 167.64 105.41 180)
+		(at 233.68 81.28 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify right bottom)
+			(justify left bottom)
 		)
 		(uuid "8170bfc6-2a1a-43ff-97ed-7a1693a79923")
 	)
@@ -4156,16 +4146,6 @@
 			(justify right bottom)
 		)
 		(uuid "89300c17-fea9-4b76-91b2-a8b4048ae9a6")
-	)
-	(label "GND"
-		(at 200.66 143.51 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "89711e43-2542-477a-80db-c724079eb8fc")
 	)
 	(label "VBAT"
 		(at 91.44 36.83 90)
@@ -4357,7 +4337,7 @@
 		)
 		(uuid "b3f4ff3a-3151-4c6a-9ae5-52616a348fa4")
 	)
-	(label "KEY_RIGHT"
+	(label "KEY_POWER"
 		(at 233.68 66.04 0)
 		(effects
 			(font
@@ -4387,7 +4367,7 @@
 		)
 		(uuid "bbcbac4b-0a7b-4ea5-adbb-85a22eded1f4")
 	)
-	(label "KEY_VOLDN"
+	(label "IR_LED"
 		(at 167.64 102.87 180)
 		(effects
 			(font
@@ -4437,7 +4417,7 @@
 		)
 		(uuid "c29f3175-8093-40d1-938d-058c37db2435")
 	)
-	(label "KEY_PLAY"
+	(label "KEY_VOLDN"
 		(at 167.64 97.79 180)
 		(effects
 			(font
@@ -4467,7 +4447,7 @@
 		)
 		(uuid "c75b869d-5cf4-4653-be0d-15caa2ad64bc")
 	)
-	(label "KEY_VOLUP"
+	(label "IR_RX"
 		(at 167.64 100.33 180)
 		(effects
 			(font
@@ -4527,7 +4507,7 @@
 		)
 		(uuid "d5c62391-fd65-49cb-8afe-4d2144c19b06")
 	)
-	(label "KEY_DOWN"
+	(label "KEY_RIGHT"
 		(at 233.68 73.66 0)
 		(effects
 			(font
@@ -4557,16 +4537,6 @@
 		)
 		(uuid "db707ea8-16c9-4eb4-a0c2-e654f77c26bc")
 	)
-	(label "XL2"
-		(at 200.66 135.89 90)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "dd3fe102-63ff-4a68-9f4e-36f18713a0c6")
-	)
 	(label "SWDCLK"
 		(at 337.82 50.8 0)
 		(effects
@@ -4587,16 +4557,6 @@
 		)
 		(uuid "e4679057-0e68-4278-80b0-2620ffb6c4a4")
 	)
-	(label "GND"
-		(at 190.5 143.51 270)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "ee52e4cc-9380-4eaa-8f35-df341d974d56")
-	)
 	(label "SWDIO"
 		(at 233.68 71.12 0)
 		(effects
@@ -4607,8 +4567,8 @@
 		)
 		(uuid "ee6eb61b-3944-408b-99c8-dc5a4b2a793c")
 	)
-	(label "KEY_POWER"
-		(at 167.64 57.15 180)
+	(label "KEY_DOWN"
+		(at 167.64 62.23 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -4711,6 +4671,28 @@
 				)
 			)
 		)
+		(property "LCSC" "C23733"
+			(at 45.72 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Samsung CL05A475MP5NRNC"
+			(at 45.72 149.86 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "11f0c3b0-cd6d-4ae5-b1ee-04dbab3a3454")
 		)
@@ -4800,6 +4782,28 @@
 				)
 			)
 		)
+		(property "LCSC" "C22775"
+			(at 30.48 144.78 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Uniroyal 0603WAF1000T5E"
+			(at 30.48 144.78 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "aaa62955-1f6f-4303-a81f-4101112bb9ad")
 		)
@@ -4879,6 +4883,28 @@
 			)
 		)
 		(property "Note" "Holds Q1 off during reset"
+			(at 78.74 109.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C25803"
+			(at 78.74 109.22 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Uniroyal 0603WAF1003T5E"
 			(at 78.74 109.22 0)
 			(hide yes)
 			(show_name no)
@@ -5082,6 +5108,28 @@
 			)
 		)
 		(property "Note" "On VDD_NRF, Raytac reference C10"
+			(at 91.44 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C23733"
+			(at 91.44 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Samsung CL05A475MP5NRNC"
 			(at 91.44 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -5674,7 +5722,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
+		(property "Footprint" "Resistor_SMD:R_0805_2012Metric"
 			(at 30.48 83.82 0)
 			(hide yes)
 			(show_name no)
@@ -5698,6 +5746,28 @@
 		)
 		(property "Description" ""
 			(at 30.48 83.82 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C17415"
+			(at 30.48 83.82 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Uniroyal 0805W8F100JT5E"
+			(at 30.48 83.82 0)
+			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -5967,184 +6037,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:C")
-		(at 190.5 139.7 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(uuid "3ea6a483-fc92-414b-8b62-79785c8ad3fb")
-		(property "Reference" "C3"
-			(at 193.04 134.62 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DNP"
-			(at 193.04 144.78 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 190.5 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 190.5 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 190.5 139.7 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Note" "Not fitted, per Raytac reference C12"
-			(at 190.5 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "ee7c7130-9d99-4969-8213-2307c71d96eb")
-		)
-		(pin "2"
-			(uuid "b37c953d-0902-459a-b4af-13e36524b003")
-		)
-		(instances
-			(project "antuna-remote"
-				(path "/dc8d99ce-47f1-4dff-968b-70e32a66c823"
-					(reference "C3")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 200.66 139.7 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp yes)
-		(uuid "3f2a0442-2174-4c70-962c-a7330499b0c7")
-		(property "Reference" "C4"
-			(at 203.2 134.62 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "DNP"
-			(at 203.2 144.78 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 200.66 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" ""
-			(at 200.66 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" ""
-			(at 200.66 139.7 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Note" "Not fitted, per Raytac reference C13"
-			(at 200.66 139.7 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "b2f9ca48-d0fc-4d88-9b3c-fbbe0c401742")
-		)
-		(pin "2"
-			(uuid "4c7a8280-46dd-4f4b-b4b7-c48f7e7ab7b2")
-		)
-		(instances
-			(project "antuna-remote"
-				(path "/dc8d99ce-47f1-4dff-968b-70e32a66c823"
-					(reference "C4")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "Device:Battery")
 		(at 30.48 40.64 0)
 		(unit 1)
@@ -6152,7 +6044,7 @@
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
-		(in_pos_files yes)
+		(in_pos_files no)
 		(dnp no)
 		(uuid "3fd204ea-fb69-4d49-8c2d-bba2f21b84df")
 		(property "Reference" "BT1"
@@ -6175,7 +6067,7 @@
 				)
 			)
 		)
-		(property "Footprint" "antuna:Keystone_AAAx2_EdgeTabs"
+		(property "Footprint" "antuna:Battery_Wire_Pads_P11.5mm"
 			(at 30.48 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -6207,7 +6099,7 @@
 				)
 			)
 		)
-		(property "MPN" "Keystone 5226 (+), 5204 (-), 5213 bridge in the door"
+		(property "MPN" "Keystone 5226 (+), 5204 (-), 5213 bridge"
 			(at 30.48 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -6218,7 +6110,7 @@
 				)
 			)
 		)
-		(property "Note" "Contacts bought from Digi-Key and soldered at home"
+		(property "Note" "Contacts sit in slots in the shell; a wire from each is soldered into these holes at home"
 			(at 30.48 40.64 0)
 			(hide yes)
 			(show_name no)
@@ -7116,6 +7008,28 @@
 				)
 			)
 		)
+		(property "LCSC" "C23138"
+			(at 30.48 190.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Uniroyal 0603WAF3300T5E"
+			(at 30.48 190.5 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "d64d1730-9e11-4c75-89fa-bada9c8d9f45")
 		)
@@ -7974,7 +7888,40 @@
 				)
 			)
 		)
-		(property "Note" "Firmware sets the internal load to the crystal's rated load"
+		(property "Note" "7 pF load, set in firmware with the chip's internal capacitors; no load capacitors on the board"
+			(at 175.26 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "LCSC" "C2450085"
+			(at 175.26 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "ECS ECS-.327-7-34B-C-TR"
+			(at 175.26 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Alternate" "HCI FC31M2-32.768-N07LLDTL (C5120558)"
 			(at 175.26 129.54 0)
 			(hide yes)
 			(show_name no)
@@ -8307,6 +8254,28 @@
 				)
 			)
 		)
+		(property "LCSC" "C23162"
+			(at 60.96 144.78 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Uniroyal 0603WAF4701T5E"
+			(at 60.96 144.78 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
 		(pin "1"
 			(uuid "7be2701f-109f-40db-b732-b69f44c9aa10")
 		)
@@ -8496,7 +8465,29 @@
 				)
 			)
 		)
-		(property "Note" "DC/DC, Raytac reference L1; current rating at least 120 mA"
+		(property "LCSC" "C114862"
+			(at 149.86 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "Murata LQM18PN4R7MFRL"
+			(at 149.86 129.54 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Note" "4.7 uH 20 %, 620 mA, 550 mOhm; Nordic asks 120 mA and at most 650 mOhm"
 			(at 149.86 129.54 0)
 			(hide yes)
 			(show_name no)
