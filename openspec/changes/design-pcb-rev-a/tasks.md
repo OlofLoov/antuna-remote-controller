@@ -21,7 +21,7 @@
 - [x] 4.2 ERC clean, and a review of every net against design.md
 - [x] 4.3 Check KiCad's TS-1187A footprint against XKB's drawing (`xkb-ts-1187a-drawing.pdf` in `docs/datasheets/manifest.tsv`) and pin its hash
 - [ ] 4.4 Owner review of the schematic in KiCad
-- [ ] 4.5 Recheck the crystal's load and series resistance limits, and the NFC pads' leakage, against Nordic's nRF54L15 product specification PDF
+- [x] 4.5 Recheck the crystal's limits, the NFC pads' leakage and the supply limits against Nordic's nRF54L15 datasheet (the web edition, read 2026-11-27; it shows no version number)
 
 ## 5. Layout
 
