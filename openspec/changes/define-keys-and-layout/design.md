@@ -170,8 +170,9 @@ parts, and `scripts/build-mockup.sh` writes them as STEP and STL:
   it. Moving caps come with the enclosure change, once there is a board
   to press on.
 - The back half: the rest of the body, with a pocket the board drops
-  into, ribs under it, a deeper room under the IR LED's leads, the
-  battery bay and the screw holes.
+  into. Under the board it is hollow down to a 2 mm wall. Six ribs across
+  the width and a post round each board screw stand on that wall and
+  carry the board. The battery end is solid around the bay.
 - The battery door: a flat plate, flush with the back. Two tabs hook
   under the shell at the bottom end. At the other end a slot leaves a bar
   1.1 mm thick that bends back as its snap passes the shell's edge. Two
@@ -186,7 +187,9 @@ the IR receiver are checked as boxes of their datasheet sizes.
 Each part prints with its outside up and its inside on the bed, so the
 faces the hand touches need no supports. The price is a butt joint: a
 lip from one half into the other would have to hang below the bed. The
-screws line the halves up. The bay is 45 mm long so bare cells do not
+screws line the halves up. `printable.py` slices each part into 0.2 mm
+layers and fails the build when a region has nothing under it; the floor
+of Power's recess runs on to the side wall for that reason. The bay is 45 mm long so bare cells do not
 slide; the real bay is 50 mm, runs under the end wall and has spring
 contacts (decision 3).
 
@@ -207,7 +210,8 @@ counterbore. Four pass through unplated 2.2 mm holes in the PCB, at
 front half; two more beside the battery bay, at 4.6/143 and 35.4/143 mm,
 hold the bottom end shut. Each has 1.5 mm of back under its head and
 2.5 mm of thread in its boss. The board lies in its pocket, clamped
-between the bosses and the ribs, so it needs no notches. The top left
+between the front half's bosses above and the back half's posts and
+ribs below, so it needs no notches. The top left
 corner has no screw, since steel beside the antenna detunes it. The
 prototype shows whether that corner gapes; a printed hook there is the
 fix if it does. The PCB sits 2 mm inside the outline all round.

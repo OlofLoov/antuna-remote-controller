@@ -50,6 +50,8 @@ BOARD_GAP = 0.2        # around the board's edge
 BOARD_END = 100.0      # the board's bottom edge
 RIB = 0.5              # the board rests this far off the back's floor
 LEDGE = 0.8            # width of the step the board's edge rests on
+BACK_WALL = 2.0        # back wall under the board
+POST = 6.0             # screw posts in the back half
 RIBS_Y = (30.0, 42.0, 54.0, 66.0, 78.0, 90.0)
 
 # M2 x 5 self-tapping screws from the back: 1.5 mm under the head, through
@@ -180,6 +182,11 @@ def front_part(shell, pos, ref):
     # Power's recess is a cup that reaches down into the room.
     cup = rod(*pos["Power"], -FACE, HEAD_RISE, 9.4)
     room -= cup
+    # The cup's floor runs on to the side wall and to the front wall below
+    # the head, so it does not start in mid-air on the printer. The IR LED
+    # lies to its left, so it cannot reach that wall.
+    px, py = pos["Power"]
+    room -= box((px - 4.7, WIDTH), (py - 4.7, HEAD_END + HEAD_SLOPE + 1), (-FACE, 0))
     for x, y in BOARD_SCREWS + END_SCREWS:
         room -= rod(x, y, SPLIT, 0, BOSS)
     front -= room
@@ -206,10 +213,14 @@ def back_part(shell):
     back -= column(2.0 - BOARD_GAP) & above_board_end & box((-5, 45), (-5, 160), (SPLIT - BOARD, SPLIT + 1))
     floor = SPLIT - BOARD - RIB
     under = column(2.0 + LEDGE) & above_board_end & box((-5, 45), (-5, 160), (floor, SPLIT))
+    # Hollow down to a wall of BACK_WALL. The ribs and the screw posts
+    # stand on that wall and reach up to the board.
+    under += (column(4.0) & (Pos(0, 0, BACK_WALL) * slab(front=False))
+              & box((-5, 45), (-5, BOARD_END - 0.5), (-50, floor + 0.2)))
     for y in RIBS_Y:
-        under -= box((0, WIDTH), (y - 0.6, y + 0.6), (floor, SPLIT - BOARD))
+        under -= box((0, WIDTH), (y - 0.6, y + 0.6), (-50, SPLIT - BOARD))
     for x, y in BOARD_SCREWS:
-        under -= rod(x, y, floor, SPLIT - BOARD, 5.2)
+        under -= rod(x, y, -50, SPLIT - BOARD, POST)
     # The IR LED's clipped leads stick out under the board at the top end.
     under += column(2.0 + LEDGE) & box((-5, 45), (-5, 22), (floor - 1.2, SPLIT - BOARD))
     back -= under

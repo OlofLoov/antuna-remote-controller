@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Build the shell prototype: three printable parts as STEP and STL in
-# hardware/enclosure/out/. Key positions come from the board's placement
+# hardware/enclosure/out/, checked against the board and for printing
+# without supports. Key positions come from the board's placement
 # file, exported here. Needs uv (`brew install uv`); the Python packages
 # are pinned in hardware/enclosure/uv.lock.
 set -euo pipefail
@@ -20,6 +21,7 @@ uv run --project hardware/enclosure --frozen python hardware/enclosure/mockup.py
   -o "$work/board.step" hardware/pcb/antuna-remote/antuna-remote.kicad_pcb >/dev/null 2>&1 || true
 [[ -s "$work/board.step" ]] || { echo "kicad-cli wrote no board.step" >&2; exit 1; }
 uv run --project hardware/enclosure --frozen python hardware/enclosure/fit.py "$work/board.step" "$work/placement.csv"
+uv run --project hardware/enclosure --frozen python hardware/enclosure/printable.py "$out"
 if [[ -n "${RENDER_TO:-}" ]]; then
   uv run --project hardware/enclosure --frozen python hardware/enclosure/render.py "$work/placement.csv" "$RENDER_TO"
 fi
