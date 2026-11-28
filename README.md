@@ -5,6 +5,19 @@ Main first, then each pull request; newest commit first.
 
 # main
 
+## 2026-11-28-1006-49a1b0d
+
+![board-bottom](main/2026-11-28-1006-49a1b0d/board-bottom.png)
+![board-iso](main/2026-11-28-1006-49a1b0d/board-iso.png)
+![board-top](main/2026-11-28-1006-49a1b0d/board-top.png)
+![enclosure-mockup-back](main/2026-11-28-1006-49a1b0d/enclosure-mockup-back.png)
+![enclosure-mockup-front](main/2026-11-28-1006-49a1b0d/enclosure-mockup-front.png)
+![enclosure-mockup-inside](main/2026-11-28-1006-49a1b0d/enclosure-mockup-inside.png)
+![enclosure-mockup-side](main/2026-11-28-1006-49a1b0d/enclosure-mockup-side.png)
+![layout-bottom](main/2026-11-28-1006-49a1b0d/layout-bottom.png)
+![layout-top](main/2026-11-28-1006-49a1b0d/layout-top.png)
+![schematic-antuna-remote](main/2026-11-28-1006-49a1b0d/schematic-antuna-remote.png)
+
 ## 2026-11-28-1005-fa91d10
 
 ![board-bottom](main/2026-11-28-1005-fa91d10/board-bottom.png)
